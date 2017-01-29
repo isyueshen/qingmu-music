@@ -10,16 +10,17 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
-import static com.luna1970.qingmumusic.application.MusicApplication.position;
-import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
 
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.entity.Music;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayConst;
+import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.position;
+import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
 
 /**
  * Created by Yue on 1/9/2017.
@@ -46,20 +47,20 @@ public class MusicPlayService extends Service {
         musics = MusicApplication.musicLists;
         Log.i(TAG, "onCreate: " + musics.size());
         intentFilter = new IntentFilter();
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_NEXT);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_PREV);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
 
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_ORDER);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER);
 
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
 
-        playModeContainer = new String[]{GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL, GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE, GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE, GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_ORDER};
-        currentPlayMode = GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL;
+        playModeContainer = new String[]{GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL, GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE, GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE, GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER};
+        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL;
         new Thread() {
             @Override
             public void run() {
@@ -67,8 +68,8 @@ public class MusicPlayService extends Service {
                     if (mediaPlayer.isPlaying()) {
                         int currentPosition = mediaPlayer.getCurrentPosition();
                         intent = new Intent();
-                        intent.putExtra(GlobalMusicPlayConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, currentPosition);
-                        intent.setAction(GlobalMusicPlayConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+                        intent.putExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, currentPosition);
+                        intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
                         sendBroadcast(intent);
                     }
                     try {
@@ -119,12 +120,12 @@ public class MusicPlayService extends Service {
                     if (position>=musics.size()) {
                         mediaPlayer.stop();
                         MusicPlayService.this.intent = new Intent();
-                        MusicPlayService.this.intent.setAction(GlobalMusicPlayConst.ACTION_SERVICE_PAUSE);
+                        MusicPlayService.this.intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
                         sendBroadcast(MusicPlayService.this.intent);
                         return;
                     }
                 }
-                playMusic(position, GlobalMusicPlayConst.ACTION_SERVICE_PLAYING);
+                playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
             }
         });
         Log.i(TAG, "onStartCommand: ");
@@ -134,70 +135,70 @@ public class MusicPlayService extends Service {
                 Log.i(TAG, "onReceive: " + intent.getAction());
                 prevPosition = position;
                 switch (intent.getAction()) {
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_OR_PAUSE:
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE:
                         if (hasPlayed) {
                             if (mediaPlayer.isPlaying()) {
                                 mediaPlayer.pause();
                                 intent = new Intent();
-                                intent.setAction(GlobalMusicPlayConst.ACTION_SERVICE_PAUSE);
+                                intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
                                 sendBroadcast(intent);
                             } else {
                                 mediaPlayer.start();
-                                sendCustomBroadcast(GlobalMusicPlayConst.ACTION_SERVICE_PLAY_CONTINUE);
+                                sendCustomBroadcast(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
                             }
                         } else {
                             hasPlayed = true;
-                            playMusic(position, GlobalMusicPlayConst.ACTION_SERVICE_PLAYING);
+                            playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                             mediaPlayer.seekTo(intent.getIntExtra("seekBarProgress", 0));
                         }
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_NEXT:
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT:
                         if (currentPlayMode.equals(playModeContainer[2])) {
                             position = getShufflePosition(position);
                         } else {
                             position = ++position>=musics.size() ? 0 : position;
                         }
                         hasPlayed = true;
-                        playMusic(position, GlobalMusicPlayConst.ACTION_SERVICE_PLAYING);
+                        playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_PREV:
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV:
                         if (currentPlayMode.equals(playModeContainer[2])) {
                             position = getShufflePosition(position);
                         } else {
                             position = --position<0 ? musics.size()-1 : position;
                         }
                         hasPlayed = true;
-                        playMusic(position, GlobalMusicPlayConst.ACTION_SERVICE_PLAYING);
+                        playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_SPECIFIC:
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC:
                         int newPosition = intent.getIntExtra("position", 0);
                         if (newPosition != position) {
                             position = newPosition;
-                            playMusic(newPosition, GlobalMusicPlayConst.ACTION_SERVICE_PLAYING);
+                            playMusic(newPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         } else {
                             if (!mediaPlayer.isPlaying()) {
                                 mediaPlayer.start();
-                                sendCustomBroadcast(GlobalMusicPlayConst.ACTION_SERVICE_PLAY_CONTINUE);
+                                sendCustomBroadcast(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
                             } else {
                                 Toast.makeText(context, "当前正在播放该曲目", Toast.LENGTH_SHORT).show();
                             }
                         }
                         hasPlayed =true;
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL:
-                        currentPlayMode = GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL;
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL:
+                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL;
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE:
-                        currentPlayMode = GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE;
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE:
+                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE;
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE:
-                        currentPlayMode = GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE;
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE:
+                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE;
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_ORDER:
-                        currentPlayMode = GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_ORDER;
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER:
+                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER;
                         break;
-                    case GlobalMusicPlayConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED:
-                        int currentPosition = intent.getIntExtra(GlobalMusicPlayConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED, 0);
+                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED:
+                        int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED, 0);
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.seekTo(currentPosition);
                         }

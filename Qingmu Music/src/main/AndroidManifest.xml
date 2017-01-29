@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:name=".application.MusicApplication"
@@ -26,12 +27,18 @@
 
         <service android:name=".service.MusicPlayService" />
 
-        <receiver android:name=".service.MusicPlayWidget" >
+        <receiver android:name=".service.MusicPlayWidget">
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_initialization"/>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_initialization" />
         </receiver>
+        <activity android:name=".activity.MainActivity">
+        </activity>
+        <activity android:name=".activity.AlbumDetailActivity" android:theme="@style/AlbumDetail">
+        </activity>
     </application>
 
 </manifest>

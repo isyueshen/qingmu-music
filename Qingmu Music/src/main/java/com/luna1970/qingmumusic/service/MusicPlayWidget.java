@@ -3,11 +3,6 @@ package com.luna1970.qingmumusic.service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
-import android.content.Intent;
-import android.util.Log;
-import android.widget.RemoteViews;
-
-import com.luna1970.qingmumusic.R;
 
 /**
  * Created by Yue on 1/10/2017.

@@ -5,7 +5,7 @@ package com.luna1970.qingmumusic.util;
  *
  */
 
-public class GlobalMusicPlayConst {
+public class GlobalMusicPlayControllerConst {
     // play button selected
     public static final String ACTION_ACTIVITY_PLAY_OR_PAUSE = "PLAY_OR_PAUSE";
     public static final String ACTION_ACTIVITY_PLAY_NEXT = "PLAY_NEXT";

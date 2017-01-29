@@ -1,6 +1,7 @@
 package com.luna1970.qingmumusic.application;
 
 import android.app.Application;
+import android.media.MediaPlayer;
 
 import com.luna1970.qingmumusic.dao.MusicDao;
 import com.luna1970.qingmumusic.dao.impl.MusicCursorDaoImpl;
@@ -24,5 +25,9 @@ public class MusicApplication extends Application{
         super.onCreate();
         MusicDao musicDao = new MusicCursorDaoImpl(this);
         musicLists = musicDao.findAll();
+        mediaPlayer = new MediaPlayer();
     }
+
+    public MediaPlayer mediaPlayer;
+
 }

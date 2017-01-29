@@ -10,9 +10,8 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,15 +29,15 @@ import com.luna1970.qingmumusic.adapter.MusicListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.entity.Music;
 import com.luna1970.qingmumusic.service.MusicPlayService;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayConst;
+import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
+
+import java.io.FileNotFoundException;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.position;
 import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
 
-import java.io.FileNotFoundException;
-
-public class MusicListActivity extends AppCompatActivity {
+public class MusicListActivity extends BaseAcitivity {
     private static final String TAG = "MusicListActivity";
     
     private ImageView largeAlbumPic;
@@ -71,13 +70,6 @@ public class MusicListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_list);
-
-        // Start service
-        if (!MusicApplication.isPlaying) {
-            intent = new Intent();
-            intent.setClass(this, MusicPlayService.class);
-            startService(intent);
-        }
 
         setViews();
         getMusicList();
@@ -128,7 +120,7 @@ public class MusicListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 intent = new Intent();
                 intent.putExtra("seekBarProgress", seekBar.getProgress());
-                intent.setAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
                 sendBroadcast(intent);
             }
         });
@@ -136,7 +128,7 @@ public class MusicListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_NEXT);
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT);
                 sendBroadcast(intent);
             }
         });
@@ -144,7 +136,7 @@ public class MusicListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_PREV);
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV);
                 sendBroadcast(intent);
             }
         });
@@ -167,7 +159,7 @@ public class MusicListActivity extends AppCompatActivity {
                 }
                 intent = new Intent();
                 intent.putExtra("position", position);
-                intent.setAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
                 sendBroadcast(intent);
             }
         });
@@ -192,9 +184,9 @@ public class MusicListActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
                 Log.i(TAG, "onStopTrackingTouch: " + seekBar.getProgress());
-                intent.putExtra(GlobalMusicPlayConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED, seekBar.getProgress());
+                intent.putExtra(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED, seekBar.getProgress());
                 sendBroadcast(intent);
             }
         });
@@ -203,7 +195,7 @@ public class MusicListActivity extends AppCompatActivity {
             public void onClick(View v) {
                 intent = new Intent();
                 intent.putExtra("position", 0);
-                intent.setAction(GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
                 sendBroadcast(intent);
             }
         });
@@ -211,30 +203,30 @@ public class MusicListActivity extends AppCompatActivity {
 
     private void setReceiver() {
         intentFilter = new IntentFilter();
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_SERVICE_PLAYING);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_SERVICE_PAUSE);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_SERVICE_PLAY_CONTINUE);
-        intentFilter.addAction(GlobalMusicPlayConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
-                    case GlobalMusicPlayConst.ACTION_SERVICE_PLAYING:
+                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING:
                         Log.i(TAG, "position:  " + position);
                         MusicApplication.isPlaying = true;
                         initMusicInfo();
                         break;
-                    case GlobalMusicPlayConst.ACTION_SERVICE_PLAY_CONTINUE:
+                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE:
                         playOrPauseIV.setImageResource(R.drawable.pause);
                         MusicApplication.isPlaying = true;
                         break;
-                    case GlobalMusicPlayConst.ACTION_SERVICE_PAUSE:
+                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE:
                         playOrPauseIV.setImageResource(R.drawable.play);
                         MusicApplication.isPlaying = false;
                         break;
-                    case GlobalMusicPlayConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
-                        int currentPosition = intent.getIntExtra(GlobalMusicPlayConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
+                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
+                        int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
                         Log.i(TAG, "onReceive: " + currentPosition + " " + MusicApplication.musicLists.get(position).getDuration());
                         seekBar.setProgress(currentPosition);
                         break;
@@ -310,10 +302,10 @@ public class MusicListActivity extends AppCompatActivity {
 
     private void initPlayMode() {
         playModeIndex = 0;
-        playModeActionContainer = new String[]{GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL,
-                GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE,
-                GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE,
-                GlobalMusicPlayConst.ACTION_ACTIVITY_PLAY_MODE_ORDER};
+        playModeActionContainer = new String[]{GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL,
+                GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE,
+                GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE,
+                GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER};
         playModeResource = new int[]{R.drawable.all_repeat,
                 R.drawable.repeat_once,
                 R.drawable.shuffle,
@@ -406,10 +398,4 @@ public class MusicListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onBackPressed() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        startActivity(intent);
-    }
 }

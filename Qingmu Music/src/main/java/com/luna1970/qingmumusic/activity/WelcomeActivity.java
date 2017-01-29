@@ -2,9 +2,9 @@ package com.luna1970.qingmumusic.activity;
 
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.widget.ImageView;
 
 import com.luna1970.qingmumusic.R;
@@ -36,7 +36,7 @@ public class WelcomeActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
 
             public void run() {
-                Intent intent = new Intent(WelcomeActivity.this, MusicListActivity.class);
+                Intent intent = new Intent(WelcomeActivity.this, MainActivity.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.start_activity_alpha_in, R.anim.start_activity_scale_out);
                 finish();
