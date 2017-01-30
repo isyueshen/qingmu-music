@@ -14,23 +14,23 @@ public class Song implements Parcelable{
     public int id;
     @SerializedName("artist_id")
     public int artistId;
+
+    public String country;
     public String language;
 
     @SerializedName("publishtime")
     public String publishTime;
 
+
     @SerializedName("album_no")
     public int albumNo;
-
 
     @SerializedName("pic_big")
     public String songCoverPath;
 
+
     @SerializedName("file_duration")
     public int duration;
-
-
-    public String country;
 
     @SerializedName("lrclink")
     public String lrcPath;
@@ -41,7 +41,8 @@ public class Song implements Parcelable{
     public String title;
 
     public String author;
-
+    @SerializedName("total_listen_nums")
+public int listeneNum;
 
     @SerializedName("album_id")
     public int AlbumId;
@@ -51,6 +52,10 @@ public class Song implements Parcelable{
 
     @SerializedName("has_mv")
     public int hasMv;
+
+    @SerializedName("style")
+    public String style;
+
 
     protected Song(Parcel in) {
         id = in.readInt();

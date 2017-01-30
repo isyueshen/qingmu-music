@@ -47,6 +47,11 @@ public class MainFragment extends Fragment {
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment newSongOnline = new BannerFocusFragment();
+        fragmentTransaction.replace(R.id.new_song_online, newSongOnline);
+        fragmentTransaction.commit();
+
+        fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_EUROPE_AMERICA = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_EUROPE_AMERICA, allType.get(DailyRecommendType.TYPE_EUROPE_AMERICA));
         fragmentTransaction.replace(R.id.TYPE_EUROPE_AMERICA, TYPE_EUROPE_AMERICA);
         fragmentTransaction.commit();

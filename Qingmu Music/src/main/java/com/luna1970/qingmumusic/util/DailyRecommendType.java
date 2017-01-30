@@ -13,18 +13,21 @@ public class DailyRecommendType {
     public static final int TYPE_NEW_SONG = 1;
     public static final int TYPE_HOT_SONG = 2;
     public static final int TYPE_EUROPE_AMERICA = 21;
-    public static final int TYPE_ORIGINAL = 0;
+    public static final int TYPE_ORIGINAL = 200;
 
     public static final int TYPE_POP_MUSIC = 16;
-    public static final int TYPE_CHINESE_SONG = 0;
+    public static final int TYPE_CHINESE_SONG = 20;
     public static final int TYPE_CLASSICAL_SONG = 22;
     public static final int TYPE_NET_WORK_SONGS = 25;
     public static final int TYPE_FILM_SONGS = 24;
     public static final int TYPE_LOVE_SONGS = 23;
-    public static final int TYPE_BILLBOARD = 0;
+    public static final int TYPE_BILLBOARD = 8;
 
     public static final int TYPE_ROCK = 11;
     public static final int TYPE_JAZZ = 12;
+
+    public static final int TYPE_HITO = 18;
+    public static final int TYPE_KTV_HOT_SONG = 18;
 
     static {
         ALL_TYPE.put(TYPE_NEW_SONG,         "新歌榜");
@@ -40,6 +43,8 @@ public class DailyRecommendType {
         ALL_TYPE.put(TYPE_BILLBOARD,        "Billboard 公告牌");
         ALL_TYPE.put(TYPE_ROCK,             "摇滚");
         ALL_TYPE.put(TYPE_JAZZ,             "爵士");
+        ALL_TYPE.put(TYPE_HITO,             "Hito中文榜");
+        ALL_TYPE.put(TYPE_KTV_HOT_SONG,     "KTV热歌榜");
     }
 
 }

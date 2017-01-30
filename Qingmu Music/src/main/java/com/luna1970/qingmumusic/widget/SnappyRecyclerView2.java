@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 
 /**
  * Created by Yue on 1/27/2017.
+ *
  */
 
 public class SnappyRecyclerView2 extends RecyclerView {
@@ -29,7 +30,7 @@ public class SnappyRecyclerView2 extends RecyclerView {
 
     @Override
     public boolean fling(int velocityX, int velocityY) {
-        if (Math.abs(velocityX) > 500) {
+        if (Math.abs(velocityX) > 3500) {
             if (velocityX > 0) {
                 smoothScrollToPosition(toRightMovePosition);
             } else {

@@ -9,6 +9,7 @@ import com.luna1970.qingmumusic.Gson.AlbumInfo;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.Gson.SongInfo;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,6 +51,12 @@ public class GsonUtil {
         }
         return albumInfo;
     }
+
+    /**
+     * request song file path by song id
+     * @param json original response json data
+     * @return SongInfo Object
+     */
     public static SongInfo handlerSongInfoByRequestPlay(String json) {
         SongInfo songInfo = null;
         try {
@@ -61,14 +68,26 @@ public class GsonUtil {
         return songInfo;
     }
 
-    public static List<Song> handlerSongInfoListByRequestDailyRecommend(String json) {
-        List<Song> songInfoList = null;
+    public static List<Song> handlerSongListByRequestDailyRecommend(String json) {
+        List<Song> songList = null;
         try {
             String songListString = new JSONObject(json).getJSONArray("song_list").toString();
-            songInfoList = new Gson().fromJson(songListString, new TypeToken<List<Song>>(){}.getType());
+            songList = new Gson().fromJson(songListString, new TypeToken<List<Song>>(){}.getType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return songInfoList;
+        return songList;
+    }
+
+    public static String getBannerUri(String json) {
+        String path = null;
+        try {
+            JSONArray jsonArray = new JSONObject(json).getJSONObject("result").getJSONObject("focus").getJSONArray("result");
+            JSONObject jsonObject = jsonArray.getJSONObject(jsonArray.length() - 1);
+            path = jsonObject.getString("randpic");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return path;
     }
 }
