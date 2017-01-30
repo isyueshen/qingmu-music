@@ -54,11 +54,17 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         </com.luna1970.qingmumusic.widget.CustomScrollViewPager>
-        <include
+        <!--<include-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--layout="@layout/fragment_play_control"/>-->
+        <FrameLayout
+            android:id="@+id/play_control_container"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/fragment_play_control"/>
+            android:layout_height="wrap_content">
+        </FrameLayout>
         <com.lapism.searchview.SearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"

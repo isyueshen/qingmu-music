@@ -6,6 +6,8 @@ import android.os.PersistableBundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -22,6 +24,7 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainRecommendListFragment;
+import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 
 public class MainActivity extends BaseAcitivity {
     private static final String TAG = "MainActivity";
@@ -35,15 +38,19 @@ public class MainActivity extends BaseAcitivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setViews();
-        Log.i(TAG, "onCreate: 1");
         setToolbar();
-        Log.i(TAG, "onCreate: 2");
         setDrawerLayout();
-        Log.i(TAG, "onCreate: 3");
         setFab();
-        Log.i(TAG, "onCreate: 4");
         setSearchView();
-        Log.i(TAG, "onCreate: 5");
+        setFragment();
+    }
+
+    private void setFragment() {
+        Fragment fragment = new PlayControlFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.play_control_container, fragment);
+        fragmentTransaction.commit();
+        Log.i(TAG, "setFragment: ");
     }
 
     private void setFab() {
