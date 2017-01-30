@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -51,19 +52,21 @@ public class NewSongListAdapter extends RecyclerView.Adapter<NewSongListAdapter.
         TextView titleTv;
         TextView albumTitleTv;
         TextView styleTv;
-        ImageButton menuBtn;
+        ImageView menuBtn;
+        FrameLayout menuArea;
         View view;
 
         public MViewHolder(View itemView) {
             super(itemView);
             // 初始化视图控件
             view = itemView;
-            menuBtn = (ImageButton) itemView.findViewById(R.id.menu_btn);
+            menuBtn = (ImageView) itemView.findViewById(R.id.menu_btn);
             songCoverIv = (ImageView) itemView.findViewById(R.id.song_cover_iv);
             authorTv = (TextView) itemView.findViewById(R.id.author_tv);
             titleTv = (TextView) itemView.findViewById(R.id.title_tv);
             albumTitleTv = (TextView) itemView.findViewById(R.id.album_title_tv);
             styleTv = (TextView) itemView.findViewById(R.id.style_tv);
+            menuArea = (FrameLayout) itemView.findViewById(R.id.menu_are);
         }
     }
 
@@ -105,8 +108,10 @@ public class NewSongListAdapter extends RecyclerView.Adapter<NewSongListAdapter.
         // 设置menu图标偏移, 获得更大的点击区域, 优化视觉效果
         holder.menuBtn.setTranslationX(27);
         holder.menuBtn.setTranslationY(-25);
+        holder.menuBtn.setScaleX(0.5f);
+        holder.menuBtn.setScaleY(0.5f);
         // menu 点击事件 PopMenu
-        holder.menuBtn.setOnClickListener(new View.OnClickListener() {
+        holder.menuArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 customRecyclerItemOnClickListener.onPopMenuOnClick(v);

@@ -42,15 +42,19 @@
                     android:textSize="19sp"
                     android:layout_width="145dp"
                     android:layout_height="wrap_content" />
-                <ImageButton
-                    android:id="@+id/menu_btn"
+                <FrameLayout
+                    android:id="@+id/menu_are"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:scaleX="0.5"
-                    android:scaleY="0.5"
-                    android:background="@drawable/menu"/>
+                    android:layout_height="40dp">
+                    <ImageView
+                        android:id="@+id/menu_btn"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@drawable/menu"/>
+                </FrameLayout>
+
                 <TextView
                     android:id="@+id/title_tv"
                     android:ellipsize="end"
