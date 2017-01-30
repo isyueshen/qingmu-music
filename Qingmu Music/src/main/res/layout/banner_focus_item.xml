@@ -68,7 +68,7 @@
                     android:ellipsize="end"
                     android:lines="1"
                     android:maxLines="1"
-                    android:layout_width="105dp"
+                    android:layout_width="135dp"
                     android:layout_height="wrap_content" />
                 <TextView
                     android:id="@+id/style_tv"
@@ -78,7 +78,7 @@
                     android:gravity="end"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_width="80dp"
+                    android:layout_width="50dp"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
         </LinearLayout>
