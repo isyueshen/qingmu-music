@@ -56,6 +56,8 @@ public int listeneNum;
     @SerializedName("style")
     public String style;
 
+    @SerializedName("file_link")
+    public String FileLink;
 
     protected Song(Parcel in) {
         id = in.readInt();

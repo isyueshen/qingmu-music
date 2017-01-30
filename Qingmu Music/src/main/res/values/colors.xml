@@ -7,4 +7,6 @@
     <color name="colorPrimaryDark">#0F9D58</color>
     <color name="colorAccent">#0F9D58</color>
     <color name="mainBackground">#0F9D58</color>
+    <color name="playControlBarBackgroundPressed">#eebbbbbb</color>
+    <color name="playControlBarBackground">#ddffffff</color>
 </resources>
