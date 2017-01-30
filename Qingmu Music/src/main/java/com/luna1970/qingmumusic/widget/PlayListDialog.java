@@ -23,7 +23,6 @@ import com.luna1970.qingmumusic.util.ToastUtils;
 
 import org.w3c.dom.Text;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.position;
 
 /**
  * Created by Yue on 1/31/2017.
@@ -66,7 +65,7 @@ public class PlayListDialog extends Dialog {
             public void onClick(int position) {
                 Intent intent = new Intent();
                 intent.setAction(GlobalMusicPlayControllerConst.ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM);
-                MusicApplication.position = position;
+                MusicApplication.currentPosition = position;
                 getContext().sendBroadcast(intent);
             }
         });

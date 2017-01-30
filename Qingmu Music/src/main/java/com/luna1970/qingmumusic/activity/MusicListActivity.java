@@ -33,7 +33,7 @@ import com.luna1970.qingmumusic.util.ToastUtils;
 
 import java.io.FileNotFoundException;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.position;
+import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
 import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
 
 public class MusicListActivity extends BaseActivity {
@@ -212,7 +212,7 @@ public class MusicListActivity extends BaseActivity {
                 Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
                     case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING:
-                        Log.i(TAG, "position:  " + position);
+                        Log.i(TAG, "position:  " + currentPosition);
                         MusicApplication.isPlaying = true;
                         initMusicInfo();
                         break;
@@ -249,7 +249,7 @@ public class MusicListActivity extends BaseActivity {
             playOrPauseIV.setImageResource(R.drawable.pause);
 
             // refresh musicIndexTV and playingTrumpet widget view if and only if prePosition is not equal position
-            if(prevPosition != position) {
+            if(prevPosition != currentPosition) {
                 // refresh prePosition listView item state if and only if it's on visible situation
                 if (prevPosition >= currentFirstVisiblePosition && prevPosition <= currentLastVisiblePosition) {
                     View view = listView.getChildAt(prevPosition-currentFirstVisiblePosition);
@@ -258,8 +258,8 @@ public class MusicListActivity extends BaseActivity {
 //                    Log.i(TAG, "initMusicInfo: " + view);
                 }
                 // refresh position listView item state if and only if it's on visible situation
-                if (position >= currentFirstVisiblePosition && position <= currentLastVisiblePosition) {
-                    View view = listView.getChildAt(position -currentFirstVisiblePosition);
+                if (currentPosition >= currentFirstVisiblePosition && currentPosition <= currentLastVisiblePosition) {
+                    View view = listView.getChildAt(currentPosition -currentFirstVisiblePosition);
                     ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.VISIBLE);
                     ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.GONE);
                 }
@@ -268,14 +268,14 @@ public class MusicListActivity extends BaseActivity {
 
         // setting smooth scroll to current play position, listView will be go straight immediately
         // if current position minus will play position out of range
-        if (Math.abs(position - currentFirstVisiblePosition) > 10) {
-            listView.setSelection(position);
+        if (Math.abs(currentPosition - currentFirstVisiblePosition) > 10) {
+            listView.setSelection(currentPosition);
         } else {
-            listView.smoothScrollToPosition(position);
+            listView.smoothScrollToPosition(currentPosition);
         }
 
         // setting screen bottom bar music info
-        Music music = getMusicByPosition(position);
+        Music music = getMusicByPosition(currentPosition);
         if (music != null) {
             musicTitleTV.setText(music.getTitle());
             musicArtistTV.setText(music.getArtist());
@@ -339,11 +339,11 @@ public class MusicListActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "onResume: " + position);
+        Log.i(TAG, "onResume: " + currentPosition);
         if (!MusicApplication.isPlaying) {
 //            seekBar.setVisibility(View.GONE);
             SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-            MusicApplication.position = sharedPreferences.getInt("position", 0);
+            MusicApplication.currentPosition = sharedPreferences.getInt("position", 0);
             initMusicInfo();
             seekBar.setProgress(sharedPreferences.getInt("seekBarProgress", 0));
         } else {
@@ -369,7 +369,7 @@ public class MusicListActivity extends BaseActivity {
         }
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("position", position);
+        editor.putInt("position", currentPosition);
         editor.putInt("seekBarProgress", seekBar.getProgress());
         editor.apply();
         Log.d(TAG, "onDestroy() ");

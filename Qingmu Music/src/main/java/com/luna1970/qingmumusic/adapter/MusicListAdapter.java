@@ -73,7 +73,7 @@ public class MusicListAdapter extends BaseAdapter {
         viewHolder.musicAlbumTV.setText("  " + new SimpleDateFormat("m:ss").format(new Date(music.getDuration())));
         viewHolder.musicInfoTV.setText(new StringBuilder(music.getArtist()).append(" - ").append(music.getTitle()));
         viewHolder.musicIndexTV.setText(position + 1 + "");
-        if (position == MusicApplication.position) {
+        if (position == MusicApplication.currentPosition) {
             viewHolder.playTrumpet.setVisibility(View.VISIBLE);
             viewHolder.musicIndexTV.setVisibility(View.GONE);
         } else {

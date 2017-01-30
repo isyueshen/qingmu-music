@@ -20,7 +20,7 @@ import java.util.List;
 public class MusicApplication extends Application {
     public static List<Song> playList;
     public static boolean isPlaying;
-    public static Integer position = 0;
+    public static int songId;
     public static int prevPosition;
     public static int currentPosition;
     public static MediaPlayer mediaPlayer;

@@ -35,8 +35,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
 import static com.luna1970.qingmumusic.application.MusicApplication.mediaPlayer;
-import static com.luna1970.qingmumusic.application.MusicApplication.position;
 /**
  * Created by Yue on 1/30/2017.
  *
@@ -180,7 +180,7 @@ public class BannerFocusFragment extends Fragment {
                 MusicApplication.refreshPlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Intent intent = new Intent();
                 intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
-                position = posi - 1;
+                currentPosition = posi - 1;
                 Log.i(TAG, "onResponse: " + posi);
                 getActivity().sendBroadcast(intent);
             }

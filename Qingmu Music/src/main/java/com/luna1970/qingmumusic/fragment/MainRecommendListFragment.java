@@ -35,7 +35,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.position;
+import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
 
 /**
  * Created by Yue on 1/29/2017.
@@ -151,7 +151,7 @@ public class MainRecommendListFragment extends Fragment {
                 MusicApplication.refreshPlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Intent intent = new Intent();
                 intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
-                position = posi;
+                currentPosition = posi;
                 Log.i(TAG, "onResponse: " + posi);
                 getActivity().sendBroadcast(intent);
             }

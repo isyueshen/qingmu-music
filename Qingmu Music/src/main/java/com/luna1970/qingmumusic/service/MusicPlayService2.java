@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.position;
+import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
 import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
 
 /**
@@ -41,7 +41,7 @@ public class MusicPlayService2 extends Service {
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "onCreate: " + position + "  --> "+ MusicApplication.position);
+        Log.i(TAG, "onCreate: " + currentPosition + "  --> "+ MusicApplication.currentPosition);
         mediaPlayer = new MediaPlayer();
         controlWorkThread = true;
 //        musics = MusicApplication.musicLists;
@@ -107,17 +107,17 @@ public class MusicPlayService2 extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                prevPosition = position;
+                prevPosition = currentPosition;
                 if (currentPlayMode.equals(playModeContainer[0])) {
-                    position = ++position>=musics.size() ? 0 : position;
+                    currentPosition = ++currentPosition>=musics.size() ? 0 : currentPosition;
                 } else if (currentPlayMode.equals(playModeContainer[1])) {
                     mediaPlayer.start();
                     return;
                 } else if (currentPlayMode.equals(playModeContainer[2])) {
-                    position = getShufflePosition(position);
+                    currentPosition = getShufflePosition(currentPosition);
                 } else if (currentPlayMode.equals(playModeContainer[3])) {
-                    ++position;
-                    if (position>=musics.size()) {
+                    ++currentPosition;
+                    if (currentPosition>=musics.size()) {
                         mediaPlayer.stop();
                         MusicPlayService2.this.intent = new Intent();
                         MusicPlayService2.this.intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
@@ -125,7 +125,7 @@ public class MusicPlayService2 extends Service {
                         return;
                     }
                 }
-                playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+                playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
             }
         });
         Log.i(TAG, "onStartCommand: ");
@@ -133,7 +133,7 @@ public class MusicPlayService2 extends Service {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "onReceive: " + intent.getAction());
-                prevPosition = position;
+                prevPosition = currentPosition;
                 switch (intent.getAction()) {
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE:
                         if (hasPlayed) {
@@ -148,32 +148,32 @@ public class MusicPlayService2 extends Service {
                             }
                         } else {
                             hasPlayed = true;
-                            playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+                            playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                             mediaPlayer.seekTo(intent.getIntExtra("seekBarProgress", 0));
                         }
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT:
                         if (currentPlayMode.equals(playModeContainer[2])) {
-                            position = getShufflePosition(position);
+                            currentPosition = getShufflePosition(currentPosition);
                         } else {
-                            position = ++position>=musics.size() ? 0 : position;
+                            currentPosition = ++currentPosition>=musics.size() ? 0 : currentPosition;
                         }
                         hasPlayed = true;
-                        playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+                        playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV:
                         if (currentPlayMode.equals(playModeContainer[2])) {
-                            position = getShufflePosition(position);
+                            currentPosition = getShufflePosition(currentPosition);
                         } else {
-                            position = --position<0 ? musics.size()-1 : position;
+                            currentPosition = --currentPosition<0 ? musics.size()-1 : currentPosition;
                         }
                         hasPlayed = true;
-                        playMusic(position, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+                        playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC:
                         int newPosition = intent.getIntExtra("position", 0);
-                        if (newPosition != position) {
-                            position = newPosition;
+                        if (newPosition != currentPosition) {
+                            currentPosition = newPosition;
                             playMusic(newPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         } else {
                             if (!mediaPlayer.isPlaying()) {
