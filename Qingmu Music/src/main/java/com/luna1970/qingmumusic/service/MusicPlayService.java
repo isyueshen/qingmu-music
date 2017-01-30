@@ -61,6 +61,7 @@ public class MusicPlayService extends Service {
 
         intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_REFRESH_PLAY_LIST);
         intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
+        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM);
 
         intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
 
@@ -146,6 +147,9 @@ public class MusicPlayService extends Service {
                         }
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY:
+                        playMusic(position, null);
+                        break;
+                    case GlobalMusicPlayControllerConst.ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM:
                         playMusic(position, null);
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE:

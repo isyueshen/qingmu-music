@@ -9,4 +9,6 @@
     <color name="mainBackground">#0F9D58</color>
     <color name="playControlBarBackgroundPressed">#eebbbbbb</color>
     <color name="playControlBarBackground">#ddffffff</color>
+    <color name="playListDialogBackgroundPressed">#eebbbbbb</color>
+    <color name="playListDialogBackground">#ffffffff</color>
 </resources>

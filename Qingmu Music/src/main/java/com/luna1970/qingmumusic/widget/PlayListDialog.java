@@ -2,9 +2,11 @@ package com.luna1970.qingmumusic.widget;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,9 +18,12 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.PlayListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
 
 import org.w3c.dom.Text;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.position;
 
 /**
  * Created by Yue on 1/31/2017.
@@ -58,8 +63,11 @@ public class PlayListDialog extends Dialog {
         recyclerView.setLayoutManager(linearLayoutManager);
         PlayListAdapter playListAdapter = new PlayListAdapter(MusicApplication.playList, new CustomRecyclerItemOnClickListener() {
             @Override
-            public void onClick(int id) {
-                ToastUtils.makeText(getContext(), id + "", Toast.LENGTH_SHORT).show();
+            public void onClick(int position) {
+                Intent intent = new Intent();
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM);
+                MusicApplication.position = position;
+                getContext().sendBroadcast(intent);
             }
         });
         recyclerView.setAdapter(playListAdapter);

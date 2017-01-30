@@ -84,7 +84,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
         spannableStringBuilder.setSpan(new AbsoluteSizeSpan(12, true), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         Log.i(TAG, "onBindViewHolder: " + spannableStringBuilder.toString());
         holder.songTitle.setText(spannableStringBuilder);
-        holder.songAlbum.setText(song.albumTitle);
+        holder.songAlbum.setText("专辑: " + song.albumTitle);
 
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override

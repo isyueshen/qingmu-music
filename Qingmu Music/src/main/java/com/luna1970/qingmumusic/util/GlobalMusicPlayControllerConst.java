@@ -30,4 +30,6 @@ public class GlobalMusicPlayControllerConst {
     // fragment
     public static final String ACTION_FRAGMENT_REFRESH_PLAY_LIST = "ACTION_FRAGMENT_REFRESH_PLAY_LIST";
     public static final String ACTION_FRAGMENT_PREPARE_PLAY = "ACTION_FRAGMENT_PREPARE_PLAY";
+
+    public static final String ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM = "ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM";
 }
