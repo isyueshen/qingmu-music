@@ -22,7 +22,7 @@
         android:paddingLeft="5dp">
 
         <TextView
-            android:id="@+id/musicTitleTV"
+            android:id="@+id/music_title_tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Music Name"
@@ -39,22 +39,21 @@
     </LinearLayout>
 
     <ImageButton
-        android:id="@+id/playPrev"
+        android:id="@+id/play_list"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="fitCenter"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
-        android:visibility="gone"
-        android:src="@drawable/prev" />
+        android:scaleX="0.4"
+        android:scaleY="0.4"
+        android:background="@drawable/play_list" />
 
     <ImageButton
         android:id="@+id/playOrPause"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="fitCenter"
-        android:scaleX="0.65"
-        android:scaleY="0.65"
+        android:scaleX="0.6"
+        android:scaleY="0.6"
         android:background="@drawable/play" />
 
     <ImageButton
@@ -62,8 +61,8 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:scaleType="fitCenter"
-        android:scaleX="0.5"
-        android:scaleY="0.5"
+        android:scaleX="0.4"
+        android:scaleY="0.4"
         android:background="@drawable/next" />
 
 </LinearLayout>

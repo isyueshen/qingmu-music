@@ -93,13 +93,13 @@ public class MusicListActivity extends BaseActivity {
 
         // bottom left
         miniAlbumPic = (ImageView) findViewById(R.id.miniAlbumPic);
-        musicTitleTV = (TextView) findViewById(R.id.musicTitleTV);
+        musicTitleTV = (TextView) findViewById(R.id.music_title_tv);
         musicArtistTV = (TextView) findViewById(R.id.musicArtistTV);
 
         // bottom right
         playOrPauseIV = (ImageButton) findViewById(R.id.playOrPause);
         playNextIV = (ImageButton) findViewById(R.id.playNext);
-        playPrevIV = (ImageButton) findViewById(R.id.playPrev);
+//        playPrevIV = (ImageButton) findViewById(R.id.playPrev);
     }
 
     private void setAdapter() {

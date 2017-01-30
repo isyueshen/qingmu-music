@@ -54,7 +54,7 @@ public class MusicListAdapter extends BaseAdapter {
         if (convertView==null) {
             view = LayoutInflater.from(context).inflate(R.layout.music_list_item, null);
             viewHolder = new ViewHolder();
-            viewHolder.musicTitleTV = (TextView) view.findViewById(R.id.musicTitleTV);
+            viewHolder.musicTitleTV = (TextView) view.findViewById(R.id.music_title_tv);
             viewHolder.musicAlbumTV = (TextView) view.findViewById(R.id.musicAlbumTV);
             viewHolder.musicInfoTV = (TextView) view.findViewById(R.id.musicInfoTV);
             viewHolder.musicIndexTV = (TextView) view.findViewById(R.id.musicIndexTV);

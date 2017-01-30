@@ -152,7 +152,6 @@ public class MainRecommendListFragment extends Fragment {
                 Intent intent = new Intent();
                 intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
                 position = posi;
-                Log.i(TAG, "onResponse: " + songList);
                 Log.i(TAG, "onResponse: " + posi);
                 getActivity().sendBroadcast(intent);
             }

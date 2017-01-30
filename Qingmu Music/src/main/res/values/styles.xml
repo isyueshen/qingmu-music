@@ -40,7 +40,7 @@
         <!--<item name="android:windowExitAnimation">@anim/actionsheet_dialog_out</item>-->
     </style>
 
-    <style name="MyDialog" parent="@android:style/Theme.Dialog">
+    <style name="MyDialog" parent="@android:style/Theme.Holo.Dialog">
         <!-- 是否有边框 -->
         <item name="android:windowFrame">@null</item>
         <!--是否在悬浮Activity之上  -->
@@ -56,6 +56,6 @@
     </style>
     <style name="dialogAnimation">
         <item name="android:windowEnterAnimation">@anim/play_list_dialog_bottom2top</item>
-        <item name="android:windowExitAnimation">@anim/play_list_dialog_bottom2top</item>
+        <item name="android:windowExitAnimation">@anim/play_list_dialog_top2bottom</item>
     </style>
 </resources>

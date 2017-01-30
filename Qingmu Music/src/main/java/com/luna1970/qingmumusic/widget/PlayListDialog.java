@@ -3,11 +3,22 @@ package com.luna1970.qingmumusic.widget;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.adapter.PlayListAdapter;
+import com.luna1970.qingmumusic.application.MusicApplication;
+import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.ToastUtils;
+
+import org.w3c.dom.Text;
 
 /**
  * Created by Yue on 1/31/2017.
@@ -16,6 +27,9 @@ import com.luna1970.qingmumusic.R;
 
 public class PlayListDialog extends Dialog {
     private Context mContext;
+    private TextView playListTitleTv;
+    private Button clearBtn;
+    private RecyclerView recyclerView;
 
     public PlayListDialog(Context context) {
         super(context, R.style.MyDialog);
@@ -26,6 +40,33 @@ public class PlayListDialog extends Dialog {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.current_play_list_dialog);
+        initView();
+        setListeners();
+    }
+
+    private void initView() {
+        playListTitleTv = (TextView) findViewById(R.id.play_list_title);
+        playListTitleTv.setText("播放列表 (" + MusicApplication.playList.size() + ")");
+
+        clearBtn = (Button) findViewById(R.id.clear_btn);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        setRecyclerView();
+    }
+
+    private void setRecyclerView() {
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(linearLayoutManager);
+        PlayListAdapter playListAdapter = new PlayListAdapter(MusicApplication.playList, new CustomRecyclerItemOnClickListener() {
+            @Override
+            public void onClick(int id) {
+                ToastUtils.makeText(getContext(), id + "", Toast.LENGTH_SHORT).show();
+            }
+        });
+        recyclerView.setAdapter(playListAdapter);
+    }
+
+    private void setListeners() {
+
     }
 
     @Override
