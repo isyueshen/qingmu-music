@@ -30,7 +30,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class AlbumDetailActivity extends BaseAcitivity {
+public class AlbumDetailActivity extends BaseActivity {
     private static final String TAG = "AlbumDetailActivity";
     private Album album;
     private List<Song> songList;

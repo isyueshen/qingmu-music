@@ -81,7 +81,7 @@ public class NewSongListAdapter extends RecyclerView.Adapter<NewSongListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(MViewHolder holder, int position) {
+    public void onBindViewHolder(final MViewHolder holder, int position) {
         // 设置滚动列表第一个为空
         if (position == 0) {
             holder.itemView.setVisibility(View.INVISIBLE);
@@ -102,7 +102,7 @@ public class NewSongListAdapter extends RecyclerView.Adapter<NewSongListAdapter.
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                customRecyclerItemOnClickListener.onClick(song.songId);
+                customRecyclerItemOnClickListener.onClick(holder.getAdapterPosition());
             }
         });
         // 设置menu图标偏移, 获得更大的点击区域, 优化视觉效果

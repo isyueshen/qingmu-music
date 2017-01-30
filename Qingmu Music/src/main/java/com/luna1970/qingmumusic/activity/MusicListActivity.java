@@ -25,10 +25,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.adapter.MusicListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.entity.Music;
-import com.luna1970.qingmumusic.service.MusicPlayService;
+import com.luna1970.qingmumusic.service.MusicPlayService2;
 import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
 
@@ -37,7 +36,7 @@ import java.io.FileNotFoundException;
 import static com.luna1970.qingmumusic.application.MusicApplication.position;
 import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
 
-public class MusicListActivity extends BaseAcitivity {
+public class MusicListActivity extends BaseActivity {
     private static final String TAG = "MusicListActivity";
     
     private ImageView largeAlbumPic;
@@ -108,9 +107,9 @@ public class MusicListActivity extends BaseAcitivity {
 //        SimpleCursorAdapter simpleCursorAdapter = new SimpleCursorAdapter(this, R.layout.music_list_item, cursor, new String[]{MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM, MediaStore.Audio.Media.ARTIST},
 //                new int[]{R.id.musicTitleTV, R.id.musicAlbumTV, R.id.musicInfoTV}, 0);
 //        listView.setAdapter(simpleCursorAdapter);
-        totalCountTV.setText(new StringBuilder("(共").append(MusicApplication.musicLists.size()).append("首)"));
-        MusicListAdapter musicListAdapter = new MusicListAdapter(this, R.layout.music_list_item, MusicApplication.musicLists);
-        listView.setAdapter(musicListAdapter);
+//        totalCountTV.setText(new StringBuilder("(共").append(MusicApplication.musicLists.size()).append("首)"));
+//        MusicListAdapter musicListAdapter = new MusicListAdapter(this, R.layout.music_list_item, MusicApplication.musicLists);
+//        listView.setAdapter(musicListAdapter);
     }
 
     private void setListeners() {
@@ -227,7 +226,7 @@ public class MusicListActivity extends BaseAcitivity {
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
                         int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
-                        Log.i(TAG, "onReceive: " + currentPosition + " " + MusicApplication.musicLists.get(position).getDuration());
+//                        Log.i(TAG, "onReceive: " + currentPosition + " " + MusicApplication.musicLists.get(position).getDuration());
                         seekBar.setProgress(currentPosition);
                         break;
                 }
@@ -280,7 +279,7 @@ public class MusicListActivity extends BaseAcitivity {
         if (music != null) {
             musicTitleTV.setText(music.getTitle());
             musicArtistTV.setText(music.getArtist());
-            seekBar.setMax((int) MusicApplication.musicLists.get(position).getDuration());
+//            seekBar.setMax((int) MusicApplication.musicLists.get(position).getDuration());
 
             // setting album art
             long id = music.getAlbumID();
@@ -365,7 +364,7 @@ public class MusicListActivity extends BaseAcitivity {
     protected void onDestroy() {
 //        unregisterReceiver(broadcastReceiver);
         if (!MusicApplication.isPlaying) {
-            intent = new Intent(this, MusicPlayService.class);
+            intent = new Intent(this, MusicPlayService2.class);
             stopService(intent);
         }
         SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
@@ -391,7 +390,7 @@ public class MusicListActivity extends BaseAcitivity {
 //                Process.killProcess(Process.myPid());
                 finish();
                 MusicApplication.isPlaying = false;
-                intent = new Intent(this, MusicPlayService.class);
+                intent = new Intent(this, MusicPlayService2.class);
                 stopService(intent);
                 break;
         }

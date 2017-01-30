@@ -1,10 +1,9 @@
 package com.luna1970.qingmumusic.fragment;
 
-import android.media.MediaPlayer;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.GravityCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -19,11 +18,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
-import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
@@ -36,6 +35,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.luna1970.qingmumusic.application.MusicApplication.mediaPlayer;
+import static com.luna1970.qingmumusic.application.MusicApplication.position;
 /**
  * Created by Yue on 1/30/2017.
  *
@@ -45,7 +46,6 @@ public class BannerFocusFragment extends Fragment {
     private static final String TAG = "MainRecommendListFrag";
     private List<Song> songList;
     private NewSongListAdapter newSongListAdapter;
-    private MediaPlayer mediaPlayer;
     private int songId;
     private Bundle bundle;
     private ImageView backgroundIv;
@@ -54,7 +54,6 @@ public class BannerFocusFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_banner_focus, container, false);
-        mediaPlayer = ((MusicApplication)getActivity().getApplication()).mediaPlayer;
         setView(view);
         return view;
     }
@@ -67,9 +66,9 @@ public class BannerFocusFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         newSongListAdapter = new NewSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
-            public void onClick(int id) {
-                songId = id;
-                getFile();
+            public void onClick(int position) {
+                songId = position;
+                preparePlay(position);
             }
 
             @Override
@@ -102,43 +101,10 @@ public class BannerFocusFragment extends Fragment {
         });
     }
 
-    public void getFile() {
-        String apiPath = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&format=json&from:webapp_music&method=baidu.ting.song.play&songid=" + songId;
-        HttpUtils.sendHttpRequest(apiPath, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final SongInfo song = GsonUtil.handlerSongInfoByRequestPlay(response.body().string());
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mediaPlayer.reset();
-                        try {
-                            mediaPlayer.setDataSource(song.FileLink);
-                            mediaPlayer.prepare();
-                            mediaPlayer.start();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        int type = 1;
-        bundle = getArguments();
-        if (bundle != null) {
-            type = bundle.getInt("type");
-        }
-        requestSongInfoList(type);
+        requestSongInfoList();
         initBackGround();
     }
 
@@ -170,7 +136,7 @@ public class BannerFocusFragment extends Fragment {
         });
     }
 
-    private void requestSongInfoList(int type) {
+    private void requestSongInfoList() {
         String apiUri = UriUtils.getNewSong(20);
         HttpUtils.sendHttpRequest(apiUri, new Callback() {
             @Override
@@ -192,6 +158,32 @@ public class BannerFocusFragment extends Fragment {
                     }
                 };
                 getActivity().runOnUiThread(runnable);
+            }
+        });
+    }
+
+    private void preparePlay(final int posi) {
+        String apiUri = UriUtils.getNewSong(100);
+        HttpUtils.sendHttpRequest(apiUri, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                MusicApplication.refreshPlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                Intent intent = new Intent();
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
+                position = posi;
+                Log.i(TAG, "onResponse: " + songList);
+                Log.i(TAG, "onResponse: " + posi);
+                getActivity().sendBroadcast(intent);
             }
         });
     }

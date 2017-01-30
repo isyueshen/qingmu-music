@@ -44,7 +44,7 @@ public class GsonUtil {
             List<Song> songList = new Gson().fromJson(songListString, new TypeToken<List<Song>>(){}.getType());
             if (albumInfo != null) {
                 albumInfo.songList = songList;
-                Log.d(TAG, "handlerAlbumInfo: songList size " + albumInfo.songList.size());
+                Log.d(TAG, "handlerAlbumInfo: playList size " + albumInfo.songList.size());
             }
         } catch (JSONException e) {
             e.printStackTrace();

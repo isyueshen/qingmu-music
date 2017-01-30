@@ -13,7 +13,7 @@ import com.luna1970.qingmumusic.service.MusicPlayService;
  *
  */
 
-public class BaseAcitivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity {
     private Intent intent;
 
     @Override

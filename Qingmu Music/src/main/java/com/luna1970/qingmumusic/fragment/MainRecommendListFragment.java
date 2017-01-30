@@ -1,5 +1,6 @@
 package com.luna1970.qingmumusic.fragment;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +22,7 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
@@ -31,6 +34,8 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.position;
 
 /**
  * Created by Yue on 1/29/2017.
@@ -45,6 +50,7 @@ public class MainRecommendListFragment extends Fragment {
     private MediaPlayer mediaPlayer;
     private int songId;
     private Bundle bundle;
+    private int type;
 
     @Nullable
     @Override
@@ -69,9 +75,9 @@ public class MainRecommendListFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         recommendListAdapter = new RecommendListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
-            public void onClick(int id) {
-                songId = id;
-                getFile();
+            public void onClick(int position) {
+                songId = position;
+                preparePlay(position);
             }
         });
         recyclerView.setAdapter(recommendListAdapter);
@@ -80,38 +86,10 @@ public class MainRecommendListFragment extends Fragment {
         recyclerView.setNestedScrollingEnabled(false);
     }
 
-    public void getFile() {
-        String apiPath = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&format=json&from:webapp_music&method=baidu.ting.song.play&songid=" + songId;
-        HttpUtils.sendHttpRequest(apiPath, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final SongInfo song = GsonUtil.handlerSongInfoByRequestPlay(response.body().string());
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mediaPlayer.reset();
-                        try {
-                            mediaPlayer.setDataSource(song.FileLink);
-                            mediaPlayer.prepare();
-                            mediaPlayer.start();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-    }
-
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        int type = 1;
+        type = 1;
         bundle = getArguments();
         if (bundle != null) {
             type = bundle.getInt("type");
@@ -153,5 +131,31 @@ public class MainRecommendListFragment extends Fragment {
 //        Log.d(TAG, "newInstance() called with: type = [" + type + "], title = [" + title + "]");
         mainRecommendListFragment.setArguments(bundle);
         return mainRecommendListFragment;
+    }
+
+    private void preparePlay(final int posi) {
+        String apiUri = UriUtils.getRecommendUri(type, 0, 100);
+        HttpUtils.sendHttpRequest(apiUri, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                MusicApplication.refreshPlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                Intent intent = new Intent();
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
+                position = posi;
+                Log.i(TAG, "onResponse: " + songList);
+                Log.i(TAG, "onResponse: " + posi);
+                getActivity().sendBroadcast(intent);
+            }
+        });
     }
 }

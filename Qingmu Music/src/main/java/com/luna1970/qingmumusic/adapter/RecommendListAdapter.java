@@ -59,7 +59,7 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
     }
 
     @Override
-    public void onBindViewHolder(MViewHolder holder, int position) {
+    public void onBindViewHolder(final MViewHolder holder, int position) {
         final Song song = songList.get(position);
         Glide.with(mContext).load(UriUtils.getCustomImageSize(song.songCoverPath, 300)).into(holder.songCoverIv);
         holder.titleTv.setText(song.title);
@@ -67,7 +67,7 @@ public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdap
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                customRecyclerItemOnClickListener.onClick(song.songId);
+                customRecyclerItemOnClickListener.onClick(holder.getAdapterPosition());
             }
         });
     }

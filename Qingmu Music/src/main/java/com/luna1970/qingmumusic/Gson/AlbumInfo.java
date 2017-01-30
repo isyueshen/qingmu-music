@@ -109,7 +109,7 @@ public class AlbumInfo implements Parcelable{
                 ", artistId=" + artistId +
                 ", albumPicPath='" + albumPicPath + '\'' +
                 ", listenNum=" + listenNum +
-                ", songList=" + songList +
+                ", playList=" + songList +
                 '}';
     }
 }

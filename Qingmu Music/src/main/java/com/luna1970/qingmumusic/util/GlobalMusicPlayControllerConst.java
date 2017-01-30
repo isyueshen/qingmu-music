@@ -26,4 +26,8 @@ public class GlobalMusicPlayControllerConst {
     public static final String ACTION_SERVICE_PLAY_CONTINUE = "SERVICE_PLAY_CONTINUE";
     public static final String ACTION_SERVICE_PAUSE = "SERVICE_PAUSE";
     public static final String ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS = "SERVICE_UPDATE_SEEK_BAR_PROGRESS";
+
+    // fragment
+    public static final String ACTION_FRAGMENT_REFRESH_PLAY_LIST = "ACTION_FRAGMENT_REFRESH_PLAY_LIST";
+    public static final String ACTION_FRAGMENT_PREPARE_PLAY = "ACTION_FRAGMENT_PREPARE_PLAY";
 }

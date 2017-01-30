@@ -16,8 +16,6 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.lapism.searchview.SearchView;
 import com.luna1970.qingmumusic.R;
@@ -26,7 +24,7 @@ import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainRecommendListFragment;
 import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 
-public class MainActivity extends BaseAcitivity {
+public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     private DrawerLayout drawerLayout;
     private FloatingActionButton floatingActionButton;
