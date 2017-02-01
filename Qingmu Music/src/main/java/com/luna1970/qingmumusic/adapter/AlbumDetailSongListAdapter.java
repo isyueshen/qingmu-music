@@ -61,7 +61,7 @@ public class AlbumDetailSongListAdapter extends RecyclerView.Adapter<AlbumDetail
     }
 
     @Override
-    public void onBindViewHolder(MViewHolder holder, int position) {
+    public void onBindViewHolder(final MViewHolder holder, int position) {
         final Song song = songList.get(position);
         holder.songTitleTv.setText(song.title);
         Glide.with(mContext).load(song.songCoverPath).into(holder.songCoverIv);
@@ -69,7 +69,7 @@ public class AlbumDetailSongListAdapter extends RecyclerView.Adapter<AlbumDetail
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: ");
-                customRecyclerItemOnClickListener.onClick(song.songId);
+                customRecyclerItemOnClickListener.onClick(holder.getAdapterPosition());
             }
         });
         Log.d(TAG, "onBindViewHolder: " + song.songId);

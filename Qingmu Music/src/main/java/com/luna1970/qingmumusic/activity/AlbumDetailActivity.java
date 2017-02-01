@@ -1,5 +1,6 @@
 package com.luna1970.qingmumusic.activity;
 
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -19,6 +20,7 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.AlbumDetailSongListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
 
@@ -42,7 +44,7 @@ public class AlbumDetailActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_detail);
-        mediaPlayer = ((MusicApplication)getApplication()).mediaPlayer;
+        mediaPlayer = MusicApplication.mediaPlayer;
         songList = new ArrayList<>();
         getIntentData();
         setToolbar();
@@ -82,42 +84,19 @@ public class AlbumDetailActivity extends BaseActivity {
         recyclerView.setLayoutManager(gridLayoutManager);
         albumDetailSongListAdapter = new AlbumDetailSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
-            public void onClick(int id) {
-                songId = id;
-                getFile();
+            public void onClick(int position) {
+                MusicApplication.refreshPlayList(songList);
+                Intent intent = new Intent();
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
+                MusicApplication.currentPosition = position;
+                sendBroadcast(intent);
+
             }
         });
         recyclerView.setAdapter(albumDetailSongListAdapter);
         recyclerView.setNestedScrollingEnabled(false);
     }
 
-    public void getFile() {
-        String apiPath = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&format=json&from:webapp_music&method=baidu.ting.song.play&songid=" + songId;
-        HttpUtils.sendHttpRequest(apiPath, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                final SongInfo song = GsonUtil.handlerSongInfoByRequestPlay(response.body().string());
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mediaPlayer.reset();
-                        try {
-                            mediaPlayer.setDataSource(song.FileLink);
-                            mediaPlayer.prepare();
-                            mediaPlayer.start();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-        });
-    }
 
     private void sendRequest() {
         String apiPath = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.album.getAlbumInfo&format=json&album_id=" + album.albumId;

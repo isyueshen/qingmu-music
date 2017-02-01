@@ -1,6 +1,7 @@
 package com.luna1970.qingmumusic.application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
 
@@ -21,8 +22,9 @@ public class MusicApplication extends Application {
     public static boolean isPlaying;
     public static int songId;
     public static int prevPosition;
-    public static int currentPosition;
+    public static int currentPosition = -1;
     public static MediaPlayer mediaPlayer;
+    public static Context mContext;
 
     @Override
     public void onCreate() {
@@ -37,6 +39,7 @@ public class MusicApplication extends Application {
         Intent intent = new Intent();
         intent.setClass(this, MusicPlayService.class);
         startService(intent);
+        mContext = getApplicationContext();
     }
 
     public static void refreshPlayList(List<Song> data) {

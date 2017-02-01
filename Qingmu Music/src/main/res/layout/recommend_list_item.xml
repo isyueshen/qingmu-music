@@ -11,6 +11,7 @@
         app:layout_widthPercent="95%"
         app:layout_heightPercent="95%"
         app:elevation="5dp"
+        android:foreground="?android:attr/selectableItemBackgroundBorderless"
         app:cardCornerRadius="5dp">
 
         <LinearLayout

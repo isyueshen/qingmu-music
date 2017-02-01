@@ -116,7 +116,6 @@ public class PlayControlFragment extends Fragment {
                 intent = new Intent();
                 intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
                 getActivity().sendBroadcast(intent);
-                ToastUtils.makeText(getContext(), "text", Toast.LENGTH_SHORT).show();
             }
         });
         playNext.setOnClickListener(new View.OnClickListener() {
@@ -181,15 +180,11 @@ public class PlayControlFragment extends Fragment {
 
 
 
-
-
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         localBroadcastManager.unregisterReceiver(broadcastReceiver);
     }
-
 
 
     private void initMusicInfo() {

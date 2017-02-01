@@ -158,7 +158,7 @@ public class MusicPlayService extends Service {
                         playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE:
-                        if (hasPlayed) {
+//                        if (hasPlayed) {
                             if (mediaPlayer.isPlaying()) {
                                 mediaPlayer.pause();
                                 intent = new Intent();
@@ -168,11 +168,11 @@ public class MusicPlayService extends Service {
                                 mediaPlayer.start();
                                 sendCustomBroadcast(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
                             }
-                        } else {
-                            hasPlayed = true;
-                            playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-                            mediaPlayer.seekTo(intent.getIntExtra("seekBarProgress", 0));
-                        }
+//                        } else {
+//                            hasPlayed = true;
+//                            playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+//                            mediaPlayer.seekTo(intent.getIntExtra("seekBarProgress", 0));
+//                        }
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT:
                         if (currentPlayMode.equals(playModeContainer[2])) {
