@@ -39,6 +39,7 @@
         </activity>
         <activity android:name=".activity.AlbumDetailActivity" android:theme="@style/AlbumDetail">
         </activity>
+        <activity android:name=".activity.MusicPlayActivity"/>
     </application>
 
 </manifest>

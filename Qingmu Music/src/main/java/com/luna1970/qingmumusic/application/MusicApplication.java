@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * Created by Yue on 1/9/2017.
- *
  */
 
 public class MusicApplication extends Application {
@@ -33,6 +32,11 @@ public class MusicApplication extends Application {
         mediaPlayer = new MediaPlayer();
 //        Intent intent = new Intent(getApplicationContext(), MusicPlayService.class);
 //        startService(intent);
+
+        // Start service
+        Intent intent = new Intent();
+        intent.setClass(this, MusicPlayService.class);
+        startService(intent);
     }
 
     public static void refreshPlayList(List<Song> data) {

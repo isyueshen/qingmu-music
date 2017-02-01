@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,7 @@ import java.util.HashMap;
  */
 
 public class MainFragment extends Fragment {
+    private static final String TAG = "MainFragment";
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -29,66 +31,79 @@ public class MainFragment extends Fragment {
     }
 
     private void startFragment() {
+        Log.d(TAG, "startFragment: ");
         HashMap<Integer, String> allType = DailyRecommendType.ALL_TYPE;
         MainNewAlbumFragment mainNewAlbumFragment = new MainNewAlbumFragment();
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.replace(R.id.container_new_album_fragment, mainNewAlbumFragment);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_NEW_SONG = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_NEW_SONG,       allType.get(DailyRecommendType.TYPE_NEW_SONG));
         fragmentTransaction.replace(R.id.TYPE_NEW_SONG , TYPE_NEW_SONG);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_HOT_SONG = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_HOT_SONG,       allType.get(DailyRecommendType.TYPE_HOT_SONG));
         fragmentTransaction.replace(R.id.TYPE_HOT_SONG, TYPE_HOT_SONG);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment newSongOnline = new BannerFocusFragment();
         fragmentTransaction.replace(R.id.new_song_online, newSongOnline);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_EUROPE_AMERICA = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_EUROPE_AMERICA, allType.get(DailyRecommendType.TYPE_EUROPE_AMERICA));
         fragmentTransaction.replace(R.id.TYPE_EUROPE_AMERICA, TYPE_EUROPE_AMERICA);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
-//        fragmentTransaction = fragmentManager.beginTransaction();
-//        Fragment TYPE_ORIGINAL = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_ORIGINAL,       allType.get(DailyRecommendType.TYPE_ORIGINAL));
-//        fragmentTransaction.replace(R.id.TYPE_ORIGINAL, TYPE_ORIGINAL);
-//        fragmentTransaction.commit();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment TYPE_ORIGINAL = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_ORIGINAL,       allType.get(DailyRecommendType.TYPE_ORIGINAL));
+        fragmentTransaction.replace(R.id.TYPE_ORIGINAL, TYPE_ORIGINAL);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
+        fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_POP_MUSIC = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_POP_MUSIC,      allType.get(DailyRecommendType.TYPE_POP_MUSIC));
         fragmentTransaction.replace(R.id.TYPE_POP_MUSIC, TYPE_POP_MUSIC);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
-//        fragmentTransaction = fragmentManager.beginTransaction();
-//        Fragment TYPE_CHINESE_SONG = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_CHINESE_SONG,   allType.get(DailyRecommendType.TYPE_CHINESE_SONG));
-//        fragmentTransaction.replace(R.id.TYPE_CHINESE_SONG, TYPE_CHINESE_SONG);
-//        fragmentTransaction.commit();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment TYPE_CHINESE_SONG = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_CHINESE_SONG,   allType.get(DailyRecommendType.TYPE_CHINESE_SONG));
+        fragmentTransaction.replace(R.id.TYPE_CHINESE_SONG, TYPE_CHINESE_SONG);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
+        fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_CLASSICAL_SONG = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_CLASSICAL_SONG, allType.get(DailyRecommendType.TYPE_CLASSICAL_SONG));
         fragmentTransaction.replace(R.id.TYPE_CLASSICAL_SONG, TYPE_CLASSICAL_SONG);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_NET_WORK_SONGS = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_NET_WORK_SONGS, allType.get(DailyRecommendType.TYPE_NET_WORK_SONGS));
         fragmentTransaction.replace(R.id.TYPE_NET_WORK_SONGS, TYPE_NET_WORK_SONGS);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_FILM_SONGS = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_FILM_SONGS,     allType.get(DailyRecommendType.TYPE_FILM_SONGS));
         fragmentTransaction.replace(R.id.TYPE_FILM_SONGS, TYPE_FILM_SONGS);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_LOVE_SONGS = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_LOVE_SONGS,     allType.get(DailyRecommendType.TYPE_LOVE_SONGS));
         fragmentTransaction.replace(R.id.TYPE_LOVE_SONGS, TYPE_LOVE_SONGS);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
 //        fragmentTransaction = fragmentManager.beginTransaction();
@@ -99,12 +114,15 @@ public class MainFragment extends Fragment {
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_ROCK = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_ROCK,           allType.get(DailyRecommendType.TYPE_ROCK));
         fragmentTransaction.replace(R.id.TYPE_ROCK, TYPE_ROCK);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
 
         fragmentTransaction = fragmentManager.beginTransaction();
         Fragment TYPE_JAZZ = MainRecommendListFragment.newInstance(DailyRecommendType.TYPE_JAZZ,           allType.get(DailyRecommendType.TYPE_JAZZ));
         fragmentTransaction.replace(R.id.TYPE_JAZZ, TYPE_JAZZ);
+        fragmentTransaction.setCustomAnimations(R.anim.load_fragment_translate_in_right2left, 0);
         fragmentTransaction.commit();
-
+        Log.d(TAG, "startFragment: ");
     }
+
 }

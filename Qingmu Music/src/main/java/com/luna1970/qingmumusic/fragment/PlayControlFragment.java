@@ -1,13 +1,11 @@
 package com.luna1970.qingmumusic.fragment;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,17 +16,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
+import com.luna1970.qingmumusic.util.ToastUtils;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
-
-import java.io.FileNotFoundException;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -50,6 +50,8 @@ public class PlayControlFragment extends Fragment {
     private BroadcastReceiver broadcastReceiver;
     private ProgressBar progressBar;
     private Song song;
+    private Intent intent;
+    private LinearLayout linearLayout;
 
     @Nullable
     @Override
@@ -61,7 +63,9 @@ public class PlayControlFragment extends Fragment {
         return view;
     }
 
-    // 初始化控件
+    /**
+     * 初始化控件
+     */
     private void initView(View view, LayoutInflater layoutInflater) {
         miniAlbumPic = (CircleImageView) view.findViewById(R.id.miniAlbumPic);
         playOrPause = (ImageView) view.findViewById(R.id.playOrPause);
@@ -70,8 +74,13 @@ public class PlayControlFragment extends Fragment {
         musicTitleTV = (TextView) view.findViewById(R.id.music_title_tv);
         musicArtistTV = (TextView) view.findViewById(R.id.musicArtistTV);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
+
+        linearLayout = (LinearLayout) view.findViewById(R.id.play_control_bar);
     }
 
+    /**
+     * 设置控件信息
+     */
     private void setData() {
         if (MusicApplication.playList.size() != 0) {
             song = MusicApplication.playList.get(MusicApplication.currentPosition);
@@ -81,12 +90,49 @@ public class PlayControlFragment extends Fragment {
         }
     }
 
+    /**
+     * 设置监听器
+     */
     private void setListener() {
+        // 打开播放列表dialog
         playList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Log.d(TAG, "onClick: ");
+                AudioManager audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+                int max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+                int current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+                Log.i(TAG, "show: " + max + " " + current);
                 PlayListDialog playListDialog = new PlayListDialog(getActivity());
                 playListDialog.show();
+
+            }
+        });
+        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
+        // Set play or pause button OnclickListener
+        playOrPause.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent();
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
+                getActivity().sendBroadcast(intent);
+                ToastUtils.makeText(getContext(), "text", Toast.LENGTH_SHORT).show();
+            }
+        });
+        playNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                intent = new Intent();
+                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT);
+                getActivity().sendBroadcast(intent);
+            }
+        });
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), MusicPlayActivity.class);
+                getActivity().startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.start_activity_translate_in_right2left, R.anim.start_activity_translate_out_right2left);
             }
         });
     }
@@ -101,7 +147,6 @@ public class PlayControlFragment extends Fragment {
      * 注册本地广播接收器
      */
     private void setBroadcastReceiver() {
-        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
         intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
@@ -110,7 +155,6 @@ public class PlayControlFragment extends Fragment {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
                     case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING:
                         Log.i(TAG, "position:  " + MusicApplication.currentPosition);
@@ -127,7 +171,6 @@ public class PlayControlFragment extends Fragment {
                         break;
                     case GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
                         int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
-                        Log.i(TAG, "onReceive: " + currentPosition);
                         progressBar.setProgress(currentPosition/10/song.duration);
                         break;
                 }
@@ -135,6 +178,11 @@ public class PlayControlFragment extends Fragment {
         };
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
     }
+
+
+
+
+
 
     @Override
     public void onDestroy() {

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/play_control_bar"
     android:layout_width="match_parent"
     android:layout_height="53dp"
-    android:orientation="vertical"
     android:background="@drawable/play_control_bar_selector"
-    android:clickable="true">
+    android:clickable="true"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +17,8 @@
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/miniAlbumPic"
             android:layout_width="40dp"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            android:src="@drawable/defaut_cover" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -47,10 +49,10 @@
             android:id="@+id/play_list"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:background="@drawable/play_list"
             android:scaleType="fitCenter"
             android:scaleX="0.4"
-            android:scaleY="0.4"
-            android:background="@drawable/play_list" />
+            android:scaleY="0.4" />
 
         <ImageView
             android:id="@+id/playOrPause"
@@ -65,16 +67,15 @@
             android:id="@+id/playNext"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:background="@drawable/next"
             android:scaleType="fitCenter"
             android:scaleX="0.4"
-            android:scaleY="0.4"
-            android:background="@drawable/next" />
+            android:scaleY="0.4" />
     </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progress_bar"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
         style="?android:attr/progressBarStyleHorizontal"
-        />
+        android:layout_width="match_parent"
+        android:layout_height="3dp" />
 </LinearLayout>

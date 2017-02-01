@@ -5,6 +5,8 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.MotionEvent;
 
 /**
  * Created by Yue on 1/27/2017.
@@ -30,6 +32,7 @@ public class SnappyRecyclerView2 extends RecyclerView {
 
     @Override
     public boolean fling(int velocityX, int velocityY) {
+        Log.i(TAG, "fling: ");
         if (Math.abs(velocityX) > 3500) {
             if (velocityX > 0) {
                 smoothScrollToPosition(toRightMovePosition);
@@ -44,6 +47,7 @@ public class SnappyRecyclerView2 extends RecyclerView {
 
     @Override
     public void onScrollStateChanged(int state) {
+        Log.i(TAG, "onScrollStateChanged: ");
         super.onScrollStateChanged(state);
 
         LinearLayoutManager linearLayoutManager = (LinearLayoutManager) getLayoutManager();
@@ -65,5 +69,4 @@ public class SnappyRecyclerView2 extends RecyclerView {
             toLeftMovePosition = 0;
         }
     }
-
 }

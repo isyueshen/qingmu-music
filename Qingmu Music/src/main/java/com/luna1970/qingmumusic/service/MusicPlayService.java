@@ -32,6 +32,7 @@ import static com.luna1970.qingmumusic.application.MusicApplication.mediaPlayer;
 
 /**
  * Created by Yue on 1/9/2017.
+ *
  */
 
 public class MusicPlayService extends Service {
@@ -162,7 +163,7 @@ public class MusicPlayService extends Service {
                                 mediaPlayer.pause();
                                 intent = new Intent();
                                 intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
-                                sendBroadcast(intent);
+                                localBroadcastManager.sendBroadcast(intent);
                             } else {
                                 mediaPlayer.start();
                                 sendCustomBroadcast(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
@@ -239,9 +240,9 @@ public class MusicPlayService extends Service {
     }
 
     private void playMusic(int position, String action) {
-        if (MusicApplication.isPlaying) {
+//        if (MusicApplication.isPlaying) {
             mediaPlayer.reset();
-        }
+//        }
         if (playList.size() <= 0) {
             return;
         }

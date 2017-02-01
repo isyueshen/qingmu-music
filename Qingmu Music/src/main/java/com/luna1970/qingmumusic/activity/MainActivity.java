@@ -137,4 +137,21 @@ public class MainActivity extends BaseActivity {
         startActivity(intent);
     }
 
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        Log.i(TAG, "onWindowFocusChanged: ");
+        super.onWindowFocusChanged(hasFocus);
+    }
+
+    @Override
+    protected void onStart() {
+        Log.d(TAG, "onStart: ");
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+    }
 }

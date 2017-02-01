@@ -27,7 +27,6 @@ import okhttp3.Response;
 
 /**
  * Created by Yue on 1/27/2017.
- *
  */
 
 public class MainNewAlbumFragment extends Fragment {
@@ -58,7 +57,7 @@ public class MainNewAlbumFragment extends Fragment {
         recyclerView.setAdapter(mainNewAlbumAdapter);
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
-
+        recyclerView.setNestedScrollingEnabled(false);
     }
 
     @Override

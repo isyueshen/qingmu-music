@@ -65,6 +65,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
         </FrameLayout>
+        <ImageView
+            android:id="@+id/loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/test"/>
         <com.lapism.searchview.SearchView
             android:id="@+id/search_view"
             android:layout_width="match_parent"
