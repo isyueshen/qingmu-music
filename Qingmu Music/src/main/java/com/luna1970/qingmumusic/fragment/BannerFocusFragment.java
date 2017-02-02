@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -36,7 +37,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
-import static com.luna1970.qingmumusic.application.MusicApplication.mediaPlayer;
+
 /**
  * Created by Yue on 1/30/2017.
  *
@@ -59,7 +60,7 @@ public class BannerFocusFragment extends Fragment {
     }
 
     public void setView(View view) {
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        final RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         songList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
@@ -72,13 +73,28 @@ public class BannerFocusFragment extends Fragment {
             }
 
             @Override
-            public void onPopMenuOnClick(View view) {
-                super.onPopMenuOnClick(view);
+            public void onPopMenuOnClick(View view, final int position) {
+                super.onPopMenuOnClick(view, position);
                 final PopupMenu popupMenu = new PopupMenu(getActivity(), view);
                 popupMenu.getMenuInflater().inflate(R.menu.pop_menu, popupMenu.getMenu());
                 popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
                     public boolean onMenuItemClick(MenuItem item) {
+                        return false;
+                    }
+                });
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.download:
+                                break;
+                            case R.id.play_next:
+                                MusicApplication.playNext(songList.get(position));
+                                break;
+                            case R.id.favorite:
+                                break;
+                        }
                         return false;
                     }
                 });

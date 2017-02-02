@@ -80,7 +80,7 @@ public class NewSongListAdapter extends RecyclerView.Adapter<NewSongListAdapter.
     }
 
     @Override
-    public void onBindViewHolder(final MViewHolder holder, int position) {
+    public void onBindViewHolder(final MViewHolder holder, final int position) {
         // 设置滚动列表第一个为空
         if (position == 0) {
             holder.itemView.setVisibility(View.INVISIBLE);
@@ -113,7 +113,7 @@ public class NewSongListAdapter extends RecyclerView.Adapter<NewSongListAdapter.
         holder.menuArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                customRecyclerItemOnClickListener.onPopMenuOnClick(v);
+                customRecyclerItemOnClickListener.onPopMenuOnClick(v, position-1);
             }
         });
         // 设置专辑标题

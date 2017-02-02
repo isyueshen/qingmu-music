@@ -2,15 +2,15 @@
 <android.support.percent.PercentRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="210dp"
-    android:layout_height="285dp"
+    android:layout_height="300dp"
     android:gravity="center">
 
     <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_gravity="center_horizontal"
         android:paddingStart="8dp"
-        app:layout_widthPercent="95%"
+        app:layout_widthPercent="97%"
         android:foreground="?android:attr/selectableItemBackgroundBorderless"
-        app:layout_heightPercent="93%"
+        app:layout_heightPercent="90%"
         app:elevation="5dp"
         app:cardCornerRadius="5dp">
 
@@ -19,52 +19,62 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/song_cover_iv"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="190dp"
-                android:padding="10dp"
-                android:scaleType="centerCrop"/>
+                android:layout_height="180dp"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="10dp">
+
+                <ImageView
+                    android:id="@+id/song_cover_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="centerCrop"/>
+            </FrameLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="10dp">
                 <TextView
-                    android:layout_alignParentStart="true"
-                    android:id="@+id/author_tv"
+                    android:id="@+id/title_tv"
                     android:ellipsize="end"
                     android:lines="1"
                     android:maxLines="1"
                     android:textColor="@color/black"
                     android:textSize="19sp"
                     android:layout_width="145dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_alignParentStart="true"
                     android:layout_height="wrap_content" />
-                <FrameLayout
-                    android:id="@+id/menu_are"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp">
-                    <ImageView
-                        android:id="@+id/menu_btn"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/menu"/>
-                </FrameLayout>
-
                 <TextView
-                    android:id="@+id/title_tv"
+                    android:id="@+id/author_tv"
                     android:ellipsize="end"
                     android:lines="1"
                     android:maxLines="1"
                     android:textSize="12sp"
-                    android:layout_below="@id/author_tv"
+                    android:layout_below="@id/title_tv"
                     android:layout_alignParentStart="true"
                     android:layout_width="145dp"
                     android:layout_height="wrap_content"/>
+                <FrameLayout
+                    android:id="@+id/menu_are"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBottom="@id/author_tv"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:paddingEnd="10dp">
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/menu_btn"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/menu"/>
+                </FrameLayout>
+
                 <TextView
                     android:id="@+id/album_title_tv"
                     android:layout_alignParentStart="true"
@@ -75,6 +85,7 @@
                     android:layout_width="135dp"
                     android:layout_height="wrap_content" />
                 <TextView
+                    android:layout_marginEnd="10dp"
                     android:id="@+id/style_tv"
                     android:ellipsize="end"
                     android:lines="1"

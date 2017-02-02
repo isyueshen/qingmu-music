@@ -10,5 +10,5 @@ import android.view.View;
 public class CustomRecyclerItemOnClickListener {
     public void onClick(int id){}
     public void onContextMenuOnClick(){}
-    public void onPopMenuOnClick(View view){}
+    public void onPopMenuOnClick(View view, int position){}
 }

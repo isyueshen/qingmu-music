@@ -4,6 +4,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.media.MediaPlayer;
+import android.util.Log;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.dao.MusicDao;
@@ -15,9 +16,11 @@ import java.util.List;
 
 /**
  * Created by Yue on 1/9/2017.
+ *
  */
 
 public class MusicApplication extends Application {
+    private static final String TAG = "MusicApplication";
     public static List<Song> playList;
     public static boolean isPlaying;
     public static int songId;
@@ -51,6 +54,7 @@ public class MusicApplication extends Application {
     }
 
     public static void playNext(Song song) {
+        Log.i(TAG, "playNext: ");
         playList.add(currentPosition + 1, song);
     }
 }
