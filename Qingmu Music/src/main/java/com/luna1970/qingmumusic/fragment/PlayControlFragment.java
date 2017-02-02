@@ -131,7 +131,7 @@ public class PlayControlFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MusicPlayActivity.class);
                 getActivity().startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.start_activity_translate_in_right2left, R.anim.start_activity_translate_out_right2left);
+                getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.start_activity_translate_out_none);
             }
         });
     }

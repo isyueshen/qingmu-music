@@ -55,7 +55,7 @@
         <item name="android:windowCloseOnTouchOutside">true</item>
     </style>
     <style name="dialogAnimation">
-        <item name="android:windowEnterAnimation">@anim/play_list_dialog_top2bottom</item>
-        <item name="android:windowExitAnimation">@anim/play_list_dialog_bottom2top</item>
+        <item name="android:windowEnterAnimation">@anim/play_list_dialog_out_top2bottom</item>
+        <item name="android:windowExitAnimation">@anim/play_list_dialog_in_bottom2top</item>
     </style>
 </resources>

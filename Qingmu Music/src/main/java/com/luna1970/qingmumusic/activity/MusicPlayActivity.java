@@ -156,7 +156,7 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        overridePendingTransition(R.anim.exit_activity_translate_in_left2right, R.anim.exit_activity_translate_out_left2right);
+        overridePendingTransition(0, R.anim.exit_activity_translate_out_top2bottom);
     }
 
     @Override
