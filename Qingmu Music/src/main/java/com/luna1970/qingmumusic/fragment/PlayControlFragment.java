@@ -1,6 +1,5 @@
 package com.luna1970.qingmumusic.fragment;
 
-import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -19,19 +18,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
-import com.luna1970.qingmumusic.application.MusicApplication;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
-import com.luna1970.qingmumusic.util.ToastUtils;
+import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/31/2017.
@@ -82,11 +79,14 @@ public class PlayControlFragment extends Fragment {
      * 设置控件信息
      */
     private void setData() {
-        if (MusicApplication.playList.size() != 0) {
-            song = MusicApplication.playList.get(MusicApplication.currentPosition);
+        if (playState.getListSize() != 0) {
+            song = playState.getSong();
             Glide.with(getActivity()).load(song.songCoverPath).into(miniAlbumPic);
             musicTitleTV.setText(song.title);
             musicArtistTV.setText(song.author);
+            if (playState.isPlaying()) {
+                playOrPause.setImageResource(R.drawable.pause);
+            }
         }
     }
 
@@ -114,16 +114,16 @@ public class PlayControlFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
-                getActivity().sendBroadcast(intent);
+                intent.setAction(PlayController.ACTION_PLAY_OR_PAUSE);
+                localBroadcastManager.sendBroadcast(intent);
             }
         });
         playNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT);
-                getActivity().sendBroadcast(intent);
+                intent.setAction(PlayController.ACTION_PLAY_NEXT);
+                localBroadcastManager.sendBroadcast(intent);
             }
         });
         linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -131,7 +131,7 @@ public class PlayControlFragment extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getContext(), MusicPlayActivity.class);
                 getActivity().startActivity(intent);
-                getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.start_activity_translate_out_none);
+                getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
             }
         });
     }
@@ -147,29 +147,26 @@ public class PlayControlFragment extends Fragment {
      */
     private void setBroadcastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PLAY_CONTINUE);
+        intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING:
-                        Log.i(TAG, "position:  " + MusicApplication.currentPosition);
-                        MusicApplication.isPlaying = true;
-                        initMusicInfo();
+                    case PlayController.STATE_SERVICE_PLAYING:
+                        setData();
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE:
+                    case PlayController.STATE_SERVICE_PLAY_CONTINUE:
                         playOrPause.setImageResource(R.drawable.pause);
-                        MusicApplication.isPlaying = true;
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE:
+                    case PlayController.STATE_SERVICE_PAUSE:
                         playOrPause.setImageResource(R.drawable.play);
-                        MusicApplication.isPlaying = false;
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
-                        int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
+                    case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
+                        int currentPosition = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
                         progressBar.setProgress(currentPosition/10/song.duration);
                         break;
                 }
@@ -186,21 +183,5 @@ public class PlayControlFragment extends Fragment {
         localBroadcastManager.unregisterReceiver(broadcastReceiver);
     }
 
-
-    private void initMusicInfo() {
-        if (MusicApplication.isPlaying) {
-            playOrPause.setImageResource(R.drawable.pause);
-        }
-
-        // setting screen bottom bar music info
-        song = MusicApplication.playList.get(MusicApplication.currentPosition);
-        if (song != null) {
-            musicTitleTV.setText(song.title);
-            musicArtistTV.setText(song.author);
-            Glide.with(getActivity()).load(song.songCoverPath).into(miniAlbumPic);
-            Log.i(TAG, "initMusicInfo: " + song.duration);
-        }
-
-    }
 
 }

@@ -21,7 +21,7 @@ import com.lapism.searchview.SearchView;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
-import com.luna1970.qingmumusic.fragment.MainRecommendListFragment;
+import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
 import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 
 public class MainActivity extends BaseActivity {
@@ -93,7 +93,7 @@ public class MainActivity extends BaseActivity {
         ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
         MainFragmentViewPagerFragment mainFragmentViewPagerFragment = new MainFragmentViewPagerFragment(getSupportFragmentManager());
         mainFragmentViewPagerFragment.addFragment(new MainFragment(), "榜单");
-        mainFragmentViewPagerFragment.addFragment(new MainRecommendListFragment(), "电台");
+        mainFragmentViewPagerFragment.addFragment(new MainTopSongListFragment(), "电台");
         viewPager.setAdapter(mainFragmentViewPagerFragment);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager, true);

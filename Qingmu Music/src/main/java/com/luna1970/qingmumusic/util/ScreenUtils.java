@@ -27,15 +27,15 @@ public class ScreenUtils {
     }
 
     public static int getStatusBarSize() {
-        int resourceId = MusicApplication.mContext.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        int resourceId = MusicApplication.getInstance().getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId != 0) {
-            return MusicApplication.mContext.getResources().getDimensionPixelSize(resourceId);
+            return MusicApplication.getInstance().getResources().getDimensionPixelSize(resourceId);
         }
         return -1;
     }
 
     public static float dp2px(int dp) {
-        float dpi = MusicApplication.mContext.getResources().getDisplayMetrics().densityDpi;
+        float dpi = MusicApplication.getInstance().getResources().getDisplayMetrics().densityDpi;
         return dpi * dp / 160;
     }
 }

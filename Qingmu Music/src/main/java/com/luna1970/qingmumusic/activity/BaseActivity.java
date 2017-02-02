@@ -10,9 +10,6 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.luna1970.qingmumusic.application.MusicApplication;
-import com.luna1970.qingmumusic.service.MusicPlayService;
-
 /**
  * Created by Yue on 1/28/2017.
  *

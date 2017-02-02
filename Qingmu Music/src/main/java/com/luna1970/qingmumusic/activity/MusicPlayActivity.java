@@ -15,21 +15,22 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.application.MusicApplication;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
+import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 2/1/2017.
@@ -38,7 +39,6 @@ import jp.wasabeef.glide.transformations.CropCircleTransformation;
 
 public class MusicPlayActivity extends BaseActivity {
     private static final String TAG = "MusicPlayActivity";
-    private Song song;
     private ImageView backgroundIv;
     private ImageView songCoverIv;
     private TextView songTitleTv;
@@ -59,10 +59,7 @@ public class MusicPlayActivity extends BaseActivity {
         }
         setToolbar();
         initView();
-        if (MusicApplication.currentPosition != -1) {
-            song = MusicApplication.playList.get(MusicApplication.currentPosition);
-            setViewInfo();
-        }
+        setViewInfo();
     }
 
     private void setToolbar() {
@@ -95,7 +92,7 @@ public class MusicPlayActivity extends BaseActivity {
                     public void run() {
                         int oldHeight = songCoverIv.getHeight();
                         int oldWidth = songCoverIv.getWidth();
-                        songCoverIv.scrollTo(0, oldHeight/2 - actionBar.getHeight() - oldWidth/2);
+                        songCoverIv.scrollTo(0, oldHeight / 2 - actionBar.getHeight() - oldWidth / 2);
                     }
                 });
                 return false;
@@ -104,6 +101,7 @@ public class MusicPlayActivity extends BaseActivity {
     }
 
     private void setViewInfo() {
+        Song song = playState.getSong();
         // 设置标题栏信息
         songTitleTv.setText(song.title);
         songAuthorTv.setText(song.author);
@@ -125,7 +123,7 @@ public class MusicPlayActivity extends BaseActivity {
 
     private void setBroadCastReceiver() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -133,8 +131,7 @@ public class MusicPlayActivity extends BaseActivity {
 
                 String action = intent.getAction();
                 switch (action) {
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING:
-                        song = MusicApplication.playList.get(MusicApplication.currentPosition);
+                    case PlayController.STATE_SERVICE_PLAYING:
                         setViewInfo();
                         break;
                 }

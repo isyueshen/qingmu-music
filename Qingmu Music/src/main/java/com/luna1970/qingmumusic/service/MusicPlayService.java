@@ -10,13 +10,14 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.luna1970.qingmumusic.Gson.SongInfo;
-import com.luna1970.qingmumusic.application.MusicApplication;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
+import com.luna1970.qingmumusic.application.PlayMode;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
+import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.ToastUtils;
+import com.luna1970.qingmumusic.util.UriUtils;
 
 import java.io.IOException;
 import java.util.Random;
@@ -25,10 +26,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.playList;
-import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
-import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
-import static com.luna1970.qingmumusic.application.MusicApplication.mediaPlayer;
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/9/2017.
@@ -36,51 +34,39 @@ import static com.luna1970.qingmumusic.application.MusicApplication.mediaPlayer;
  */
 
 public class MusicPlayService extends Service {
-    private static final String TAG = "MusicPlayService2";
+    private static final String TAG = "MusicPlayService";
     private IntentFilter intentFilter;
-    private Intent intent;
-    private boolean hasPlayed;
     private BroadcastReceiver broadcastReceiver;
-    private String[] playModeContainer;
-    private String currentPlayMode;
-    private boolean controlWorkThread;
+    private int currentPlayMode;
+    private boolean controlProgressUpdateWorkThread;
     private LocalBroadcastManager localBroadcastManager;
+    private MediaPlayer mediaPlayer;
 
     @Override
     public void onCreate() {
-        Log.i(TAG, "onCreate: " + currentPosition + "  --> " + MusicApplication.currentPosition);
-        controlWorkThread = true;
+        controlProgressUpdateWorkThread = true;
+        // 初始化intentFilter
         intentFilter = new IntentFilter();
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
-
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER);
-
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_REFRESH_PLAY_LIST);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM);
-
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
-
-        playModeContainer = new String[]{GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL, GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE, GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE, GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER};
-        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL;
-
+        intentFilter.addAction(PlayController.ACTION_PLAY_OR_PAUSE);
+        intentFilter.addAction(PlayController.ACTION_PLAY_NEXT);
+        intentFilter.addAction(PlayController.ACTION_PLAY_PREV);
+        intentFilter.addAction(PlayController.ACTION_PLAY_SPECIFIC);
+        intentFilter.addAction(PlayController.ACTION_PLAY_MODE_CHANGED);
+        intentFilter.addAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+        intentFilter.addAction(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED);
+mediaPlayer = new MediaPlayer();
+        currentPlayMode = PlayMode.REPEAT_ALL;
         localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+
         new Thread() {
             @Override
             public void run() {
-                while (controlWorkThread) {
-
+                while (controlProgressUpdateWorkThread) {
                     if (mediaPlayer.isPlaying()) {
-                        int currentPosition = mediaPlayer.getCurrentPosition();
-                        intent = new Intent();
-                        intent.putExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, currentPosition);
-                        intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+                        int currentSeekPosition = mediaPlayer.getCurrentPosition();
+                        Intent intent = new Intent();
+                        intent.putExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, currentSeekPosition);
+                        intent.setAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
                         localBroadcastManager.sendBroadcast(intent);
                     }
                     try {
@@ -92,8 +78,8 @@ public class MusicPlayService extends Service {
                 super.run();
             }
         }.start();
-        super.onCreate();
         setListeners();
+        super.onCreate();
     }
 
     private void setListeners() {
@@ -101,6 +87,8 @@ public class MusicPlayService extends Service {
             @Override
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 mp.reset();
+                ToastUtils.makeText("播放错误, 请重试!").show();
+                sendBroadcastControlCenter(PlayController.STATE_SERVICE_STOP);
                 return false;
             }
         });
@@ -118,171 +106,206 @@ public class MusicPlayService extends Service {
         mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
-                prevPosition = currentPosition;
-                if (currentPlayMode.equals(playModeContainer[0])) {
-                    currentPosition = ++currentPosition >= playList.size() ? 0 : currentPosition;
-                } else if (currentPlayMode.equals(playModeContainer[1])) {
-                    mediaPlayer.start();
-                    return;
-                } else if (currentPlayMode.equals(playModeContainer[2])) {
-                    currentPosition = getShufflePosition(currentPosition);
-                } else if (currentPlayMode.equals(playModeContainer[3])) {
-                    ++currentPosition;
-                    if (currentPosition >= playList.size()) {
-                        mediaPlayer.stop();
-                        MusicPlayService.this.intent = new Intent();
-                        MusicPlayService.this.intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
-                        sendBroadcast(MusicPlayService.this.intent);
-                        return;
-                    }
-                }
-                playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
+                playNext();
             }
         });
-        Log.i(TAG, "onStartCommand: ");
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "onReceive: " + intent.getAction());
-                prevPosition = currentPosition;
-                switch (intent.getAction()) {
-                    case GlobalMusicPlayControllerConst.ACTION_FRAGMENT_REFRESH_PLAY_LIST:
+                String action = intent.getAction();
+                Log.i(TAG, "onReceive: " + action);
+                switch (action) {
+                    case PlayController.ACTION_PLAY_SPECIFIC:
+                        int position = intent.getIntExtra(PlayController.ACTION_PLAY_SPECIFIC, 0);
+                        playSpecific(position);
+                        break;
+                    case PlayController.ACTION_PLAY_NEXT:
+                        playNext();
+                        break;
+                    case PlayController.ACTION_PLAY_PREV:
+                        playPrevious();
+                        break;
+                    case PlayController.ACTION_REFRESH_PLAY_LIST:
+                        prepareUpdatePlayList();
+                        break;
+                    case PlayController.ACTION_PLAY_OR_PAUSE:
+                        playOrPause();
+                        break;
+                    case PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED:
+                        int seekIndex = intent.getIntExtra(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED, 0);
                         if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.reset();
+                            mediaPlayer.seekTo(seekIndex);
                         }
+                    case PlayController.ACTION_PLAY_MODE_CHANGED:
+                        currentPlayMode = intent.getIntExtra(PlayController.ACTION_PLAY_MODE_CHANGED, 0);
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY:
-                        playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_PLAY_LIST_DIALOG_PLAY_SPECIFIC_ITEM:
-                        playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE:
-//                        if (hasPlayed) {
-                            if (mediaPlayer.isPlaying()) {
-                                mediaPlayer.pause();
-                                intent = new Intent();
-                                intent.setAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
-                                localBroadcastManager.sendBroadcast(intent);
-                            } else {
-                                mediaPlayer.start();
-                                sendCustomBroadcast(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
-                            }
-//                        } else {
-//                            hasPlayed = true;
-//                            playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-//                            mediaPlayer.seekTo(intent.getIntExtra("seekBarProgress", 0));
-//                        }
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT:
-                        if (currentPlayMode.equals(playModeContainer[2])) {
-                            currentPosition = getShufflePosition(currentPosition);
-                        } else {
-                            currentPosition = ++currentPosition >= playList.size() ? 0 : currentPosition;
-                        }
-                        hasPlayed = true;
-                        playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV:
-                        if (currentPlayMode.equals(playModeContainer[2])) {
-                            currentPosition = getShufflePosition(currentPosition);
-                        } else {
-                            currentPosition = --currentPosition < 0 ? playList.size() - 1 : currentPosition;
-                        }
-                        hasPlayed = true;
-                        playMusic(currentPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC:
-                        int newPosition = intent.getIntExtra("position", 0);
-                        if (newPosition != currentPosition) {
-                            currentPosition = newPosition;
-                            playMusic(newPosition, GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-                        } else {
-                            if (!mediaPlayer.isPlaying()) {
-                                mediaPlayer.start();
-                                sendCustomBroadcast(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
-                            } else {
-                                Toast.makeText(context, "当前正在播放该曲目", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                        hasPlayed = true;
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL:
-                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL;
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE:
-                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE;
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE:
-                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE;
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER:
-                        currentPlayMode = GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER;
-                        break;
-                    case GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED:
-                        int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED, 0);
-                        if (mediaPlayer.isPlaying()) {
-                            mediaPlayer.seekTo(currentPosition);
-                        }
                 }
             }
         };
-        registerReceiver(broadcastReceiver, intentFilter);
+        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
         return super.onStartCommand(intent, flags, startId);
     }
 
-    private int getShufflePosition(int position) {
-        int newPosition;
-        do {
-            newPosition = new Random().nextInt(playList.size());
-        } while (position == newPosition);
-        return newPosition;
+    /**
+     * 播放或暂停
+     */
+    public void playOrPause() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            playState.setPlaying(false);
+            sendBroadcastControlCenter(PlayController.STATE_SERVICE_PAUSE);
+        } else {
+            mediaPlayer.start();
+            playState.setPlaying(true);
+            sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
+        }
     }
 
-    private void playMusic(int position, String action) {
-//        if (MusicApplication.isPlaying) {
-            mediaPlayer.reset();
-//        }
-        if (playList.size() <= 0) {
+    /**
+     * 请求网络, 准备播放
+     */
+    public void playSpecific(int specificIndex) {
+        if (specificIndex == -1) {
             return;
         }
-        int songId = playList.get(position).songId;
-        getSongFilePath(songId, action);
+        if (playState.getCurrentPosition() != specificIndex) {
+            // 更新全局播放索引
+            playState.setCurrentPosition(specificIndex);
+            // 网络歌曲uri
+            String songUri = UriUtils.getSongFile(playState.getSongID());
+            preparePlay(songUri, specificIndex);
+        }
     }
 
-    private void getSongFilePath(int id, final String action) {
-        String apiPath = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&format=json&from:webapp_music&method=baidu.ting.song.play&songid=" + id;
-        HttpUtils.sendHttpRequest(apiPath, new Callback() {
+    /**
+     * 请求网络, 准备播放
+     */
+    private void preparePlay(String songUri, final int specificIndex) {
+        HttpUtils.sendHttpRequest(songUri, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-
+                playState.setPlaying(false);
+                sendBroadcastControlCenter(PlayController.STATE_SERVICE_STOP);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final SongInfo song = GsonUtil.handlerSongInfoByRequestPlay(response.body().string());
+                if (mediaPlayer.isPlaying()) {
+                }
+                mediaPlayer.reset();
                 mediaPlayer.setDataSource(song.FileLink);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-                sendCustomBroadcast(action);
+                playState.setPlaying(true);
+                sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
             }
         });
     }
 
-    private void sendCustomBroadcast(String action) {
-        Log.i(TAG, "sendCustomBroadcast: " + action);
-        intent = new Intent();
+    /**
+     * 播放下一曲
+     */
+    public void playNext() {
+        int index = -1;
+        int currentPosition = playState.getCurrentPosition();
+        int size = playState.getListSize();
+        switch (currentPlayMode) {
+            case PlayMode.REPEAT_ALL:
+                index = ++currentPosition >= size ? 0 : currentPosition;
+                break;
+            case PlayMode.REPEAT_ONCE:
+                mediaPlayer.seekTo(0);
+                return;
+            case PlayMode.MODE_SHUFFLE:
+                index = getShuffleIndex();
+                break;
+            case PlayMode.ORDER:
+                index++;
+                if (index >= playState.getListSize()) {
+                    sendBroadcastControlCenter(PlayController.STATE_SERVICE_STOP);
+                    return;
+                }
+                break;
+        }
+        playSpecific(index);
+    }
+
+    /**
+     * 播放上一曲
+     */
+    public void playPrevious() {
+        int index = -1;
+        int currentPosition = playState.getCurrentPosition();
+        switch (currentPlayMode) {
+            case PlayMode.REPEAT_ALL:
+            case PlayMode.ORDER:
+                index = --currentPosition < 0 ? playState.getListSize() - 1 : currentPosition;
+                break;
+            case PlayMode.REPEAT_ONCE:
+                mediaPlayer.seekTo(0);
+                return;
+        }
+        playSpecific(index);
+    }
+
+    /**
+     * 即将更新播放列表
+     */
+    public void prepareUpdatePlayList() {
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            mediaPlayer.pause();
+            mediaPlayer.reset();
+        }
+    }
+
+    public void updatePlayInfo() {
+
+    }
+
+    /**
+     * 发送广播工具方法
+     *
+     * @param action Intent Action
+     */
+    public void sendBroadcastControlCenter(String action) {
+        Intent intent = new Intent();
         intent.setAction(action);
+        intent.putExtra("position", playState.getCurrentPosition());
         localBroadcastManager.sendBroadcast(intent);
+        Log.d(TAG, "sendBroadcastControlCenter() called with: action = [" + action + "]");
+    }
+
+    /**
+     * 获得随机位置
+     * @return 新生成的随机
+     */
+    private int getShuffleIndex() {
+        int index;
+        int currentIndex = playState.getCurrentPosition();
+        do {
+            index = new Random().nextInt(playState.getListSize());
+        } while (currentIndex == index);
+        return index;
+    }
+
+    /**
+     * 打乱播放列表
+     */
+    private void getSufflePlaylist() {
+
     }
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(broadcastReceiver);
-        controlWorkThread = false;
-        mediaPlayer.release();
-        stopSelf();
         Log.i(TAG, "onDestroy: ");
+        // 停止更新播放进度
+        controlProgressUpdateWorkThread = false;
+        // 释放资源, 解除广播接收注册
+        mediaPlayer.release();
+        localBroadcastManager.unregisterReceiver(broadcastReceiver);
+        // 停止service
+        stopSelf();
         super.onDestroy();
     }
 }

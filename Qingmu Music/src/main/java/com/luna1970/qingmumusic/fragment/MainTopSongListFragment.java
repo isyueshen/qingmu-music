@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -17,14 +18,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.luna1970.qingmumusic.Gson.Song;
-import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
+import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.UriUtils;
 
 import java.io.IOException;
@@ -35,14 +34,14 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/29/2017.
  *
  */
 
-public class MainRecommendListFragment extends Fragment {
+public class MainTopSongListFragment extends Fragment {
     private static final String TAG = "MainRecommendListFrag";
 
     private List<Song> songList;
@@ -51,12 +50,12 @@ public class MainRecommendListFragment extends Fragment {
     private int songId;
     private Bundle bundle;
     private int type;
+    private LocalBroadcastManager localBroadcastManager;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_recommend_list, container, false);
-        mediaPlayer = ((MusicApplication)getActivity().getApplication()).mediaPlayer;
         setView(view);
         return view;
     }
@@ -95,6 +94,7 @@ public class MainRecommendListFragment extends Fragment {
             type = bundle.getInt("type");
         }
         requestSongInfoList(type);
+        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
     }
 
     private void requestSongInfoList(int type) {
@@ -124,16 +124,16 @@ public class MainRecommendListFragment extends Fragment {
     }
 
     public static Fragment newInstance(int type, String title) {
-        MainRecommendListFragment mainRecommendListFragment = new MainRecommendListFragment();
+        MainTopSongListFragment mainTopSongListFragment = new MainTopSongListFragment();
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putInt("type", type);
 //        Log.d(TAG, "newInstance() called with: type = [" + type + "], title = [" + title + "]");
-        mainRecommendListFragment.setArguments(bundle);
-        return mainRecommendListFragment;
+        mainTopSongListFragment.setArguments(bundle);
+        return mainTopSongListFragment;
     }
 
-    private void preparePlay(final int posi) {
+    private void preparePlay(final int position) {
         String apiUri = UriUtils.getRecommendUri(type, 0, 100);
         HttpUtils.sendHttpRequest(apiUri, new Callback() {
             @Override
@@ -148,12 +148,16 @@ public class MainRecommendListFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                MusicApplication.refreshPlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Intent intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
-                currentPosition = posi;
-                Log.i(TAG, "onResponse: " + posi);
-                getActivity().sendBroadcast(intent);
+                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+                localBroadcastManager.sendBroadcast(intent);
+                playState.updatePlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                Log.i(TAG, "onResponse: " + playState.getListSize());
+                intent = new Intent();
+                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                int index = position;
+                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                localBroadcastManager.sendBroadcast(intent);
             }
         });
     }

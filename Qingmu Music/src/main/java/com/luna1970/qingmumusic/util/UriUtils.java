@@ -21,6 +21,8 @@ public class UriUtils {
      */
     private static final String BANNER_FOCUS = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=android&version=5.9.8.1&channel=1426d&operator=0&method=baidu.ting.plaza.index&cuid=62DCEAF9427E66A9276CA44&focu_num={0}";
 
+    private static final String SONG_FILE = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&format=json&from:webapp_music&method=baidu.ting.song.play&songid=";
+
     public static String getRecommendUri(int type, int offset, int size) {
         MessageFormat messageFormat = new MessageFormat(TOP_HOT);
         return messageFormat.format(new String[]{type + "", offset + "", size + ""});
@@ -44,5 +46,10 @@ public class UriUtils {
 
     public static String getNewSong(int count) {
         return NEW_SONG + count;
+    }
+
+
+    public static String getSongFile(int id) {
+        return SONG_FILE + id;
     }
 }

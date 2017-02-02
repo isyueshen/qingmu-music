@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,14 +16,12 @@ import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Album;
 import com.luna1970.qingmumusic.Gson.AlbumInfo;
 import com.luna1970.qingmumusic.Gson.Song;
-import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.AlbumDetailSongListAdapter;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
+import com.luna1970.qingmumusic.util.PlayController;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,6 +31,8 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
+
 public class AlbumDetailActivity extends BaseActivity {
     private static final String TAG = "AlbumDetailActivity";
     private Album album;
@@ -39,16 +40,17 @@ public class AlbumDetailActivity extends BaseActivity {
     private AlbumDetailSongListAdapter albumDetailSongListAdapter;
     private int songId;
     private MediaPlayer mediaPlayer;
+    private LocalBroadcastManager localBroadcastManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_detail);
-        mediaPlayer = MusicApplication.mediaPlayer;
         songList = new ArrayList<>();
         getIntentData();
         setToolbar();
         setViews();
+        localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
     @Override
@@ -85,10 +87,13 @@ public class AlbumDetailActivity extends BaseActivity {
         albumDetailSongListAdapter = new AlbumDetailSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
             public void onClick(int position) {
-                MusicApplication.refreshPlayList(songList);
                 Intent intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
-                MusicApplication.currentPosition = position;
+                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+                localBroadcastManager.sendBroadcast(intent);
+                playState.updatePlayList(songList);
+                intent = new Intent();
+                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, position);
                 sendBroadcast(intent);
 
             }

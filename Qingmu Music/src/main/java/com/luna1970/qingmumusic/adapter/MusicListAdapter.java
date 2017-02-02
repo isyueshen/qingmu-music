@@ -9,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.entity.Music;
 
 import java.text.SimpleDateFormat;
@@ -73,13 +72,13 @@ public class MusicListAdapter extends BaseAdapter {
         viewHolder.musicAlbumTV.setText("  " + new SimpleDateFormat("m:ss").format(new Date(music.getDuration())));
         viewHolder.musicInfoTV.setText(new StringBuilder(music.getArtist()).append(" - ").append(music.getTitle()));
         viewHolder.musicIndexTV.setText(position + 1 + "");
-        if (position == MusicApplication.currentPosition) {
-            viewHolder.playTrumpet.setVisibility(View.VISIBLE);
-            viewHolder.musicIndexTV.setVisibility(View.GONE);
-        } else {
-            viewHolder.playTrumpet.setVisibility(View.GONE);
-            viewHolder.musicIndexTV.setVisibility(View.VISIBLE);
-        }
+//        if (position == MusicApplication.currentPosition) {
+//            viewHolder.playTrumpet.setVisibility(View.VISIBLE);
+//            viewHolder.musicIndexTV.setVisibility(View.GONE);
+//        } else {
+//            viewHolder.playTrumpet.setVisibility(View.GONE);
+//            viewHolder.musicIndexTV.setVisibility(View.VISIBLE);
+//        }
 
         return view;
     }

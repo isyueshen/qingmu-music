@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -13,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -21,11 +21,10 @@ import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
+import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.UriUtils;
 
 import java.io.IOException;
@@ -36,7 +35,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/30/2017.
@@ -47,9 +46,8 @@ public class BannerFocusFragment extends Fragment {
     private static final String TAG = "MainRecommendListFrag";
     private List<Song> songList;
     private NewSongListAdapter newSongListAdapter;
-    private int songId;
-    private Bundle bundle;
     private ImageView backgroundIv;
+    private LocalBroadcastManager localBroadcastManager;
 
     @Nullable
     @Override
@@ -68,7 +66,6 @@ public class BannerFocusFragment extends Fragment {
         newSongListAdapter = new NewSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
             public void onClick(int position) {
-                songId = position;
                 preparePlay(position);
             }
 
@@ -90,7 +87,7 @@ public class BannerFocusFragment extends Fragment {
                             case R.id.download:
                                 break;
                             case R.id.play_next:
-                                MusicApplication.playNext(songList.get(position));
+                                playState.insertPlayNext(songList.get(position));
                                 break;
                             case R.id.favorite:
                                 break;
@@ -122,6 +119,7 @@ public class BannerFocusFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         requestSongInfoList();
         initBackGround();
+        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
     }
 
     private void initBackGround() {
@@ -178,7 +176,7 @@ public class BannerFocusFragment extends Fragment {
         });
     }
 
-    private void preparePlay(final int posi) {
+    private void preparePlay(final int position) {
         String apiUri = UriUtils.getNewSong(100);
         HttpUtils.sendHttpRequest(apiUri, new Callback() {
             @Override
@@ -193,12 +191,15 @@ public class BannerFocusFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                MusicApplication.refreshPlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Intent intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_FRAGMENT_PREPARE_PLAY);
-                currentPosition = posi - 1;
-                Log.i(TAG, "onResponse: " + posi);
-                getActivity().sendBroadcast(intent);
+                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+                localBroadcastManager.sendBroadcast(intent);
+                playState.updatePlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                intent = new Intent();
+                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                int index = position - 1;
+                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                localBroadcastManager.sendBroadcast(intent);
             }
         });
     }

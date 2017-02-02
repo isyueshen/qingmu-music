@@ -5,7 +5,6 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -22,19 +21,14 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.entity.Music;
-import com.luna1970.qingmumusic.service.MusicPlayService2;
-import com.luna1970.qingmumusic.util.GlobalMusicPlayControllerConst;
-import com.luna1970.qingmumusic.util.ToastUtils;
+import com.luna1970.qingmumusic.util.PlayController;
 
 import java.io.FileNotFoundException;
 
-import static com.luna1970.qingmumusic.application.MusicApplication.currentPosition;
-import static com.luna1970.qingmumusic.application.MusicApplication.prevPosition;
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 public class MusicListActivity extends BaseActivity {
     private static final String TAG = "MusicListActivity";
@@ -97,7 +91,7 @@ public class MusicListActivity extends BaseActivity {
         musicArtistTV = (TextView) findViewById(R.id.musicArtistTV);
 
         // bottom right
-        playOrPauseIV = (ImageButton) findViewById(R.id.playOrPause);
+//        playOrPauseIV = (ImageButton) findViewById(R.id.playOrPause);
         playNextIV = (ImageButton) findViewById(R.id.playNext);
 //        playPrevIV = (ImageButton) findViewById(R.id.playPrev);
     }
@@ -119,7 +113,7 @@ public class MusicListActivity extends BaseActivity {
             public void onClick(View v) {
                 intent = new Intent();
                 intent.putExtra("seekBarProgress", seekBar.getProgress());
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_OR_PAUSE);
+                intent.setAction(PlayController.ACTION_PLAY_OR_PAUSE);
                 sendBroadcast(intent);
             }
         });
@@ -127,7 +121,7 @@ public class MusicListActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_NEXT);
+                intent.setAction(PlayController.ACTION_PLAY_NEXT);
                 sendBroadcast(intent);
             }
         });
@@ -135,7 +129,7 @@ public class MusicListActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_PREV);
+                intent.setAction(PlayController.ACTION_PLAY_PREV);
                 sendBroadcast(intent);
             }
         });
@@ -145,20 +139,20 @@ public class MusicListActivity extends BaseActivity {
                 int currentFirstVisiblePosition = listView.getFirstVisiblePosition();
                 int currentLastVisiblePosition = listView.getLastVisiblePosition();
                 // refresh musicIndexTV and playingTrumpet widget view if and only if prePosition is not equal position
-                if(prevPosition != position) {
-                    // refresh prePosition listView item state if and only if it's on visible situation
-                    if (prevPosition >= currentFirstVisiblePosition && prevPosition <= currentLastVisiblePosition) {
-                        View viewd = listView.getChildAt(prevPosition-currentFirstVisiblePosition);
-                        ((View) viewd.getTag(R.id.playingTrumpet)).setVisibility(View.GONE);
-                        ((View) viewd.getTag(R.id.musicIndexTV)).setVisibility(View.VISIBLE);
-//                    Log.i(TAG, "initMusicInfo: " + viewd);
-                    }
-                    ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.VISIBLE);
-                    ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.GONE);
-                }
+//                if(prevPosition != position) {
+//                    // refresh prePosition listView item state if and only if it's on visible situation
+//                    if (prevPosition >= currentFirstVisiblePosition && prevPosition <= currentLastVisiblePosition) {
+//                        View viewd = listView.getChildAt(prevPosition-currentFirstVisiblePosition);
+//                        ((View) viewd.getTag(R.id.playingTrumpet)).setVisibility(View.GONE);
+//                        ((View) viewd.getTag(R.id.musicIndexTV)).setVisibility(View.VISIBLE);
+////                    Log.i(TAG, "initMusicInfo: " + viewd);
+//                    }
+//                    ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.VISIBLE);
+//                    ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.GONE);
+//                }
                 intent = new Intent();
                 intent.putExtra("position", position);
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
+                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
                 sendBroadcast(intent);
             }
         });
@@ -169,7 +163,7 @@ public class MusicListActivity extends BaseActivity {
                 playMode.setImageBitmap(BitmapFactory.decodeResource(getResources(), playModeResource[playModeIndex]));
                 intent = new Intent();
                 intent.setAction(playModeActionContainer[playModeIndex]);
-                ToastUtils.makeText(MusicListActivity.this, playModeDescriptionResource[playModeIndex], Toast.LENGTH_LONG).show();
+//                ToastUtils.makeText(MusicListActivity.this, playModeDescriptionResource[playModeIndex], Toast.LENGTH_LONG).show();
                 sendBroadcast(intent);
             }
         });
@@ -183,9 +177,9 @@ public class MusicListActivity extends BaseActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 intent = new Intent();
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED);
+                intent.setAction(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED);
                 Log.i(TAG, "onStopTrackingTouch: " + seekBar.getProgress());
-                intent.putExtra(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_SEEK_BAR_PROGRESS_CHANGED, seekBar.getProgress());
+                intent.putExtra(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED, seekBar.getProgress());
                 sendBroadcast(intent);
             }
         });
@@ -194,7 +188,7 @@ public class MusicListActivity extends BaseActivity {
             public void onClick(View v) {
                 intent = new Intent();
                 intent.putExtra("position", 0);
-                intent.setAction(GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_SPECIFIC);
+                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
                 sendBroadcast(intent);
             }
         });
@@ -202,39 +196,39 @@ public class MusicListActivity extends BaseActivity {
 
     private void setReceiver() {
         intentFilter = new IntentFilter();
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE);
-        intentFilter.addAction(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
+        intentFilter.addAction(PlayController.STATE_SERVICE_PLAY_CONTINUE);
+        intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAYING:
-                        Log.i(TAG, "position:  " + currentPosition);
-                        MusicApplication.isPlaying = true;
+                    case PlayController.STATE_SERVICE_PLAYING:
+//                        Log.i(TAG, "position:  " + currentPosition);
+//                        MusicApplication.isPlaying = true;
                         initMusicInfo();
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PLAY_CONTINUE:
+                    case PlayController.STATE_SERVICE_PLAY_CONTINUE:
                         playOrPauseIV.setImageResource(R.drawable.pause);
-                        MusicApplication.isPlaying = true;
+//                        MusicApplication.isPlaying = true;
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_PAUSE:
+                    case PlayController.STATE_SERVICE_PAUSE:
                         playOrPauseIV.setImageResource(R.drawable.play);
-                        MusicApplication.isPlaying = false;
+//                        MusicApplication.isPlaying = false;
                         break;
-                    case GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
-                        int currentPosition = intent.getIntExtra(GlobalMusicPlayControllerConst.ACTION_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
+                    case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
+                        int currentPosition = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
 //                        Log.i(TAG, "onReceive: " + currentPosition + " " + MusicApplication.musicLists.get(position).getDuration());
                         seekBar.setProgress(currentPosition);
                         break;
                 }
-                if (!MusicApplication.isPlaying) {
-                    seekBar.setVisibility(View.GONE);
-                } else {
-                    seekBar.setVisibility(View.VISIBLE);
-                }
+//                if (!MusicApplication.isPlaying) {
+//                    seekBar.setVisibility(View.GONE);
+//                } else {
+//                    seekBar.setVisibility(View.VISIBLE);
+//                }
             }
         };
         registerReceiver(broadcastReceiver, intentFilter);
@@ -244,37 +238,38 @@ public class MusicListActivity extends BaseActivity {
         int currentFirstVisiblePosition = listView.getFirstVisiblePosition();
         int currentLastVisiblePosition = listView.getLastVisiblePosition();
 //        Log.i(TAG, "currentFirstVisiblePosition: " + currentFirstVisiblePosition);
-        if (MusicApplication.isPlaying) {
-            // setting play button style
-            playOrPauseIV.setImageResource(R.drawable.pause);
-
-            // refresh musicIndexTV and playingTrumpet widget view if and only if prePosition is not equal position
-            if(prevPosition != currentPosition) {
-                // refresh prePosition listView item state if and only if it's on visible situation
-                if (prevPosition >= currentFirstVisiblePosition && prevPosition <= currentLastVisiblePosition) {
-                    View view = listView.getChildAt(prevPosition-currentFirstVisiblePosition);
-                    ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.GONE);
-                    ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.VISIBLE);
-//                    Log.i(TAG, "initMusicInfo: " + view);
-                }
-                // refresh position listView item state if and only if it's on visible situation
-                if (currentPosition >= currentFirstVisiblePosition && currentPosition <= currentLastVisiblePosition) {
-                    View view = listView.getChildAt(currentPosition -currentFirstVisiblePosition);
-                    ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.VISIBLE);
-                    ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.GONE);
-                }
-            }
-        }
+//        if (MusicApplication.isPlaying) {
+//            // setting play button style
+//            playOrPauseIV.setImageResource(R.drawable.pause);
+//
+//            // refresh musicIndexTV and playingTrumpet widget view if and only if prePosition is not equal position
+//            if(prevPosition != currentPosition) {
+//                // refresh prePosition listView item state if and only if it's on visible situation
+//                if (prevPosition >= currentFirstVisiblePosition && prevPosition <= currentLastVisiblePosition) {
+//                    View view = listView.getChildAt(prevPosition-currentFirstVisiblePosition);
+//                    ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.GONE);
+//                    ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.VISIBLE);
+////                    Log.i(TAG, "initMusicInfo: " + view);
+//                }
+//                // refresh position listView item state if and only if it's on visible situation
+//                if (currentPosition >= currentFirstVisiblePosition && currentPosition <= currentLastVisiblePosition) {
+//                    View view = listView.getChildAt(currentPosition -currentFirstVisiblePosition);
+//                    ((View) view.getTag(R.id.playingTrumpet)).setVisibility(View.VISIBLE);
+//                    ((View) view.getTag(R.id.musicIndexTV)).setVisibility(View.GONE);
+//                }
+//            }
+//        }
 
         // setting smooth scroll to current play position, listView will be go straight immediately
         // if current position minus will play position out of range
-        if (Math.abs(currentPosition - currentFirstVisiblePosition) > 10) {
-            listView.setSelection(currentPosition);
-        } else {
-            listView.smoothScrollToPosition(currentPosition);
-        }
+//        if (Math.abs(currentPosition - currentFirstVisiblePosition) > 10) {
+//            listView.setSelection(currentPosition);
+//        } else {
+//            listView.smoothScrollToPosition(currentPosition);
+//        }
 
         // setting screen bottom bar music info
+        int currentPosition = playState.getCurrentPosition();
         Music music = getMusicByPosition(currentPosition);
         if (music != null) {
             musicTitleTV.setText(music.getTitle());
@@ -301,10 +296,6 @@ public class MusicListActivity extends BaseActivity {
 
     private void initPlayMode() {
         playModeIndex = 0;
-        playModeActionContainer = new String[]{GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ALL,
-                GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_REPEAT_ONCE,
-                GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_SHUFFLE,
-                GlobalMusicPlayControllerConst.ACTION_ACTIVITY_PLAY_MODE_ORDER};
         playModeResource = new int[]{R.drawable.all_repeat,
                 R.drawable.repeat_once,
                 R.drawable.shuffle,
@@ -339,16 +330,16 @@ public class MusicListActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-        Log.i(TAG, "onResume: " + currentPosition);
-        if (!MusicApplication.isPlaying) {
-//            seekBar.setVisibility(View.GONE);
-            SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-            MusicApplication.currentPosition = sharedPreferences.getInt("position", 0);
-            initMusicInfo();
-            seekBar.setProgress(sharedPreferences.getInt("seekBarProgress", 0));
-        } else {
-            initMusicInfo();
-        }
+//        Log.i(TAG, "onResume: " + currentPosition);
+//        if (!MusicApplication.isPlaying) {
+////            seekBar.setVisibility(View.GONE);
+//            SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+//            MusicApplication.currentPosition = sharedPreferences.getInt("position", 0);
+//            initMusicInfo();
+//            seekBar.setProgress(sharedPreferences.getInt("seekBarProgress", 0));
+//        } else {
+//            initMusicInfo();
+//        }
         registerReceiver(broadcastReceiver, intentFilter);
         super.onResume();
     }
@@ -363,17 +354,17 @@ public class MusicListActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
 //        unregisterReceiver(broadcastReceiver);
-        if (!MusicApplication.isPlaying) {
-            intent = new Intent(this, MusicPlayService2.class);
-            stopService(intent);
-        }
-        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putInt("position", currentPosition);
-        editor.putInt("seekBarProgress", seekBar.getProgress());
-        editor.apply();
-        Log.d(TAG, "onDestroy() ");
-        super.onDestroy();
+//        if (!MusicApplication.isPlaying) {
+//            intent = new Intent(this, MusicPlayService.class);
+//            stopService(intent);
+//        }
+//        SharedPreferences sharedPreferences = getPreferences(MODE_PRIVATE);
+//        SharedPreferences.Editor editor = sharedPreferences.edit();
+//        editor.putInt("position", currentPosition);
+//        editor.putInt("seekBarProgress", seekBar.getProgress());
+//        editor.apply();
+//        Log.d(TAG, "onDestroy() ");
+//        super.onDestroy();
     }
 
     @Override
@@ -389,9 +380,9 @@ public class MusicListActivity extends BaseActivity {
 //                onDestroy();
 //                Process.killProcess(Process.myPid());
                 finish();
-                MusicApplication.isPlaying = false;
-                intent = new Intent(this, MusicPlayService2.class);
-                stopService(intent);
+//                MusicApplication.isPlaying = false;
+//                intent = new Intent(this, MusicPlayService.class);
+//                stopService(intent);
                 break;
         }
         return super.onOptionsItemSelected(item);
