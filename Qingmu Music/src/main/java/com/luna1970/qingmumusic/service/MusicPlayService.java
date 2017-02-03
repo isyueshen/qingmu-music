@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -54,7 +55,7 @@ public class MusicPlayService extends Service {
         intentFilter.addAction(PlayController.ACTION_PLAY_MODE_CHANGED);
         intentFilter.addAction(PlayController.ACTION_REFRESH_PLAY_LIST);
         intentFilter.addAction(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED);
-mediaPlayer = new MediaPlayer();
+        mediaPlayer = new MediaPlayer();
         currentPlayMode = PlayMode.REPEAT_ALL;
         localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
 
@@ -92,28 +93,78 @@ mediaPlayer = new MediaPlayer();
                 return false;
             }
         });
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                if (playState.getCurrentPlayMode() != PlayMode.ORDER) {
+                    if (playState.getListSize() == 1) {
+                        mediaPlayer.setLooping(true);
+                        mediaPlayer.seekTo(0);
+                        mediaPlayer.start();
+                        return;
+                    }
+                    if (playState.getCurrentPlayMode() == PlayMode.REPEAT_ONE) {
+                        mediaPlayer.setLooping(true);
+                        mediaPlayer.seekTo(0);
+                        mediaPlayer.start();
+                    }
+                } else if (playState.getCurrentPlayMode() == playState.getListSize()) {
+                    return;
+                }
+                playNext();
+                Log.i(TAG, "onCompletion: ");
+            }
+        });
+        mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
+            @Override
+            public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                Intent intent = new Intent();
+                intent.putExtra(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, percent);
+                intent.setAction(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
+                localBroadcastManager.sendBroadcast(intent);
+            }
+        });
     }
 
+    public class PlayControlBinder extends Binder{
+        public void playPrev() {
+            MusicPlayService.this.playPrevious();
+        }
+
+        public void playNext() {
+            MusicPlayService.this.playNext();
+        }
+
+        public void playOfPause() {
+            MusicPlayService.this.playOrPause();
+        }
+
+        public void seekToPosition(int timeMillis) {
+            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+                mediaPlayer.seekTo(timeMillis);
+            }
+        }
+
+        public void changePlayMode(int mode) {
+            currentPlayMode = mode;
+        }
+    }
+private PlayControlBinder playControlBinder;
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "onBind: ");
-        return null;
+        playControlBinder = new PlayControlBinder();
+        return playControlBinder;
     }
 
     @Override
     public int onStartCommand(Intent intent, final int flags, int startId) {
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                playNext();
-            }
-        });
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-                Log.i(TAG, "onReceive: " + action);
+//                Log.i(TAG, "onReceive: " + action);
                 switch (action) {
                     case PlayController.ACTION_PLAY_SPECIFIC:
                         int position = intent.getIntExtra(PlayController.ACTION_PLAY_SPECIFIC, 0);
@@ -168,19 +219,26 @@ mediaPlayer = new MediaPlayer();
         if (specificIndex == -1) {
             return;
         }
+        // 如果列表仅有一首歌, 则循环播放
+        if (playState.getListSize() == 1) {
+            mediaPlayer.setLooping(true);
+        } else {
+            mediaPlayer.setLooping(false);
+        }
+        // 如果不是点击当前歌曲才换歌
         if (playState.getCurrentPosition() != specificIndex) {
             // 更新全局播放索引
             playState.setCurrentPosition(specificIndex);
             // 网络歌曲uri
             String songUri = UriUtils.getSongFile(playState.getSongID());
-            preparePlay(songUri, specificIndex);
+            preparePlay(songUri);
         }
     }
 
     /**
      * 请求网络, 准备播放
      */
-    private void preparePlay(String songUri, final int specificIndex) {
+    private void preparePlay(String songUri) {
         HttpUtils.sendHttpRequest(songUri, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -212,11 +270,9 @@ mediaPlayer = new MediaPlayer();
         int size = playState.getListSize();
         switch (currentPlayMode) {
             case PlayMode.REPEAT_ALL:
+            case PlayMode.REPEAT_ONE:
                 index = ++currentPosition >= size ? 0 : currentPosition;
                 break;
-            case PlayMode.REPEAT_ONCE:
-                mediaPlayer.seekTo(0);
-                return;
             case PlayMode.MODE_SHUFFLE:
                 index = getShuffleIndex();
                 break;
@@ -240,11 +296,9 @@ mediaPlayer = new MediaPlayer();
         switch (currentPlayMode) {
             case PlayMode.REPEAT_ALL:
             case PlayMode.ORDER:
+            case PlayMode.REPEAT_ONE:
                 index = --currentPosition < 0 ? playState.getListSize() - 1 : currentPosition;
                 break;
-            case PlayMode.REPEAT_ONCE:
-                mediaPlayer.seekTo(0);
-                return;
         }
         playSpecific(index);
     }
@@ -278,6 +332,7 @@ mediaPlayer = new MediaPlayer();
 
     /**
      * 获得随机位置
+     *
      * @return 新生成的随机
      */
     private int getShuffleIndex() {

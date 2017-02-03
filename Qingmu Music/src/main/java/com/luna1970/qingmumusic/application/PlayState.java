@@ -4,6 +4,7 @@ import com.luna1970.qingmumusic.Gson.Song;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Yue on 2/2/2017.
@@ -15,8 +16,6 @@ public class PlayState {
     private List<Song> playList;
     private boolean isPlaying;
     private int currentPlayMode;
-
-
 
     private PlayState() {
     }
@@ -31,6 +30,10 @@ public class PlayState {
     public void updatePlayList(List<Song> data) {
         playList.clear();
         playList.addAll(data);
+    }
+
+    public void setPlayList(List<Song> playList) {
+        this.playList = playList;
     }
 
     public void insertPlayNext(Song song) {
@@ -75,5 +78,8 @@ public class PlayState {
 
     public Song getSong() {
         return playList.get(currentPosition);
+    }
+    public int getDuration() {
+        return getSong().duration;
     }
 }

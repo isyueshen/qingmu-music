@@ -24,6 +24,7 @@ public final class PlayController {
     public static final String STATE_SERVICE_PAUSE = "SERVICE_PAUSE";
     public static final String STATE_SERVICE_STOP = "SERVICE_STOP";
     public static final String STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS = "SERVICE_UPDATE_SEEK_BAR_PROGRESS";
+    public static final String STATE_SERVICE_UPDATE_BUFFER_PROGRESS = "STATE_SERVICE_UPDATE_BUFFER_PROGRESS";
 
     // fragment
     public static final String ACTION_REFRESH_PLAY_LIST = "REFRESH_PLAY_LIST";

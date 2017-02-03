@@ -94,7 +94,7 @@ public class AlbumDetailActivity extends BaseActivity {
                 intent = new Intent();
                 intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
                 intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, position);
-                sendBroadcast(intent);
+                localBroadcastManager.sendBroadcast(intent);
 
             }
         });

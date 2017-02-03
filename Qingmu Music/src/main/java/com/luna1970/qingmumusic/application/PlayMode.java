@@ -7,7 +7,7 @@ package com.luna1970.qingmumusic.application;
 
 public final class PlayMode {
     public static final int REPEAT_ALL = 0;
-    public static final int REPEAT_ONCE = 1;
+    public static final int REPEAT_ONE = 1;
     public static final int MODE_SHUFFLE = 2;
     public static final int ORDER = 3;
 }

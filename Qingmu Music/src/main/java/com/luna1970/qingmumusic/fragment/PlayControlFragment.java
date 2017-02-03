@@ -46,9 +46,9 @@ public class PlayControlFragment extends Fragment {
     private LocalBroadcastManager localBroadcastManager;
     private BroadcastReceiver broadcastReceiver;
     private ProgressBar progressBar;
-    private Song song;
     private Intent intent;
     private LinearLayout linearLayout;
+    private IntentFilter intentFilter;
 
     @Nullable
     @Override
@@ -80,7 +80,7 @@ public class PlayControlFragment extends Fragment {
      */
     private void setData() {
         if (playState.getListSize() != 0) {
-            song = playState.getSong();
+            Song song = playState.getSong();
             Glide.with(getActivity()).load(song.songCoverPath).into(miniAlbumPic);
             musicTitleTV.setText(song.title);
             musicArtistTV.setText(song.author);
@@ -146,7 +146,7 @@ public class PlayControlFragment extends Fragment {
      * 注册本地广播接收器
      */
     private void setBroadcastReceiver() {
-        IntentFilter intentFilter = new IntentFilter();
+        intentFilter = new IntentFilter();
         intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
         intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
         intentFilter.addAction(PlayController.STATE_SERVICE_PLAY_CONTINUE);
@@ -167,20 +167,29 @@ public class PlayControlFragment extends Fragment {
                         break;
                     case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
                         int currentPosition = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
-                        progressBar.setProgress(currentPosition/10/song.duration);
+                        progressBar.setProgress(currentPosition/10/playState.getDuration());
                         break;
                 }
             }
         };
+    }
+
+    @Override
+    public void onStart() {
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+        super.onStart();
     }
 
 
+    @Override
+    public void onStop() {
+        localBroadcastManager.unregisterReceiver(broadcastReceiver);
+        super.onStop();
+    }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        localBroadcastManager.unregisterReceiver(broadcastReceiver);
     }
 
 
