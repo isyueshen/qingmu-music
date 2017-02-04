@@ -22,7 +22,7 @@ import java.util.List;
  *
  */
 
-public class AlbumDetailSongListAdapter extends RecyclerView.Adapter<AlbumDetailSongListAdapter.MViewHolder> {
+public class SongListAdapter extends RecyclerView.Adapter<SongListAdapter.MViewHolder> {
 
     private static final String TAG = "AlbumDetailSongListAdap";
     private List<Song> songList;
@@ -30,7 +30,7 @@ public class AlbumDetailSongListAdapter extends RecyclerView.Adapter<AlbumDetail
     private int screenX;
     private CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener;
 
-    public AlbumDetailSongListAdapter(List<Song> songList, CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener) {
+    public SongListAdapter(List<Song> songList, CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener) {
         this.songList = songList;
         screenX = Resources.getSystem().getDisplayMetrics().widthPixels;
         this.customRecyclerItemOnClickListener = customRecyclerItemOnClickListener;
@@ -54,7 +54,7 @@ public class AlbumDetailSongListAdapter extends RecyclerView.Adapter<AlbumDetail
         if (mContext == null) {
             mContext = parent.getContext();
         }
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.album_song_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_list_item, parent, false);
         RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) view.getLayoutParams();
         layoutParams.width = screenX / 3 - 30;
         return new MViewHolder(view);
@@ -72,7 +72,6 @@ public class AlbumDetailSongListAdapter extends RecyclerView.Adapter<AlbumDetail
                 customRecyclerItemOnClickListener.onClick(holder.getAdapterPosition());
             }
         });
-        Log.d(TAG, "onBindViewHolder: " + song.songId);
     }
 
 

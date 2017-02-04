@@ -5,10 +5,12 @@
     android:orientation="vertical">
 
     <LinearLayout
+        android:id="@+id/start_top_billboard_detail_area"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:paddingEnd="24dp"
         android:paddingStart="24dp"
+        android:drawable="@drawable/play_list_dialog_selector"
         android:gravity="center_vertical">
 
         <LinearLayout

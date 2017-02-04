@@ -1,7 +1,6 @@
 package com.luna1970.qingmumusic.fragment;
 
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,11 +13,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.activity.TopBillboardActivity;
 import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.GsonUtil;
@@ -46,11 +47,10 @@ public class MainTopSongListFragment extends Fragment {
 
     private List<Song> songList;
     private RecommendListAdapter recommendListAdapter;
-    private MediaPlayer mediaPlayer;
-    private int songId;
     private Bundle bundle;
     private int type;
     private LocalBroadcastManager localBroadcastManager;
+    private LinearLayout linearLayout;
 
     @Nullable
     @Override
@@ -69,13 +69,13 @@ public class MainTopSongListFragment extends Fragment {
             titleTv.setText(bundle.getString("title"));
         }
 
+        linearLayout = (LinearLayout) view.findViewById(R.id.start_top_billboard_detail_area);
         songList = new ArrayList<>();
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recommendListAdapter = new RecommendListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
             public void onClick(int position) {
-                songId = position;
                 preparePlay(position);
             }
         });
@@ -83,6 +83,15 @@ public class MainTopSongListFragment extends Fragment {
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
         recyclerView.setNestedScrollingEnabled(false);
+
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), TopBillboardActivity.class);
+                intent.putExtra("type", type);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

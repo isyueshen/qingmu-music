@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
+import android.media.TimedText;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -124,6 +125,18 @@ public class MusicPlayService extends Service {
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
+        mediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
+            @Override
+            public void onSeekComplete(MediaPlayer mp) {
+                Log.d(TAG, "onSeekComplete() called with: mp = [" + mp + "]");
+            }
+        });
+        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                Log.d(TAG, "onPrepared() called with: mp = [" + mp + "]");
+            }
+        });
     }
 
     public class PlayControlBinder extends Binder{
@@ -239,6 +252,7 @@ private PlayControlBinder playControlBinder;
      * 请求网络, 准备播放
      */
     private void preparePlay(String songUri) {
+        Log.d(TAG, "preparePlay() called with: songUri = [" + songUri + "]");
         HttpUtils.sendHttpRequest(songUri, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -249,6 +263,7 @@ private PlayControlBinder playControlBinder;
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final SongInfo song = GsonUtil.handlerSongInfoByRequestPlay(response.body().string());
+                Log.i(TAG, "onResponse: " + song);
                 if (mediaPlayer.isPlaying()) {
                 }
                 mediaPlayer.reset();

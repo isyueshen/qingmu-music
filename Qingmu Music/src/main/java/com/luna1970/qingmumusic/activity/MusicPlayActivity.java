@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.Toolbar;
@@ -20,12 +21,16 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.animation.ViewPropertyAnimation;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.application.PlayMode;
@@ -33,6 +38,7 @@ import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
+import com.orhanobut.logger.Logger;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -66,11 +72,13 @@ public class MusicPlayActivity extends BaseActivity {
     private ImageView playModeIv;
     private TextView totalTimeTv;
     private TextView currentTimeTv;
+    private String prevSongCover;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_music_play);
+        Glide.get(this).clearMemory();
 //
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // make navigation bar color to transparent
@@ -127,23 +135,22 @@ public class MusicPlayActivity extends BaseActivity {
         currentTimeTv = (TextView) findViewById(R.id.current_time);
         totalTimeTv = (TextView) findViewById(R.id.total_time_tv);
 
-
         seekBar = (SeekBar) findViewById(R.id.seek_bar);
         // 根据屏幕动态设置ImageView的位置, Y -> status bar + 2 * action bar, X -> Screen width / 2 - image radius
-        Message.obtain(new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        int oldHeight = songCoverIv.getHeight();
-                        int oldWidth = songCoverIv.getWidth();
-                        songCoverIv.scrollTo(0, oldHeight / 2 - actionBar.getHeight() - oldWidth / 2);
-                    }
-                });
-                return false;
-            }
-        })).sendToTarget();
+//        Message.obtain(new Handler(new Handler.Callback() {
+//            @Override
+//            public boolean handleMessage(Message msg) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        int oldHeight = songCoverIv.getHeight();
+//                        int oldWidth = songCoverIv.getWidth();
+//                        songCoverIv.scrollTo(0, oldHeight / 2 - actionBar.getHeight() - oldWidth / 2);
+//                    }
+//                });
+//                return false;
+//            }
+//        })).sendToTarget();
     }
 
 
@@ -211,20 +218,36 @@ public class MusicPlayActivity extends BaseActivity {
         // 设置标题栏信息
         songTitleTv.setText(song.title);
         songAuthorTv.setText(song.author);
-
+        Logger.d(song.lrcPath);
         // 设置高斯模糊背景 & 歌曲封面
         String imageUri = UriUtils.getCustomImageSize(song.songCoverPath, 1000);
-        Glide.with(this).load(imageUri)
+        Glide.with(this).load(imageUri).skipMemoryCache(true)
                 .load(imageUri)
                 .bitmapTransform(new BlurTransformation(this, 100))
                 .into(backgroundIv);
-        Glide.with(this).load(imageUri).bitmapTransform(new CropCircleTransformation(this)).into(songCoverIv);
+        Glide.with(this).load(imageUri).skipMemoryCache(true)
+                .crossFade(300)
+                .animate(new ViewPropertyAnimation.Animator() {
+                    @Override
+                    public void animate(View view) {
+                        RotateAnimation rotateAnimation = new RotateAnimation(0, 360, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+                        rotateAnimation.setRepeatCount(Animation.INFINITE);
+                        rotateAnimation.setDuration(25000);
+                        rotateAnimation.setInterpolator(new LinearInterpolator());
+                        rotateAnimation.setRepeatMode(Animation.RESTART);
+                        view.startAnimation(rotateAnimation);
+                    }
+                })
+                .placeholder(R.drawable.test)
+                .bitmapTransform(new CropCircleTransformation(this))
+                .into(songCoverIv);
         seekBar.setMax(song.duration * 1000);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("mm:ss", Locale.CHINA);
         Date date = new Date();
         date.setTime(song.duration * 1000);
         String total = simpleDateFormat.format(date);
         totalTimeTv.setText(total);
+        prevSongCover = song.songCoverPath;
     }
 
     @Override
@@ -262,7 +285,7 @@ public class MusicPlayActivity extends BaseActivity {
                         break;
                     case PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS:
                         int bufferProgress = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, 0);
-                        seekBar.setSecondaryProgress(bufferProgress/100 * playState.getDuration() * 1000);
+                        seekBar.setSecondaryProgress(bufferProgress * playState.getDuration() * 10);
                         break;
                     case PlayController.STATE_SERVICE_PAUSE:
                         playOrPauseIv.setSelected(false);

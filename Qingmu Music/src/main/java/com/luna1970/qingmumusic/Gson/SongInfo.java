@@ -13,4 +13,13 @@ public class SongInfo {
     private int SongId;
     @SerializedName("file_link")
     public String FileLink;
+
+    @Override
+    public String toString() {
+        return "SongInfo{" +
+                "id=" + id +
+                ", SongId=" + SongId +
+                ", FileLink='" + FileLink + '\'' +
+                '}';
+    }
 }

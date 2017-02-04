@@ -1,11 +1,11 @@
 package com.luna1970.qingmumusic.activity;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewCompat;
@@ -13,14 +13,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.luna1970.qingmumusic.Gson.Album;
+import com.bumptech.glide.request.RequestFutureTarget;
 import com.luna1970.qingmumusic.Gson.AlbumInfo;
-import com.luna1970.qingmumusic.Gson.Song;
+import com.luna1970.qingmumusic.Gson.Billboard;
 import com.luna1970.qingmumusic.Gson.TopBillboard;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.SongListAdapter;
@@ -29,10 +30,11 @@ import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.GsonUtil;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.UriUtils;
+import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -40,64 +42,68 @@ import okhttp3.Response;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
-public class AlbumDetailActivity extends BaseActivity {
-    private static final String TAG = "AlbumDetailActivity";
-    private Album album;
-    private List<Song> songList;
+/**
+ * Created by Yue on 2/3/2017.
+ *
+ */
+
+public class TopBillboardActivity extends BaseActivity {
+    private static final String TAG = "TopBillboardActivity";
+    private TopBillboard topBillboard;
+    private int type;
     private SongListAdapter songListAdapter;
     private LocalBroadcastManager localBroadcastManager;
+    private ImageView toolbarBackgroundIv;
+    private ActionBar actionBar;
+    private RecyclerView recyclerView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_album_detail);
-        songList = new ArrayList<>();
-        getIntentData();
-        setToolbar();
-        setViews();
+        setContentView(R.layout.activity_top_billboard);
+        Logger.init(TAG);
+        Glide.get(this).clearMemory();
+        topBillboard = new TopBillboard();
+        topBillboard.songList = new ArrayList<>();
+        topBillboard.billboard = new Billboard();
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if (songList.size() == 0) {
-            sendRequest();
-        }
+        setToolbar();
+        getIntentData();
+        initViews();
     }
 
     public void getIntentData() {
         Bundle bundle = getIntent().getExtras();
-        album = bundle.getParcelable("album");
+        type = bundle.getInt("type");
     }
 
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle("加载中...");
         }
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        collapsingToolbarLayout.setTitleEnabled(false);
+        collapsingToolbarLayout.setTitle("");
     }
 
-    private void setViews() {
-        ImageView toolbarAlbumIv = (ImageView) findViewById(R.id.toolbar_background_iv);
+    private void initViews() {
+        toolbarBackgroundIv = (ImageView) findViewById(R.id.toolbar_background_iv);
 
-        ViewCompat.setTransitionName(toolbarAlbumIv, "luna");
-        Glide.with(this).load(album.albumPicPath).into(toolbarAlbumIv);
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        collapsingToolbarLayout.setTitle(album.author + " - " + album.title);
-
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(gridLayoutManager);
-        songListAdapter = new SongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
+        songListAdapter = new SongListAdapter(topBillboard.songList, new CustomRecyclerItemOnClickListener() {
             @Override
             public void onClick(int position) {
                 Intent intent = new Intent();
                 intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
-                playState.updatePlayList(songList);
+                playState.updatePlayList(topBillboard.songList);
                 intent = new Intent();
                 intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
                 intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, position);
@@ -109,10 +115,18 @@ public class AlbumDetailActivity extends BaseActivity {
         recyclerView.setNestedScrollingEnabled(false);
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (topBillboard.songList != null && topBillboard.songList.size() == 0) {
+            sendNetRequest();
+        }
+    }
 
-    private void sendRequest() {
-        String apiPath = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.album.getAlbumInfo&format=json&album_id=" + album.albumId;
-        HttpUtils.sendHttpRequest(apiPath, new Callback() {
+
+    private void sendNetRequest() {
+        String songListUri = UriUtils.getRecommendUri(type, 0, 100);
+        HttpUtils.sendHttpRequest(songListUri, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
 
@@ -120,12 +134,17 @@ public class AlbumDetailActivity extends BaseActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final AlbumInfo albumInfo = GsonUtil.handlerAlbumInfo(response.body().string());
+                String res = response.body().string();
+                final TopBillboard topBillboard = GsonUtil.handlerTopBillboard(res);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        songList.addAll(albumInfo.songList);
+                        TopBillboardActivity.this.topBillboard.songList.clear();
+                        TopBillboardActivity.this.topBillboard.songList.addAll(topBillboard.songList);
                         songListAdapter.notifyDataSetChanged();
+                        TopBillboardActivity.this.topBillboard.billboard = topBillboard.billboard;
+                        Glide.with(TopBillboardActivity.this).load(TopBillboardActivity.this.topBillboard.billboard.picBigSquare).into(toolbarBackgroundIv);
+                        actionBar.setTitle(TopBillboardActivity.this.topBillboard.billboard.name);
                     }
                 });
             }
@@ -152,11 +171,5 @@ public class AlbumDetailActivity extends BaseActivity {
         super.onDestroy();
     }
 
-    public static void startCustomActivity(Activity activity, Album type, View view) {
-        Intent intent = new Intent();
-        intent.setClass(activity, AlbumDetailActivity.class);
-        intent.putExtra("album", type);
-        ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(activity, view, "luna");
-        ActivityCompat.startActivity(activity, intent, optionsCompat.toBundle());
-    }
+
 }

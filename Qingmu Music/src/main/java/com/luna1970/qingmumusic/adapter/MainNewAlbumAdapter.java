@@ -1,5 +1,6 @@
 package com.luna1970.qingmumusic.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -75,10 +76,11 @@ public class MainNewAlbumAdapter extends RecyclerView.Adapter<MainNewAlbumAdapte
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                intent.setClass(mContext, AlbumDetailActivity.class);
-                intent.putExtra("album", album);
-                mContext.startActivity(intent);
+//                Intent intent = new Intent();
+//                intent.setClass(mContext, AlbumDetailActivity.class);
+//                intent.putExtra("album", album);
+//                mContext.startActivity(intent);
+                AlbumDetailActivity.startCustomActivity((Activity) mContext, album, v);
             }
         });
         String path = UriUtils.getCustomImageSize(album.albumPicPath, 700);

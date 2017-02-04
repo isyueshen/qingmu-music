@@ -53,18 +53,18 @@
             </LinearLayout>
         </android.support.v7.widget.Toolbar>
 
-        <android.support.percent.PercentRelativeLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/song_cover_iv"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                app:layout_heightPercent="70%"
-                app:layout_widthPercent="50%"/>
-        </android.support.percent.PercentRelativeLayout>
+                android:layout_marginTop="60dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="260dp"
+                android:layout_height="260dp"/>
+        </FrameLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
