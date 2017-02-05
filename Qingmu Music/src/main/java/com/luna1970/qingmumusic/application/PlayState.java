@@ -82,4 +82,8 @@ public class PlayState {
     public int getDuration() {
         return getSong().duration;
     }
+
+    public Song removeSongAt(int index) {
+        return playList.remove(index);
+    }
 }

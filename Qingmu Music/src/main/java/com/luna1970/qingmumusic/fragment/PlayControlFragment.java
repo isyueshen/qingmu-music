@@ -153,7 +153,7 @@ public class PlayControlFragment extends Fragment {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.i(TAG, "onReceive: " + intent.getAction());
+//                Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
                     case PlayController.STATE_SERVICE_PLAYING:
                         setData();
@@ -176,7 +176,6 @@ public class PlayControlFragment extends Fragment {
     @Override
     public void onStart() {
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-        setData();
         super.onStart();
     }
 

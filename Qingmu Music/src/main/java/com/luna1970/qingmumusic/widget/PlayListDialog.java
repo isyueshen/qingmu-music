@@ -5,9 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -16,14 +18,18 @@ import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.PlayListAdapter;
+import com.luna1970.qingmumusic.application.PlayState;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.listener.PlayListDialogDeleteListener;
+import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.ToastUtils;
+import com.orhanobut.logger.Logger;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/31/2017.
- *
  */
 
 public class PlayListDialog extends Dialog {
@@ -31,7 +37,6 @@ public class PlayListDialog extends Dialog {
     private TextView playListTitleTv;
     private Button clearBtn;
     private RecyclerView recyclerView;
-    private LinearLayout linearLayout;
     private LocalBroadcastManager localBroadcastManager;
 
     public PlayListDialog(Context context) {
@@ -46,6 +51,7 @@ public class PlayListDialog extends Dialog {
         localBroadcastManager = LocalBroadcastManager.getInstance(getContext());
         initView();
         setListeners();
+        setRecyclerView();
     }
 
     private void initView() {
@@ -54,27 +60,51 @@ public class PlayListDialog extends Dialog {
 
         clearBtn = (Button) findViewById(R.id.clear_btn);
         recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
-        setRecyclerView();
 
+    }
+
+    private void setListeners() {
+        clearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ToastUtils.makeText("haha").show();
+            }
+        });
     }
 
     private void setRecyclerView() {
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        PlayListAdapter playListAdapter = new PlayListAdapter(playState.getPlayList(), new CustomRecyclerItemOnClickListener() {
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        final PlayListAdapter playListAdapter = new PlayListAdapter(playState.getPlayList());
+        playListAdapter.setPlayListDialogOnClickListener(new PlayListDialogOnClickListener() {
             @Override
-            public void onClick(int position) {
+            public void onClick(int index) {
                 Intent intent = new Intent();
                 intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
-                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, position);
+                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
                 localBroadcastManager.sendBroadcast(intent);
+
+            }
+        });
+        playListAdapter.setPlayListDialogDeleteListener(new PlayListDialogDeleteListener() {
+            @Override
+            public void onDelete(int index) {
+//                Logger.d(index);
+                playState.removeSongAt(index);
+                playListAdapter.notifyItemRemoved(index);
+                playListAdapter.notifyItemRangeChanged(index, playState.getListSize()+1-index);
+                playListTitleTv.setText("播放列表 (" + playState.getListSize() + ")");
+                if (playState.getCurrentPosition() == index) {
+                    Intent intent = new Intent();
+                    intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                    intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                    localBroadcastManager.sendBroadcast(intent);
+                    ToastUtils.makeText(index+"").show();
+                }
             }
         });
         recyclerView.setAdapter(playListAdapter);
-    }
-
-    private void setListeners() {
-
     }
 
     @Override
@@ -84,9 +114,9 @@ public class PlayListDialog extends Dialog {
         Window window = getWindow();
         WindowManager.LayoutParams layoutParams = window.getAttributes();
         if (layoutParams != null) {
-            layoutParams.gravity= Gravity.BOTTOM;
-            layoutParams.width= WindowManager.LayoutParams.MATCH_PARENT;
-            layoutParams.height= WindowManager.LayoutParams.WRAP_CONTENT;
+            layoutParams.gravity = Gravity.BOTTOM;
+            layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+            layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
             // 边距
             window.getDecorView().setPadding(0, 0, 0, 0);
             // 设置

@@ -42,6 +42,7 @@ public class MusicPlayService extends Service {
     private boolean controlProgressUpdateWorkThread;
     private LocalBroadcastManager localBroadcastManager;
     private MediaPlayer mediaPlayer;
+    private int currentSongId;
 
     @Override
     public void onCreate() {
@@ -176,7 +177,7 @@ private PlayControlBinder playControlBinder;
             @Override
             public void onReceive(Context context, Intent intent) {
                 String action = intent.getAction();
-//                Log.i(TAG, "onReceive: " + action);
+                Log.i(TAG, "onReceive: " + action);
                 switch (action) {
                     case PlayController.ACTION_PLAY_SPECIFIC:
                         int position = intent.getIntExtra(PlayController.ACTION_PLAY_SPECIFIC, 0);
@@ -228,8 +229,12 @@ private PlayControlBinder playControlBinder;
      * 请求网络, 准备播放
      */
     public void playSpecific(int specificIndex) {
-        if (specificIndex == -1) {
-            return;
+        int length = playState.getListSize() -1;
+        if (specificIndex <0) {
+            specificIndex = length;
+        }
+        if (specificIndex>length) {
+            specificIndex = 0;
         }
         // 如果列表仅有一首歌, 则循环播放
         if (playState.getListSize() == 1) {
@@ -237,15 +242,17 @@ private PlayControlBinder playControlBinder;
         } else {
             mediaPlayer.setLooping(false);
         }
-        // 如果不是点击当前歌曲才换歌
-        if (playState.getCurrentPosition() != specificIndex) {
-            // 更新全局播放索引
-            playState.setCurrentPosition(specificIndex);
-            sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
-            // 网络歌曲uri
-            String songUri = UriUtils.getSongFile(playState.getSongID());
-            preparePlay(songUri);
+        // 更新全局播放索引
+        playState.setCurrentPosition(specificIndex);
+        // 没有换歌, 如果不是点击当前歌曲才换歌
+        if (currentSongId == playState.getSongID()) {
+            return;
         }
+        currentSongId = playState.getSongID();
+        sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
+        // 网络歌曲uri
+        String songUri = UriUtils.getSongFile(currentSongId);
+        preparePlay(songUri);
     }
 
     /**
@@ -265,6 +272,7 @@ private PlayControlBinder playControlBinder;
                 final SongInfo song = GsonUtils.handlerSongInfoByRequestPlay(response.body().string());
                 Log.i(TAG, "onResponse: " + song);
                 if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.stop();
                 }
                 mediaPlayer.reset();
                 mediaPlayer.setDataSource(song.FileLink);

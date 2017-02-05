@@ -1,5 +1,7 @@
 package com.luna1970.qingmumusic.util;
 
+import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.luna1970.qingmumusic.application.MusicApplication;
@@ -11,20 +13,20 @@ import com.luna1970.qingmumusic.application.MusicApplication;
 
 public class ToastUtils {
     private static Toast toast;
+    private static Context context;
+    static {
+        context = MusicApplication.getInstance().getApplicationContext();
+    }
     public static Toast makeText(CharSequence charSequence) {
         if (toast==null) {
-            toast = Toast.makeText(MusicApplication.getInstance().getApplicationContext(), charSequence, Toast.LENGTH_SHORT);
+            toast = Toast.makeText(context, charSequence, Toast.LENGTH_SHORT);
         } else {
             toast.setText(charSequence);
         }
         return toast;
     }
     public static Toast makeText(int resId) {
-        if (toast==null) {
-            toast = Toast.makeText(MusicApplication.getInstance().getApplicationContext(), resId, Toast.LENGTH_SHORT);
-        } else {
-            toast.setText(resId);
-        }
-        return toast;
+        String content = context.getString(resId);
+        return makeText(content);
     }
 }

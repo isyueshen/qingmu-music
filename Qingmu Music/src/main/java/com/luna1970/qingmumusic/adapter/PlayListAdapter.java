@@ -10,11 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.listener.PlayListDialogDeleteListener;
+import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 
 import java.util.List;
 
@@ -36,20 +39,31 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
     /**
      * 监听接口
      */
-    private CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener;
+    private PlayListDialogDeleteListener playListDialogDeleteListener;
+    private PlayListDialogOnClickListener playListDialogOnClickListener;
 
-    public PlayListAdapter(List<Song> songList, CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener) {
+
+    public PlayListAdapter(List<Song> songList) {
         // 非法传值
         if (songList == null) {
             throw new IllegalArgumentException("SongList conn't be null!");
         }
         this.songList = songList;
-        this.customRecyclerItemOnClickListener = customRecyclerItemOnClickListener;
+    }
+
+    public void setPlayListDialogDeleteListener(PlayListDialogDeleteListener playListDialogDeleteListener) {
+        this.playListDialogDeleteListener = playListDialogDeleteListener;
+    }
+
+    public void setPlayListDialogOnClickListener(PlayListDialogOnClickListener playListDialogOnClickListener) {
+        this.playListDialogOnClickListener = playListDialogOnClickListener;
     }
 
     public static class MViewHolder extends RecyclerView.ViewHolder {
         TextView songTitle;
         TextView songAlbum;
+        ImageView deleteIv;
+        LinearLayout linearLayout;
         View view;
 
         public MViewHolder(View itemView) {
@@ -58,6 +72,8 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
             view = itemView;
             songTitle = (TextView) itemView.findViewById(R.id.song_title_tv);
             songAlbum = (TextView) itemView.findViewById(R.id.song_album_tv);
+            deleteIv = (ImageView) itemView.findViewById(R.id.delete_iv);
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.click_area_ll);
         }
     }
 
@@ -72,24 +88,35 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
     }
 
     @Override
-    public void onBindViewHolder(final MViewHolder holder, int position) {
+    public void onBindViewHolder(final MViewHolder holder, final int position) {
         // 获得当前视图对应的song object
         final Song song = songList.get(position);
         // 设置标题
         String title = song.title;
         String author = song.author;
-        String str = title + " - "+ author;
+        String str = title + " - " + author;
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
         spannableStringBuilder.setSpan(new ForegroundColorSpan(0xFFAAAAAA), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.setSpan(new AbsoluteSizeSpan(12, true), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-        Log.i(TAG, "onBindViewHolder: " + spannableStringBuilder.toString());
+//        Log.i(TAG, "onBindViewHolder: " + spannableStringBuilder.toString());
         holder.songTitle.setText(spannableStringBuilder);
         holder.songAlbum.setText("专辑: " + song.albumTitle);
 
-        holder.view.setOnClickListener(new View.OnClickListener() {
+        holder.deleteIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                customRecyclerItemOnClickListener.onClick(holder.getAdapterPosition());
+                if (playListDialogDeleteListener != null) {
+                    playListDialogDeleteListener.onDelete(position);
+                }
+            }
+        });
+
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (playListDialogOnClickListener != null) {
+                    playListDialogOnClickListener.onClick(position);
+                }
             }
         });
     }

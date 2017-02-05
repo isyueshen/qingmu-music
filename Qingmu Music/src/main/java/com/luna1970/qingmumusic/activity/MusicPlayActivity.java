@@ -301,6 +301,7 @@ public class MusicPlayActivity extends BaseActivity {
         if (songCoverIv.getVisibility() != View.INVISIBLE) {
             startSongCoverAnimation();
         }
+        initBroadCastReceiver();
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
     }
 
@@ -371,7 +372,6 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        initBroadCastReceiver();
     }
 
     private void initBroadCastReceiver() {
