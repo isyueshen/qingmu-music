@@ -23,8 +23,8 @@ import java.util.List;
  *
  */
 
-public class GsonUtil {
-    private static final String TAG = "GsonUtil";
+public class GsonUtils {
+    private static final String TAG = "GsonUtils";
 
     public static List<Album> handleAlbumList(String json) {
         List<Album> albumList = new ArrayList<>();

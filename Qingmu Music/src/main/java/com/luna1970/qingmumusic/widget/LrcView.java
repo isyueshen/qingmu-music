@@ -15,6 +15,7 @@ import android.widget.Scroller;
 
 import com.luna1970.qingmumusic.entity.Lrc;
 import com.luna1970.qingmumusic.entity.LrcRow;
+import com.luna1970.qingmumusic.listener.LrcViewSingleTapUpListener;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 
 import java.text.SimpleDateFormat;
@@ -115,6 +116,8 @@ public class LrcView extends View implements View.OnTouchListener {
      * 拖拽目标位置
      */
     private int dragPosition;
+    private boolean needTint;
+    private LrcViewSingleTapUpListener lrcViewSingleTapUpListener;
 
     public LrcView(Context context) {
         this(context, null);
@@ -147,13 +150,13 @@ public class LrcView extends View implements View.OnTouchListener {
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
             @Override
             public boolean onDown(MotionEvent e) {
-                Log.d(TAG, "onDown: ");
                 // 计算开始拖拽的位置
                 if (dragEndTime == 0) {
                     dragStartPosition = position;
                 } else {
                     dragStartPosition = dragPosition;
                 }
+                Log.d(TAG, "onDown: " + dragPosition + " " + dragStartPosition);
                 // 将上次移动的总距离归零
                 dragDistanceY = 0;
                 // 初始化专用画笔
@@ -171,17 +174,22 @@ public class LrcView extends View implements View.OnTouchListener {
 
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
+                if (lrcViewSingleTapUpListener != null) {
+                    return lrcViewSingleTapUpListener.onSingleTapUp();
+                }
                 return false;
             }
 
             @Override
             public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-                Log.i(TAG, "onScroll: ");
+                if (!hasLrc) {
+                    return false;
+                }
                 // 开启拖拽模式
                 TYPE_DRAG = true;
                 // 防止抖动
                 if (Math.abs(distanceY) < 1) {
-                    return false;
+                    return true;
                 }
                 // 计算拖拽到的位置
                 dragDistanceY += distanceY;
@@ -190,11 +198,11 @@ public class LrcView extends View implements View.OnTouchListener {
                 // 超出歌词范围后, 滑动无效
                 if (dragPosition < 0 || dragPosition > lrc.getLineCount() - 1) {
                     dragDistanceY -= distanceY;
-                    return false;
+                    return true;
                 }
                 // repaint
                 invalidate();
-                return false;
+                return true;
             }
 
             @Override
@@ -222,8 +230,8 @@ public class LrcView extends View implements View.OnTouchListener {
     @Override
     protected void onDraw(Canvas canvas) {
         paint.setTextSize(currentTextSize);
-        // 如果无歌词或歌词行为0, 则绘制提示语
-        if (!hasLrc) {
+        // 如果无歌词或需要提示, 则绘制提示语
+        if (!hasLrc || needTint) {
             canvas.drawText(tint, 0, tint.length(), centerX, centerY, paint);
             return;
         }
@@ -301,6 +309,7 @@ public class LrcView extends View implements View.OnTouchListener {
         if (lrc == null || lrc.getLineCount() == 0) {
             hasLrc = false;
         } else {
+            needTint = false;
             hasLrc = true;
         }
         // 初始化
@@ -332,12 +341,11 @@ public class LrcView extends View implements View.OnTouchListener {
                 return;
             }
         }
-        Log.d(TAG, "refreshLrc: ");
         // 如果当前时间显示的正好是当前行, 则返回, 避免重绘
         if (time > showTime && time < nextTime) {
             return;
         }
-        if (lrc != null && lrc.getLrcRowList().size() > 0) {
+        if (hasLrc) {
             LrcRow lrcRow;
             int count = lrc.getLineCount();
             for (int i = 0; i < count; i++) {
@@ -393,13 +401,21 @@ public class LrcView extends View implements View.OnTouchListener {
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        if (hasLrc) {
-            gestureDetector.onTouchEvent(event);
-        }
+        gestureDetector.onTouchEvent(event);
         if (event.getAction() == MotionEvent.ACTION_UP) {
             // 记录拖拽停止时间
             dragEndTime = System.currentTimeMillis();
         }
         return true;
+    }
+
+    public void setLrcViewSingleTapUpListener(LrcViewSingleTapUpListener lrcViewSingleTapUpListener) {
+        this.lrcViewSingleTapUpListener = lrcViewSingleTapUpListener;
+    }
+
+    public void drawTint(String tint) {
+        this.tint = tint;
+        needTint = true;
+        postInvalidate();
     }
 }

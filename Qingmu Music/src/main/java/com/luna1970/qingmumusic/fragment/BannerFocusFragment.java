@@ -22,7 +22,7 @@ import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GsonUtil;
+import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.UriUtils;
@@ -137,7 +137,7 @@ public class BannerFocusFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String backgroundPath = GsonUtil.getBannerUri(response.body().string());
+                final String backgroundPath = GsonUtils.getBannerUri(response.body().string());
                 Log.i(TAG, "onResponse: " + backgroundPath);
                 Log.i(TAG, "setView: " + (backgroundIv == null));
                 getActivity().runOnUiThread(new Runnable() {
@@ -165,7 +165,7 @@ public class BannerFocusFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                songList.addAll(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                songList.addAll(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Runnable runnable = new Runnable() {
                     public void run() {
                         newSongListAdapter.notifyDataSetChanged();
@@ -194,7 +194,7 @@ public class BannerFocusFragment extends Fragment {
                 Intent intent = new Intent();
                 intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
-                playState.updatePlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                playState.updatePlayList(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
                 intent = new Intent();
                 intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
                 int index = position - 1;

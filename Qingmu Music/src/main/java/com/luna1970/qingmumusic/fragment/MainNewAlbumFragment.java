@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import com.luna1970.qingmumusic.Gson.Album;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.MainNewAlbumAdapter;
-import com.luna1970.qingmumusic.util.GsonUtil;
+import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class MainNewAlbumFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final List<Album> albumList = GsonUtil.handleAlbumList(response.body().string());
+                final List<Album> albumList = GsonUtils.handleAlbumList(response.body().string());
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

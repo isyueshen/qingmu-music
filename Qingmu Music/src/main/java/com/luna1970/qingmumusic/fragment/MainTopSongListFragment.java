@@ -22,7 +22,7 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.TopBillboardActivity;
 import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GsonUtil;
+import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.UriUtils;
@@ -121,7 +121,7 @@ public class MainTopSongListFragment extends Fragment {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                songList.addAll(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                songList.addAll(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Runnable runnable = new Runnable() {
                     public void run() {
                         recommendListAdapter.notifyDataSetChanged();
@@ -160,7 +160,7 @@ public class MainTopSongListFragment extends Fragment {
                 Intent intent = new Intent();
                 intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
-                playState.updatePlayList(GsonUtil.handlerSongListByRequestDailyRecommend(response.body().string()));
+                playState.updatePlayList(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
                 Log.i(TAG, "onResponse: " + playState.getListSize());
                 intent = new Intent();
                 intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);

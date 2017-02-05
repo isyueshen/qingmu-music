@@ -22,7 +22,6 @@ public class LrcParse {
         BufferedReader bufferedReader = new BufferedReader(new StringReader(raw));
         String line;
         LrcRow lrcRow;
-        Logger.d(raw);
         try {
             String prevLine = null;
             int prevTime = 0;

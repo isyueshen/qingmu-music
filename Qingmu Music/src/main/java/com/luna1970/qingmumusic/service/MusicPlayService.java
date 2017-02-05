@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.MediaPlayer;
-import android.media.TimedText;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -15,7 +14,7 @@ import android.util.Log;
 
 import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.application.PlayMode;
-import com.luna1970.qingmumusic.util.GsonUtil;
+import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.ToastUtils;
@@ -153,7 +152,7 @@ public class MusicPlayService extends Service {
         }
 
         public void seekToPosition(int timeMillis) {
-            if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            if (mediaPlayer != null) {
                 mediaPlayer.seekTo(timeMillis);
             }
         }
@@ -242,6 +241,7 @@ private PlayControlBinder playControlBinder;
         if (playState.getCurrentPosition() != specificIndex) {
             // 更新全局播放索引
             playState.setCurrentPosition(specificIndex);
+            sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
             // 网络歌曲uri
             String songUri = UriUtils.getSongFile(playState.getSongID());
             preparePlay(songUri);
@@ -262,7 +262,7 @@ private PlayControlBinder playControlBinder;
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final SongInfo song = GsonUtil.handlerSongInfoByRequestPlay(response.body().string());
+                final SongInfo song = GsonUtils.handlerSongInfoByRequestPlay(response.body().string());
                 Log.i(TAG, "onResponse: " + song);
                 if (mediaPlayer.isPlaying()) {
                 }
@@ -271,7 +271,6 @@ private PlayControlBinder playControlBinder;
                 mediaPlayer.prepare();
                 mediaPlayer.start();
                 playState.setPlaying(true);
-                sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
             }
         });
     }

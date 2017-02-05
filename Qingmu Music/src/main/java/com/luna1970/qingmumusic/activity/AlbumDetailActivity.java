@@ -2,7 +2,6 @@ package com.luna1970.qingmumusic.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
@@ -21,12 +20,10 @@ import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Album;
 import com.luna1970.qingmumusic.Gson.AlbumInfo;
 import com.luna1970.qingmumusic.Gson.Song;
-import com.luna1970.qingmumusic.Gson.TopBillboard;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.SongListAdapter;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GsonUtil;
+import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
 
@@ -120,7 +117,7 @@ public class AlbumDetailActivity extends BaseActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final AlbumInfo albumInfo = GsonUtil.handlerAlbumInfo(response.body().string());
+                final AlbumInfo albumInfo = GsonUtils.handlerAlbumInfo(response.body().string());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

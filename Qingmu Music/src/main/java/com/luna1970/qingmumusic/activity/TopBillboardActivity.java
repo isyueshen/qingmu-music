@@ -1,33 +1,24 @@
 package com.luna1970.qingmumusic.activity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestFutureTarget;
-import com.luna1970.qingmumusic.Gson.AlbumInfo;
 import com.luna1970.qingmumusic.Gson.Billboard;
 import com.luna1970.qingmumusic.Gson.TopBillboard;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.SongListAdapter;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.GsonUtil;
+import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.UriUtils;
@@ -135,7 +126,7 @@ public class TopBillboardActivity extends BaseActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String res = response.body().string();
-                final TopBillboard topBillboard = GsonUtil.handlerTopBillboard(res);
+                final TopBillboard topBillboard = GsonUtils.handlerTopBillboard(res);
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
