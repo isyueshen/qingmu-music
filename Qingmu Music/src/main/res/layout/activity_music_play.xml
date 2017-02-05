@@ -54,6 +54,7 @@
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
+            android:id="@+id/content_fl"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1">
@@ -94,6 +95,7 @@
         </FrameLayout>
 
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -144,7 +146,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginEnd="10dp"
                     android:layout_toStartOf="@+id/prev_iv"
-                    android:src="@drawable/play_mode_level_list" />
+                    android:src="@drawable/play_mode_all_state_level_list" />
 
                 <ImageView
                     android:id="@+id/prev_iv"
@@ -152,14 +154,14 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/play_or_pause_iv"
-                    android:src="@drawable/play_btn_prev_selector" />
+                    android:src="@drawable/play_control_prev_selector" />
 
                 <ImageView
                     android:id="@+id/play_or_pause_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
-                    android:src="@drawable/play_btn_play_pause_selector" />
+                    android:src="@drawable/play_control_play_pause_selector" />
 
                 <ImageView
                     android:id="@+id/next_iv"
@@ -167,7 +169,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@id/play_or_pause_iv"
-                    android:src="@drawable/play_btn_next_selector" />
+                    android:src="@drawable/play_control_next_selector" />
 
                 <ImageView
                     android:id="@+id/play_list"
@@ -176,7 +178,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="10dp"
                     android:layout_toEndOf="@+id/next_iv"
-                    android:src="@drawable/play_mode_level_list" />
+                    android:src="@drawable/play_list_selector" />
 
             </RelativeLayout>
         </LinearLayout>

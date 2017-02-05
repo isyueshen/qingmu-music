@@ -9,4 +9,7 @@
     <item
         android:drawable="@drawable/play_mode_shuffle_selector"
         android:maxLevel="2" />
+    <item
+        android:drawable="@drawable/play_mode_order_selector"
+        android:maxLevel="3" />
 </level-list>

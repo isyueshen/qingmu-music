@@ -24,6 +24,7 @@ import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -43,6 +44,7 @@ import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
 import com.luna1970.qingmumusic.widget.LrcView;
+import com.luna1970.qingmumusic.widget.PlayListDialog;
 import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
@@ -85,6 +87,8 @@ public class MusicPlayActivity extends BaseActivity {
     private LrcView lrcView;
     private GestureDetector gestureDetector;
     private IntentFilter intentFilter;
+    private ImageView playList;
+    private FrameLayout frameLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -155,6 +159,8 @@ public class MusicPlayActivity extends BaseActivity {
         // 默认隐藏
         lrcView.setVisibility(View.GONE);
         seekBar = (SeekBar) findViewById(R.id.seek_bar);
+        playList = (ImageView) findViewById(R.id.play_list);
+        frameLayout = (FrameLayout) findViewById(R.id.content_fl);
 
         // 开始转动
         startSongCoverAnimation();
@@ -211,6 +217,9 @@ public class MusicPlayActivity extends BaseActivity {
                         currentMode = PlayMode.MODE_SHUFFLE;
                         break;
                     case PlayMode.MODE_SHUFFLE:
+                        currentMode = PlayMode.ORDER;
+                        break;
+                    case PlayMode.ORDER:
                         currentMode = PlayMode.REPEAT_ALL;
                         break;
                 }
@@ -235,6 +244,23 @@ public class MusicPlayActivity extends BaseActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
                 // 指定播放位置
                 playControlBinder.seekToPosition(seekBar.getProgress());
+            }
+        });
+        playList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PlayListDialog playListDialog = new PlayListDialog(MusicPlayActivity.this);
+                playListDialog.show();
+            }
+        });
+        frameLayout.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (gestureDetector!=null) {
+                    Log.d(TAG, "onTouch: ");
+                    gestureDetector.onTouchEvent(event);
+                }
+                return true;
             }
         });
     }
@@ -429,15 +455,6 @@ public class MusicPlayActivity extends BaseActivity {
                 onBackPressed();
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        Log.i(TAG, "onTouchEvent: ");
-        if (gestureDetector != null) {
-            gestureDetector.onTouchEvent(event);
-        }
-        return super.onTouchEvent(event);
     }
 
     @Override

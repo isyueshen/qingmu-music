@@ -46,11 +46,11 @@
                 android:textSize="10sp" />
         </LinearLayout>
 
-        <ImageButton
+        <ImageView
             android:id="@+id/play_list"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:background="@drawable/play_list"
+            android:src="@drawable/play_list_fragment"
             android:scaleType="fitCenter"
             android:scaleX="0.4"
             android:scaleY="0.4" />
@@ -64,7 +64,7 @@
             android:scaleY="0.6"
             android:src="@drawable/play" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/playNext"
             android:layout_width="50dp"
             android:layout_height="50dp"

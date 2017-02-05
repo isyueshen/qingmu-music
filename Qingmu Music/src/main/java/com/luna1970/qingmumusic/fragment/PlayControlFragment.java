@@ -38,8 +38,8 @@ import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 public class PlayControlFragment extends Fragment {
     private static final String TAG = "PlayControlFragment";
     private ImageView playOrPause;
-    private ImageButton playList;
-    private ImageButton playNext;
+    private ImageView playList;
+    private ImageView playNext;
     private TextView musicTitleTV;
     private TextView musicArtistTV;
     private CircleImageView miniAlbumPic;
@@ -54,7 +54,7 @@ public class PlayControlFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_play_control, container, false);
-        initView(view, inflater);
+        initView(view);
         setData();
         setListener();
         return view;
@@ -63,15 +63,14 @@ public class PlayControlFragment extends Fragment {
     /**
      * 初始化控件
      */
-    private void initView(View view, LayoutInflater layoutInflater) {
+    private void initView(View view) {
         miniAlbumPic = (CircleImageView) view.findViewById(R.id.miniAlbumPic);
         playOrPause = (ImageView) view.findViewById(R.id.playOrPause);
-        playList = (ImageButton) view.findViewById(R.id.play_list);
-        playNext = (ImageButton) view.findViewById(R.id.playNext);
+        playList = (ImageView) view.findViewById(R.id.play_list);
+        playNext = (ImageView) view.findViewById(R.id.playNext);
         musicTitleTV = (TextView) view.findViewById(R.id.music_title_tv);
         musicArtistTV = (TextView) view.findViewById(R.id.musicArtistTV);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
-
         linearLayout = (LinearLayout) view.findViewById(R.id.play_control_bar);
     }
 
