@@ -1,5 +1,6 @@
 package com.luna1970.qingmumusic.util;
 
+import android.content.Context;
 import android.content.res.Resources;
 
 import com.luna1970.qingmumusic.application.MusicApplication;
@@ -38,4 +39,5 @@ public class ScreenUtils {
         float dpi = MusicApplication.getInstance().getResources().getDisplayMetrics().densityDpi;
         return dpi * dp / 160;
     }
+
 }

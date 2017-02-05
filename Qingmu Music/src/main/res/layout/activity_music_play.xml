@@ -19,8 +19,8 @@
         android:id="@+id/content_ll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="#66000000">
+        android:background="#66000000"
+        android:orientation="vertical">
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -60,10 +60,33 @@
 
             <ImageView
                 android:id="@+id/song_cover_iv"
-                android:layout_marginTop="60dp"
-                android:layout_gravity="center_horizontal"
                 android:layout_width="260dp"
-                android:layout_height="260dp"/>
+                android:layout_height="260dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="60dp"
+                android:visibility="gone" />
+
+            <com.luna1970.qingmumusic.widget.LrcView
+                android:id="@+id/lrc"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clickable="true">
+                <!--<View-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content" />-->
+
+                <!--<View-->
+                    <!--android:layout_width="1dp"-->
+                    <!--android:layout_height="wrap_content" -->
+                    <!--android:background="@drawable/line"/>-->
+                <!--<TextView-->
+                    <!--android:id="@+id/current_time"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:text="00:00"-->
+                    <!--android:textColor="#B3B4B5"-->
+                    <!--android:textSize="10sp" />-->
+            </com.luna1970.qingmumusic.widget.LrcView>
         </FrameLayout>
 
         <LinearLayout
@@ -74,15 +97,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
                 android:gravity="center_vertical|center_horizontal"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp">
+                android:orientation="horizontal"
+                android:paddingEnd="20dp"
+                android:paddingStart="20dp">
 
                 <TextView
                     android:id="@+id/current_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="00:00"
                     android:textColor="#B3B4B5"
                     android:textSize="10sp" />
 
@@ -91,14 +115,15 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:paddingStart="5dp"
-                    android:paddingEnd="5dp"/>
+                    android:paddingEnd="7dp"
+                    android:paddingStart="7dp" />
 
                 <TextView
                     android:id="@+id/total_time_tv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textColor="#4D5057"
+                    android:text="99:99"
+                    android:textColor="#aDa0a7"
                     android:textSize="10sp" />
             </LinearLayout>
 
@@ -113,8 +138,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toStartOf="@+id/prev_iv"
                     android:layout_marginEnd="10dp"
+                    android:layout_toStartOf="@+id/prev_iv"
                     android:src="@drawable/play_mode_level_list" />
 
                 <ImageView
@@ -145,8 +170,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/next_iv"
                     android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@+id/next_iv"
                     android:src="@drawable/play_mode_level_list" />
 
             </RelativeLayout>

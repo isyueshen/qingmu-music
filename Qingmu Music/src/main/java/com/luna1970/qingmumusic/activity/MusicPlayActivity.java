@@ -34,18 +34,27 @@ import com.bumptech.glide.request.animation.ViewPropertyAnimation;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.application.PlayMode;
+import com.luna1970.qingmumusic.entity.Lrc;
+import com.luna1970.qingmumusic.entity.LrcRow;
 import com.luna1970.qingmumusic.service.MusicPlayService;
+import com.luna1970.qingmumusic.util.HttpUtils;
+import com.luna1970.qingmumusic.util.LrcParse;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
+import com.luna1970.qingmumusic.widget.LrcView;
 import com.orhanobut.logger.Logger;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import jp.wasabeef.glide.transformations.BlurTransformation;
 import jp.wasabeef.glide.transformations.CropCircleTransformation;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.Response;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -73,6 +82,7 @@ public class MusicPlayActivity extends BaseActivity {
     private TextView totalTimeTv;
     private TextView currentTimeTv;
     private String prevSongCover;
+    private LrcView lrcView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -134,6 +144,8 @@ public class MusicPlayActivity extends BaseActivity {
         playOrPauseIv = (ImageView) findViewById(R.id.play_or_pause_iv);
         currentTimeTv = (TextView) findViewById(R.id.current_time);
         totalTimeTv = (TextView) findViewById(R.id.total_time_tv);
+
+        lrcView = (LrcView) findViewById(R.id.lrc);
 
         seekBar = (SeekBar) findViewById(R.id.seek_bar);
         // 根据屏幕动态设置ImageView的位置, Y -> status bar + 2 * action bar, X -> Screen width / 2 - image radius
@@ -272,6 +284,18 @@ public class MusicPlayActivity extends BaseActivity {
                     case PlayController.STATE_SERVICE_PLAYING:
                         playOrPauseIv.setSelected(true);
                         setViewInfo();
+                        HttpUtils.sendHttpRequest(playState.getSong().lrcPath, new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                Lrc lrc = LrcParse.parseLrc(response.body().string());
+                                lrcView.setLrc(lrc);
+                            }
+                        });
                         break;
                     case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
                         int progress = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
@@ -282,6 +306,7 @@ public class MusicPlayActivity extends BaseActivity {
                         date.setTime(progress);
                         String current = simpleDateFormat.format(date);
                         currentTimeTv.setText(current);
+                        lrcView.refreshLrc(progress);
                         break;
                     case PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS:
                         int bufferProgress = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, 0);

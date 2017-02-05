@@ -140,12 +140,12 @@ public class BannerFocusFragment extends Fragment {
                 final String backgroundPath = GsonUtil.getBannerUri(response.body().string());
                 Log.i(TAG, "onResponse: " + backgroundPath);
                 Log.i(TAG, "setView: " + (backgroundIv == null));
-                Runnable runnable = new Runnable() {
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
                     public void run() {
                         Glide.with(getContext()).load(backgroundPath).into(backgroundIv);
                     }
-                };
-                getActivity().runOnUiThread(runnable);
+                });
             }
         });
     }

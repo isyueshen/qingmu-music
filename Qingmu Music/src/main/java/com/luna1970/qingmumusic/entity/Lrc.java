@@ -25,4 +25,20 @@ public class Lrc {
 
     public Lrc() {
     }
+
+    public int getLineCount() {
+        int count = 0;
+        if (lrcRowList != null) {
+            count = lrcRowList.size();
+        }
+        return count;
+    }
+
+    public LrcRow getLrcRow(int position) {
+        LrcRow lrcRow = null;
+        if (position>=-1 && position<getLineCount()) {
+            lrcRow = getLrcRowList().get(position);
+        }
+        return lrcRow;
+    }
 }
