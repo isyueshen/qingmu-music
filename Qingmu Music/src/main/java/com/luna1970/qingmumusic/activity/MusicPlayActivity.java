@@ -267,6 +267,7 @@ public class MusicPlayActivity extends BaseActivity {
 
     @Override
     protected void onStart() {
+        super.onStart();
         // 初始化LrcView单击监听器
         lrcView.setLrcViewSingleTapUpListener(new LrcViewSingleTapUpListener() {
             @Override
@@ -300,7 +301,7 @@ public class MusicPlayActivity extends BaseActivity {
         if (songCoverIv.getVisibility() != View.INVISIBLE) {
             startSongCoverAnimation();
         }
-        super.onStart();
+        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
@@ -308,6 +309,7 @@ public class MusicPlayActivity extends BaseActivity {
         // 释放资源
         gestureDetector = null;
         lrcView.clearAnimation();
+        localBroadcastManager.unregisterReceiver(broadcastReceiver);
         super.onStop();
     }
 
@@ -370,18 +372,6 @@ public class MusicPlayActivity extends BaseActivity {
     protected void onPostCreate(@Nullable Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         initBroadCastReceiver();
-    }
-
-    @Override
-    protected void onResume() {
-        localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        localBroadcastManager.unregisterReceiver(broadcastReceiver);
-        super.onPause();
     }
 
     private void initBroadCastReceiver() {

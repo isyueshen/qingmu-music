@@ -176,6 +176,7 @@ public class PlayControlFragment extends Fragment {
     @Override
     public void onStart() {
         localBroadcastManager.registerReceiver(broadcastReceiver, intentFilter);
+        setData();
         super.onStart();
     }
 
