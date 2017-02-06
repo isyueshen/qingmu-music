@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory android:title="网络">
+        <SwitchPreference
+            android:key="prefNet_onlyWifi"
+            android:title="仅Wi-Fi下联网"
+            android:summary="2G/3G/4G网络下不耗流量"
+            android:defaultValue="false"/>
+        <SwitchPreference
+            android:key="prefNet_playOnCellular"
+            android:title="使用2G/3G/4G网络播放"
+            android:disableDependentsState="true"
+            android:defaultValue="true"/>
+        <SwitchPreference
+            android:key="prefNet_downloadOnCellular"
+            android:title="使用2G/3G/4G网络下载"
+            android:defaultValue="false"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="界面">
+        <SwitchPreference
+            android:key="prefScreen_darkTheme"
+            android:title="暗色主题"
+            android:defaultValue="false"/>
+        <SwitchPreference
+            android:key="prefScreen_alwaysAwake"
+            android:title="屏幕长亮"
+            android:summary="在播放页面屏幕长亮"
+            android:defaultValue="false"/>
+        <SwitchPreference
+            android:key="prefScreen_notification"
+            android:title="启用通知"
+            android:defaultValue="true"/>
+        <ListPreference
+            android:key="prefScreen_language"
+            android:title="选择语言"
+            android:summary="中文 (简体)"
+            android:entries="@array/pref_screenLanguage_entries"
+            android:entryValues="@array/pref_screenLanguage_values"
+            android:defaultValue="@string/userAction_Exit"/>
+    </PreferenceCategory>
+    <PreferenceCategory android:title="易用性">
+        <SwitchPreference
+            android:key="prefEasy_lockWhenTurnAround"
+            android:title="在翻转时锁定屏幕"/>
+        <ListPreference
+            android:key="prefEasy_lowBattery"
+            android:title="在低电量时停止播放"
+            android:summary="不开启"
+            android:entries="@array/pref_easyLowBattery_entries"
+            android:entryValues="@array/pref_easyLowBattery_values"
+            android:defaultValue="5"/>
+    </PreferenceCategory>
+</PreferenceScreen>

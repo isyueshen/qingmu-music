@@ -1,6 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="@drawable/test"
+    android:paddingTop="50dp"
+    android:paddingStart="20sp">
 
-</LinearLayout>
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/avatar_iv"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_gravity="start"
+        android:src="@drawable/test" />
+
+    <TextView
+        android:layout_marginTop="15dp"
+        android:id="@+id/username_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:layout_below="@id/avatar_iv"
+        android:text="Luna Greece"/>
+
+    <TextView
+        android:id="@+id/email_tv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:layout_below="@id/username_tv"
+        android:textColor="@android:color/white"
+        android:text="luna89765@gmail.com"/>
+</RelativeLayout>

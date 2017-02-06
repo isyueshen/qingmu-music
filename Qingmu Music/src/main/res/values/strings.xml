@@ -10,4 +10,30 @@
     <string name="repeat_once">Repeat Once</string>
     <string name="shuffle">Shuffle</string>
     <string name="order">Order</string>
+    <string name="userAction_Exit">Exit</string>
+    <string name="appActivityPreferences">Setting</string>
+    <string-array name="pref_screenLanguage_entries">
+        <item>自动</item>
+        <item>English</item>
+        <item>中文 (简体)</item>
+        <item>中文 (繁体)</item>
+    </string-array>
+    <string-array name="pref_screenLanguage_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+    <string-array name="pref_easyLowBattery_entries">
+        <item>5%</item>
+        <item>10%</item>
+        <item>15%</item>
+        <item>20%</item>
+    </string-array>
+    <string-array name="pref_easyLowBattery_values">
+        <item>5</item>
+        <item>10</item>
+        <item>15</item>
+        <item>20</item>
+    </string-array>
 </resources>

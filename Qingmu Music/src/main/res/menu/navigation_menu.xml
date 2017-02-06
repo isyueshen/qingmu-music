@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:orderInCategory="1">
+        <item
+            android:id="@+id/love"
+            android:title="喜欢"
+            android:icon="@drawable/nav_menu_love"
+            android:orderInCategory="1" />
+        <item
+            android:id="@+id/play_list"
+            android:title="我的歌单"
+            android:icon="@drawable/nav_menu_play_list"
+            android:orderInCategory="3" />
+    </group>
+    <group android:orderInCategory="3" android:id="@+id/group">
+        <item
+            android:id="@+id/style"
+            android:title="主题"
+            android:icon="@drawable/stylnav_menu_style"
+            android:orderInCategory="5" />
+        <item
+            android:id="@+id/night"
+            android:title="夜间模式"
+            android:icon="@drawable/nav_menu_night"
+            android:orderInCategory="7" />
+    </group>
+    <group android:orderInCategory="5" android:id="@+id/set">
+        <item
+            android:id="@+id/setting"
+            android:title="设置"
+            android:icon="@drawable/nav_menu_setting"
+            android:orderInCategory="8" />
+        <item
+            android:id="@+id/exit_time"
+            android:title="定时退出"
+            android:icon="@drawable/nav_menu_exit_time"
+            android:orderInCategory="9" />
+        <item
+            android:id="@+id/about"
+            android:title="关于"
+            android:icon="@drawable/nav_menu_about"
+            android:orderInCategory="11" />
+    </group>
+    <item android:id="@+id/exit" android:title="退出" android:orderInCategory="13" android:icon="@drawable/nav_menu_exit"/>
+</menu>

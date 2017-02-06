@@ -1,15 +1,11 @@
 package com.luna1970.qingmumusic.activity;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -56,10 +52,31 @@ public class WelcomeActivity extends BaseActivity {
 //            }
 //        }.start();
         String api = "http://guolin.tech/api/bing_pic";
+        HttpUtils.sendHttpRequest(api, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WelcomeActivity.this).load("http://cn.bing.com/az/hprichbg/rb/Shimaenaga_ZH-CN14747993510_1920x1080.jpg").into(imageView);
+                    }
+                });
+            }
 
-                            Glide.with(WelcomeActivity.this).load("http://cn.bing.com/az/hprichbg/rb/Shimaenaga_ZH-CN14747993510_1920x1080.jpg").into(imageView);
-
-                   
+            @Override
+            public void onResponse(Call call, final Response response) throws IOException {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            Glide.with(WelcomeActivity.this).load(response.body().string()).into(imageView);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+        });
         new Handler().postDelayed(new Runnable() {
 
             public void run() {

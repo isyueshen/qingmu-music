@@ -239,7 +239,7 @@ public class MusicListActivity extends BaseActivity {
         int currentLastVisiblePosition = listView.getLastVisiblePosition();
 //        Log.i(TAG, "currentFirstVisiblePosition: " + currentFirstVisiblePosition);
 //        if (MusicApplication.isPlaying) {
-//            // setting play button style
+//            // preferences play button style
 //            playOrPauseIV.setImageResource(R.drawable.pause);
 //
 //            // refresh musicIndexTV and playingTrumpet widget view if and only if prePosition is not equal position
@@ -260,7 +260,7 @@ public class MusicListActivity extends BaseActivity {
 //            }
 //        }
 
-        // setting smooth scroll to current play position, listView will be go straight immediately
+        // preferences smooth scroll to current play position, listView will be go straight immediately
         // if current position minus will play position out of range
 //        if (Math.abs(currentPosition - currentFirstVisiblePosition) > 10) {
 //            listView.setSelection(currentPosition);
@@ -268,7 +268,7 @@ public class MusicListActivity extends BaseActivity {
 //            listView.smoothScrollToPosition(currentPosition);
 //        }
 
-        // setting screen bottom bar music info
+        // preferences screen bottom bar music info
         int currentPosition = playState.getCurrentPosition();
         Music music = getMusicByPosition(currentPosition);
         if (music != null) {
@@ -276,14 +276,14 @@ public class MusicListActivity extends BaseActivity {
             musicArtistTV.setText(music.getArtist());
 //            seekBar.setMax((int) MusicApplication.musicLists.get(position).getDuration());
 
-            // setting album art
+            // preferences album art
             long id = music.getAlbumID();
             if (id!=-1) {
                 Bitmap bitmap;
                 try {
                     bitmap = BitmapFactory.decodeStream(getContentResolver().openInputStream(ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), id)));
                 } catch (FileNotFoundException e) {
-                    // setting default bitmap if album art not found
+                    // preferences default bitmap if album art not found
                     bitmap = BitmapFactory.decodeStream(getResources().openRawResource(R.raw.avatar));
                     e.printStackTrace();
                 }

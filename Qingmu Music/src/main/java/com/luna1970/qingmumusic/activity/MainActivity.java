@@ -1,10 +1,13 @@
 package com.luna1970.qingmumusic.activity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.PersistableBundle;
-import android.support.design.widget.AppBarLayout;
+import android.os.Process;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -13,8 +16,10 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 
 import com.lapism.searchview.SearchView;
@@ -30,6 +35,7 @@ public class MainActivity extends BaseActivity {
     private FloatingActionButton floatingActionButton;
     private Toolbar toolbar;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private NavigationView navigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,7 @@ public class MainActivity extends BaseActivity {
         setViews();
         setToolbar();
         setDrawerLayout();
+        setNavigation();
         setFab();
         setSearchView();
         setFragment();
@@ -80,6 +87,43 @@ public class MainActivity extends BaseActivity {
         drawerLayout.addDrawerListener(actionBarDrawerToggle);
     }
 
+    private void setNavigation() {
+        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        navigationView.setItemIconTintList(null);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.exit:
+                        showAlertDialog();
+                        break;
+                    case R.id.setting:
+                        Intent intent = new Intent(MainActivity.this, PreferencesActivity.class);
+                        startActivity(intent);
+                        break;
+                }
+                drawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+            }
+
+        });
+    }
+
+    private void showAlertDialog() {
+        new AlertDialog.Builder(this)
+            .setTitle("退出")
+            .setMessage("确定要退出吗?")
+            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    finish();
+                    Process.killProcess(Process.myPid());
+                }
+            })
+            .setNegativeButton("取消", null)
+            .show();
+    }
+
     private void setToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -97,7 +141,7 @@ public class MainActivity extends BaseActivity {
         viewPager.setAdapter(mainFragmentViewPagerFragment);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager, true);
-        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
+//        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override

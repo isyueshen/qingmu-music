@@ -113,6 +113,29 @@ public class BannerFocusFragment extends Fragment {
             }
         });
     }
+    @Override
+    public void onResume() {
+        Log.i(TAG, "onResume: ");
+        super.onResume();
+    }
+
+    @Override
+    public void onStop() {
+        Log.d(TAG, "onStop() called");
+        super.onStop();
+    }
+
+    @Override
+    public void onStart() {
+        Log.d(TAG, "onStart() called");
+        super.onStart();
+    }
+
+    @Override
+    public void onPause() {
+        Log.d(TAG, "onPause() called");
+        super.onPause();
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

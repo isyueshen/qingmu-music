@@ -1,7 +1,6 @@
 package com.luna1970.qingmumusic.util;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
 import com.luna1970.qingmumusic.application.MusicApplication;

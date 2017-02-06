@@ -6,7 +6,6 @@ import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,8 +15,8 @@ import android.widget.TextView;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.listener.PlayListDialogDeleteListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
+import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
     /**
      * 监听接口
      */
-    private PlayListDialogDeleteListener playListDialogDeleteListener;
+    private PlayListDialogOnDeleteListener playListDialogOnDeleteListener;
     private PlayListDialogOnClickListener playListDialogOnClickListener;
 
 
@@ -51,8 +50,8 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
         this.songList = songList;
     }
 
-    public void setPlayListDialogDeleteListener(PlayListDialogDeleteListener playListDialogDeleteListener) {
-        this.playListDialogDeleteListener = playListDialogDeleteListener;
+    public void setPlayListDialogOnDeleteListener(PlayListDialogOnDeleteListener playListDialogOnDeleteListener) {
+        this.playListDialogOnDeleteListener = playListDialogOnDeleteListener;
     }
 
     public void setPlayListDialogOnClickListener(PlayListDialogOnClickListener playListDialogOnClickListener) {
@@ -105,8 +104,8 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
         holder.deleteIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (playListDialogDeleteListener != null) {
-                    playListDialogDeleteListener.onDelete(position);
+                if (playListDialogOnDeleteListener != null) {
+                    playListDialogOnDeleteListener.onDelete(position);
                 }
             }
         });

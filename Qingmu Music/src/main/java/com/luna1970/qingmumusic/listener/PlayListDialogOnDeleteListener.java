@@ -5,6 +5,6 @@ package com.luna1970.qingmumusic.listener;
  *
  */
 
-public interface PlayListDialogDeleteListener {
+public interface PlayListDialogOnDeleteListener {
     void onDelete(int index);
 }

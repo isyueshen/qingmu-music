@@ -1,0 +1,7 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AlbumDetail" parent="AppTheme">
+        <!-- Customize your theme here. -->
+        <item name="android:statusBarColor">@color/transparent</item>
+    </style>
+</resources>

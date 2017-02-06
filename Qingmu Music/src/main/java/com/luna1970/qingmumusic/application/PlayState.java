@@ -4,7 +4,6 @@ import com.luna1970.qingmumusic.Gson.Song;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Yue on 2/2/2017.

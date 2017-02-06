@@ -31,16 +31,24 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_initialization" />
         </receiver>
-        <activity android:name=".activity.MainActivity">
+
+        <activity android:name=".activity.MainActivity"></activity>
+        <activity
+            android:name=".activity.AlbumDetailActivity"
+            android:theme="@style/AlbumDetail"></activity>
+        <activity android:name=".activity.MusicPlayActivity" />
+        <activity android:name=".activity.TopBillboardActivity" />
+        <activity android:name=".activity.PreferencesActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MANAGE_NETWORK_USAGE" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
-        <activity android:name=".activity.AlbumDetailActivity" android:theme="@style/AlbumDetail">
-        </activity>
-        <activity android:name=".activity.MusicPlayActivity"/>
-        <activity android:name=".activity.TopBillboardActivity"/>
     </application>
 
 </manifest>

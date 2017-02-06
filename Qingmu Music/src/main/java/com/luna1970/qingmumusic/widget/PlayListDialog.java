@@ -13,18 +13,14 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.PlayListAdapter;
-import com.luna1970.qingmumusic.application.PlayState;
-import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.listener.PlayListDialogDeleteListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
+import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.util.ToastUtils;
-import com.orhanobut.logger.Logger;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -87,7 +83,7 @@ public class PlayListDialog extends Dialog {
 
             }
         });
-        playListAdapter.setPlayListDialogDeleteListener(new PlayListDialogDeleteListener() {
+        playListAdapter.setPlayListDialogOnDeleteListener(new PlayListDialogOnDeleteListener() {
             @Override
             public void onDelete(int index) {
 //                Logger.d(index);

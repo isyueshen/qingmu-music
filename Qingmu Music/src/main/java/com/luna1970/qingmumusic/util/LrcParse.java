@@ -4,7 +4,6 @@ import android.text.TextUtils;
 
 import com.luna1970.qingmumusic.entity.Lrc;
 import com.luna1970.qingmumusic.entity.LrcRow;
-import com.orhanobut.logger.Logger;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
