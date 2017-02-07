@@ -1,13 +1,14 @@
 package com.luna1970.qingmumusic.Gson;
 
 import com.google.gson.annotations.SerializedName;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 /**
  * Created by Yue on 2/3/2017.
  *
  */
 
-public class Billboard {
+public class Billboard{
     @SerializedName("billboard_type")
     public String Type;
 

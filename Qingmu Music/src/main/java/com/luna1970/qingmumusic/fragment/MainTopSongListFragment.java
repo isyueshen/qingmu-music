@@ -23,6 +23,7 @@ import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.activity.TopBillboardActivity;
 import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.DataCentral;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.PlayController;
@@ -113,67 +114,36 @@ public class MainTopSongListFragment extends Fragment {
     }
 
     private void requestSongInfoList(int type) {
-        String apiUri = UriUtils.getRecommendUri(type, 0, 50);
-        HttpUtils.sendHttpRequest(apiUri, new Callback() {
+        DataCentral.requestTopSongList(type, 20, new DataCentral.ResponseSongListListener() {
             @Override
-            public void onFailure(Call call, IOException e) {
+            public void responseSongList(final List<Song> songList) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                songList.addAll(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
-                Runnable runnable = new Runnable() {
-                    public void run() {
+                        MainTopSongListFragment.this.songList.addAll(songList);
                         recommendListAdapter.notifyDataSetChanged();
                     }
-                };
-                getActivity().runOnUiThread(runnable);
+                });
             }
         });
     }
 
+    /**
+     * 外部传参实例化
+     * @param type 榜单类型
+     * @param title 榜单标题
+     * @return 实例
+     */
     public static Fragment newInstance(int type, String title) {
-        MainTopSongListFragment mainTopSongListFragment = new MainTopSongListFragment();
         Bundle bundle = new Bundle();
         bundle.putString("title", title);
         bundle.putInt("type", type);
-//        Log.d(TAG, "newInstance() called with: type = [" + type + "], title = [" + title + "]");
+        MainTopSongListFragment mainTopSongListFragment = new MainTopSongListFragment();
         mainTopSongListFragment.setArguments(bundle);
         return mainTopSongListFragment;
     }
 
     private void preparePlay(final int position) {
-        String apiUri = UriUtils.getRecommendUri(type, 0, 100);
-        HttpUtils.sendHttpRequest(apiUri, new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getContext(), "failed", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                Intent intent = new Intent();
-                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
-                localBroadcastManager.sendBroadcast(intent);
-                playState.updatePlayList(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
-                Log.i(TAG, "onResponse: " + playState.getListSize());
-                intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
-                int index = position;
-                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
-                localBroadcastManager.sendBroadcast(intent);
-            }
-        });
+        DataCentral.requestTopSongToPlay(type, position);
     }
 }

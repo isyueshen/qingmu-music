@@ -28,4 +28,8 @@ public class ToastUtils {
         String content = context.getString(resId);
         return makeText(content);
     }
+
+    public static void cancel() {
+        toast.cancel();
+    }
 }

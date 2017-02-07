@@ -16,7 +16,6 @@ public class PreferencesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_preferences);
         getFragmentManager().beginTransaction().replace(R.id.preferences_container, new PreferencesFragment()).commit();
-
         intiView();
     }
 
@@ -27,7 +26,6 @@ public class PreferencesActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        String s = "";
     }
 
     @Override

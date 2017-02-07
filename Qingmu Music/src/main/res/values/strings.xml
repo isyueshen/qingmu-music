@@ -11,7 +11,7 @@
     <string name="shuffle">Shuffle</string>
     <string name="order">Order</string>
     <string name="userAction_exit">Exit</string>
-    <string name="appActivityPreferences">Setting</string>
+    <string name="appActivityPreferences">Settings</string>
     <string name="userAction_confirm">OK</string>
     <string name="userAction_cancel">Cancel</string>
     <string-array name="pref_screenLanguage_entries">

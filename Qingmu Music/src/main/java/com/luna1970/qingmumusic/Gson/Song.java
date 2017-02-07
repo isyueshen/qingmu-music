@@ -4,13 +4,19 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
+import com.luna1970.qingmumusic.dao.DBFlowDatabase;
+import com.raizlabs.android.dbflow.annotation.Column;
+import com.raizlabs.android.dbflow.annotation.ModelContainer;
+import com.raizlabs.android.dbflow.annotation.PrimaryKey;
+import com.raizlabs.android.dbflow.annotation.Table;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 /**
  * Created by Yue on 1/27/2017.
  *
  */
-
-public class Song implements Parcelable{
+public class Song implements Parcelable {
+    @SerializedName("id")
     public int id;
     @SerializedName("artist_id")
     public int artistId;
@@ -42,7 +48,7 @@ public class Song implements Parcelable{
 
     public String author;
     @SerializedName("total_listen_nums")
-public int listeneNum;
+    public int listeneNum;
 
     @SerializedName("album_id")
     public int AlbumId;
@@ -58,6 +64,11 @@ public int listeneNum;
 
     @SerializedName("file_link")
     public String FileLink;
+
+    public int playListId;
+
+    public Song() {
+    }
 
     protected Song(Parcel in) {
         id = in.readInt();
@@ -75,6 +86,7 @@ public int listeneNum;
         AlbumId = in.readInt();
         albumTitle = in.readString();
         hasMv = in.readInt();
+        playListId = in.readInt();
     }
 
     public static final Creator<Song> CREATOR = new Creator<Song>() {
@@ -111,6 +123,7 @@ public int listeneNum;
         dest.writeInt(AlbumId);
         dest.writeString(albumTitle);
         dest.writeInt(hasMv);
+        dest.writeInt(playListId);
     }
 
     @Override
@@ -118,19 +131,23 @@ public int listeneNum;
         return "Song{" +
                 "id=" + id +
                 ", artistId=" + artistId +
+                ", country='" + country + '\'' +
                 ", language='" + language + '\'' +
                 ", publishTime='" + publishTime + '\'' +
                 ", albumNo=" + albumNo +
                 ", songCoverPath='" + songCoverPath + '\'' +
                 ", duration=" + duration +
-                ", country='" + country + '\'' +
                 ", lrcPath='" + lrcPath + '\'' +
                 ", songId=" + songId +
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
+                ", listeneNum=" + listeneNum +
                 ", AlbumId=" + AlbumId +
                 ", albumTitle='" + albumTitle + '\'' +
                 ", hasMv=" + hasMv +
+                ", style='" + style + '\'' +
+                ", FileLink='" + FileLink + '\'' +
+                ", playListId=" + playListId +
                 '}';
     }
 }

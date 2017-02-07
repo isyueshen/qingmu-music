@@ -65,14 +65,12 @@ public class WelcomeActivity extends BaseActivity {
 
             @Override
             public void onResponse(Call call, final Response response) throws IOException {
+                final String uri = response.body().string();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-                            Glide.with(WelcomeActivity.this).load(response.body().string()).into(imageView);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        Glide.with(WelcomeActivity.this).load(uri).into(imageView);
+
                     }
                 });
             }
