@@ -36,7 +36,7 @@
             android:summary="中文 (简体)"
             android:entries="@array/pref_screenLanguage_entries"
             android:entryValues="@array/pref_screenLanguage_values"
-            android:defaultValue="@string/userAction_Exit"/>
+            android:defaultValue="@string/userAction_exit"/>
     </PreferenceCategory>
     <PreferenceCategory android:title="易用性">
         <SwitchPreference

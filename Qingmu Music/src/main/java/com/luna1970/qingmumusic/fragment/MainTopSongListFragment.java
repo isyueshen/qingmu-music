@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.activity.TopBillboardActivity;
 import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
@@ -77,6 +78,11 @@ public class MainTopSongListFragment extends Fragment {
             @Override
             public void onClick(int position) {
                 preparePlay(position);
+                if (playState.getListSize() == 0) {
+                    Intent intent = new Intent(getContext(), MusicPlayActivity.class);
+                    getActivity().startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
+                }
             }
         });
         recyclerView.setAdapter(recommendListAdapter);

@@ -56,6 +56,7 @@ public class MusicPlayService extends Service {
         intentFilter.addAction(PlayController.ACTION_PLAY_MODE_CHANGED);
         intentFilter.addAction(PlayController.ACTION_REFRESH_PLAY_LIST);
         intentFilter.addAction(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED);
+        intentFilter.addAction(PlayController.ACTION_PLAY_STOP);
         mediaPlayer = new MediaPlayer();
         currentPlayMode = PlayMode.REPEAT_ALL;
         localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
@@ -203,6 +204,13 @@ private PlayControlBinder playControlBinder;
                     case PlayController.ACTION_PLAY_MODE_CHANGED:
                         currentPlayMode = intent.getIntExtra(PlayController.ACTION_PLAY_MODE_CHANGED, 0);
                         break;
+                    case PlayController.ACTION_PLAY_STOP:
+                        if (mediaPlayer!=null) {
+                            if (mediaPlayer.isPlaying()) {
+                                mediaPlayer.stop();
+                            }
+                            mediaPlayer.reset();
+                        }
                 }
             }
         };

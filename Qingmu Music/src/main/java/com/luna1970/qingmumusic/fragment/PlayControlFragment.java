@@ -22,6 +22,7 @@ import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
 
@@ -48,6 +49,7 @@ public class PlayControlFragment extends Fragment {
     private Intent intent;
     private LinearLayout linearLayout;
     private IntentFilter intentFilter;
+    private PlayListDialog playListDialog;
 
     @Nullable
     @Override
@@ -101,7 +103,7 @@ public class PlayControlFragment extends Fragment {
                 int max = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
                 int current = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
                 Log.i(TAG, "show: " + max + " " + current);
-                PlayListDialog playListDialog = new PlayListDialog(getActivity());
+                playListDialog = new PlayListDialog(getActivity());
                 playListDialog.show();
 
             }
@@ -149,6 +151,7 @@ public class PlayControlFragment extends Fragment {
         intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
         intentFilter.addAction(PlayController.STATE_SERVICE_PLAY_CONTINUE);
         intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(PlayController.ACTION_PLAY_LIST_CLEAR);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -166,6 +169,10 @@ public class PlayControlFragment extends Fragment {
                     case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
                         int currentPosition = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
                         progressBar.setProgress(currentPosition/10/playState.getDuration());
+                        break;
+                    case PlayController.ACTION_PLAY_LIST_CLEAR:
+                        playListDialog.dismiss();
+                        getActivity().getSupportFragmentManager().beginTransaction().remove(getActivity().getSupportFragmentManager().findFragmentByTag(GlobalConst.PLAY_CONTROL_BAR_FRAGMENT_TAG)).commit();
                         break;
                 }
             }

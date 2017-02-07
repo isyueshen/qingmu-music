@@ -89,6 +89,7 @@ public class MusicPlayActivity extends BaseActivity {
     private IntentFilter intentFilter;
     private ImageView playList;
     private FrameLayout frameLayout;
+    private PlayListDialog playListDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -249,7 +250,7 @@ public class MusicPlayActivity extends BaseActivity {
         playList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                PlayListDialog playListDialog = new PlayListDialog(MusicPlayActivity.this);
+                playListDialog = new PlayListDialog(MusicPlayActivity.this);
                 playListDialog.show();
             }
         });
@@ -317,7 +318,13 @@ public class MusicPlayActivity extends BaseActivity {
     private void setViewInfo() {
         // 清理图片内存
         Glide.get(MusicPlayActivity.this).clearMemory();
+        if (playState.getListSize()<=0) {
+            return;
+        }
         Song song = playState.getSong();
+        if (song == null) {
+            return;
+        }
         // 设置标题栏信息
         songTitleTv.setText(song.title);
         songAuthorTv.setText(song.author);
@@ -380,10 +387,11 @@ public class MusicPlayActivity extends BaseActivity {
         intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
         intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
         intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
+        intentFilter.addAction(PlayController.ACTION_PLAY_LIST_CLEAR);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-//                Log.d(TAG, "onReceive() called with: context = [" + context + "], intent = [" + intent + "]");
+                Log.d(TAG, "onReceive() called with: context = [" + context + "], intent = [" + intent + "]");
                 String action = intent.getAction();
                 switch (action) {
                     // 即将播放
@@ -431,6 +439,10 @@ public class MusicPlayActivity extends BaseActivity {
                     case PlayController.STATE_SERVICE_PAUSE:
                         // 更新按钮样式
                         playOrPauseIv.setSelected(false);
+                        break;
+                    case PlayController.ACTION_PLAY_LIST_CLEAR:
+                        playListDialog.dismiss();
+                        finish();
                         break;
                 }
             }

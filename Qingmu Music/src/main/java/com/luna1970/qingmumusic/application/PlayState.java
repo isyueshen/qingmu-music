@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 public class PlayState {
-    private int currentPosition = -1;
+    private int currentPosition = 0;
     private List<Song> playList;
     private boolean isPlaying;
     private int currentPlayMode;
@@ -72,7 +72,10 @@ public class PlayState {
     }
 
     public int getListSize() {
-        return playList.size();
+        if (playList!=null) {
+            return playList.size();
+        }
+        return 0;
     }
 
     public Song getSong() {
@@ -84,5 +87,11 @@ public class PlayState {
 
     public Song removeSongAt(int index) {
         return playList.remove(index);
+    }
+
+    public void clearSong() {
+        if (getListSize() >0) {
+            playList.clear();
+        }
     }
 }

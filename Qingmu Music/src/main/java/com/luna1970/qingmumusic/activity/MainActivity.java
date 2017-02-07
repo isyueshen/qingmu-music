@@ -1,7 +1,9 @@
 package com.luna1970.qingmumusic.activity;
 
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.os.Process;
@@ -11,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
@@ -28,6 +31,9 @@ import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
 import com.luna1970.qingmumusic.fragment.PlayControlFragment;
+import com.luna1970.qingmumusic.util.GlobalConst;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
@@ -36,6 +42,8 @@ public class MainActivity extends BaseActivity {
     private Toolbar toolbar;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
+    private boolean playBarState = false;
+    private Fragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +59,21 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setFragment() {
-        Fragment fragment = new PlayControlFragment();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.play_control_container, fragment);
-        fragmentTransaction.commit();
-        Log.i(TAG, "setFragment: ");
+        if (playState.getListSize() > 0) {
+            fragment = new PlayControlFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.play_control_container, fragment, GlobalConst.PLAY_CONTROL_BAR_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+            Log.i(TAG, "setFragment: " + playState.getListSize());
+            playBarState = true;
+        }
+    }
+
+    private void removeFragment() {
+        if (fragment!=null) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            playBarState = false;
+        }
     }
 
     private void setFab() {
@@ -161,6 +179,7 @@ public class MainActivity extends BaseActivity {
         });
     }
 
+
     private void setSearchView() {
         SearchView searchView = (SearchView) findViewById(R.id.search_view);
         searchView.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
@@ -172,7 +191,6 @@ public class MainActivity extends BaseActivity {
             }
         });
     }
-
 
     @Override
     public void onBackPressed() {
@@ -188,14 +206,14 @@ public class MainActivity extends BaseActivity {
     }
 
     @Override
-    protected void onStart() {
-        Log.d(TAG, "onStart: ");
-        super.onStart();
-    }
-
-    @Override
     protected void onResume() {
         Log.d(TAG, "onResume: ");
+        if (!playBarState) {
+            setFragment();
+        }
+        if (playBarState && playState.getListSize()==0) {
+            removeFragment();
+        }
         super.onResume();
     }
 }

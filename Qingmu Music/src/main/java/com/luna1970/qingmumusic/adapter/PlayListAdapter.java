@@ -1,6 +1,9 @@
 package com.luna1970.qingmumusic.adapter;
 
 import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Color;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -19,7 +22,7 @@ import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 
 import java.util.List;
-
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 /**
  * Created by Yue on 1/29/2017.
  *
@@ -95,9 +98,17 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
         String author = song.author;
         String str = title + " - " + author;
         SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder(str);
-        spannableStringBuilder.setSpan(new ForegroundColorSpan(0xFFAAAAAA), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableStringBuilder.setSpan(new AbsoluteSizeSpan(12, true), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 //        Log.i(TAG, "onBindViewHolder: " + spannableStringBuilder.toString());
+        if (playState.getCurrentPosition() == position) {
+            spannableStringBuilder.setSpan(new ForegroundColorSpan(0xFF0F9D58), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.songTitle.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
+            holder.songAlbum.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimary));
+        } else {
+            spannableStringBuilder.setSpan(new ForegroundColorSpan(0xFFAAAAAA), title.length(), str.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            holder.songTitle.setTextColor(Color.BLACK);
+            holder.songAlbum.setTextColor(Color.DKGRAY);
+        }
         holder.songTitle.setText(spannableStringBuilder);
         holder.songAlbum.setText("专辑: " + song.albumTitle);
 

@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.GsonUtils;
@@ -39,7 +40,7 @@ import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/30/2017.
- *
+ * 
  */
 
 public class BannerFocusFragment extends Fragment {
@@ -67,6 +68,11 @@ public class BannerFocusFragment extends Fragment {
             @Override
             public void onClick(int position) {
                 preparePlay(position);
+                if (playState.getListSize() == 0) {
+                    Intent intent = new Intent(getContext(), MusicPlayActivity.class);
+                    getActivity().startActivity(intent);
+                    getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
+                }
             }
 
             @Override
@@ -113,6 +119,7 @@ public class BannerFocusFragment extends Fragment {
             }
         });
     }
+
     @Override
     public void onResume() {
         Log.i(TAG, "onResume: ");

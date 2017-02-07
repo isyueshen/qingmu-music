@@ -11,9 +11,13 @@ public final class PlayController {
     public static final String ACTION_PLAY_NEXT = "PLAY_NEXT";
     public static final String ACTION_PLAY_PREV = "PLAY_PREV";
     public static final String ACTION_PLAY_SPECIFIC = "PLAY_SPECIFIC";
+    public static final String ACTION_PLAY_STOP = "ACTION_PLAY_STOP";
 
     // playing mode
     public static final String ACTION_PLAY_MODE_CHANGED = "PLAY_MODE_CHANGED";
+
+    // play list
+    public static final String ACTION_PLAY_LIST_CLEAR = "ACTION_PLAY_LIST_CLEAR";
 
     // seek bar progress
     public static final String ACTION_SEEK_BAR_PROGRESS_CHANGED = "SEEK_BAR_PROGRESS_CHANGED";
