@@ -21,12 +21,12 @@ import java.util.List;
  *
  */
 
-public class RecommendListAdapter extends RecyclerView.Adapter<RecommendListAdapter.MViewHolder> {
+public class TopSongListAdapter extends RecyclerView.Adapter<TopSongListAdapter.MViewHolder> {
     private List<Song> songList;
     private Context mContext;
     private CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener;
 
-    public RecommendListAdapter(List<Song> songList, CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener) {
+    public TopSongListAdapter(List<Song> songList, CustomRecyclerItemOnClickListener customRecyclerItemOnClickListener) {
         if (songList == null) {
             throw new IllegalArgumentException("SongList conn't be null!");
         }

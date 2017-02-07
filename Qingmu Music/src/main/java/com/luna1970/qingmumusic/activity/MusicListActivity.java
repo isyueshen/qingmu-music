@@ -24,7 +24,7 @@ import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.entity.Music;
-import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.GlobalConst;
 
 import java.io.FileNotFoundException;
 
@@ -113,7 +113,7 @@ public class MusicListActivity extends BaseActivity {
             public void onClick(View v) {
                 intent = new Intent();
                 intent.putExtra("seekBarProgress", seekBar.getProgress());
-                intent.setAction(PlayController.ACTION_PLAY_OR_PAUSE);
+                intent.setAction(GlobalConst.ACTION_PLAY_OR_PAUSE);
                 sendBroadcast(intent);
             }
         });
@@ -121,7 +121,7 @@ public class MusicListActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_NEXT);
+                intent.setAction(GlobalConst.ACTION_PLAY_NEXT);
                 sendBroadcast(intent);
             }
         });
@@ -129,7 +129,7 @@ public class MusicListActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_PREV);
+                intent.setAction(GlobalConst.ACTION_PLAY_PREV);
                 sendBroadcast(intent);
             }
         });
@@ -152,7 +152,7 @@ public class MusicListActivity extends BaseActivity {
 //                }
                 intent = new Intent();
                 intent.putExtra("position", position);
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 sendBroadcast(intent);
             }
         });
@@ -177,9 +177,9 @@ public class MusicListActivity extends BaseActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED);
+                intent.setAction(GlobalConst.ACTION_SEEK_BAR_PROGRESS_CHANGED);
                 Log.i(TAG, "onStopTrackingTouch: " + seekBar.getProgress());
-                intent.putExtra(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED, seekBar.getProgress());
+                intent.putExtra(GlobalConst.ACTION_SEEK_BAR_PROGRESS_CHANGED, seekBar.getProgress());
                 sendBroadcast(intent);
             }
         });
@@ -188,7 +188,7 @@ public class MusicListActivity extends BaseActivity {
             public void onClick(View v) {
                 intent = new Intent();
                 intent.putExtra("position", 0);
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 sendBroadcast(intent);
             }
         });
@@ -196,30 +196,30 @@ public class MusicListActivity extends BaseActivity {
 
     private void setReceiver() {
         intentFilter = new IntentFilter();
-        intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
-        intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
-        intentFilter.addAction(PlayController.STATE_SERVICE_PLAY_CONTINUE);
-        intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PLAYING);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PAUSE);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PLAY_CONTINUE);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
-                    case PlayController.STATE_SERVICE_PLAYING:
+                    case GlobalConst.STATE_SERVICE_PLAYING:
 //                        Log.i(TAG, "position:  " + currentPosition);
 //                        MusicApplication.isPlaying = true;
                         initMusicInfo();
                         break;
-                    case PlayController.STATE_SERVICE_PLAY_CONTINUE:
+                    case GlobalConst.STATE_SERVICE_PLAY_CONTINUE:
                         playOrPauseIV.setImageResource(R.drawable.pause);
 //                        MusicApplication.isPlaying = true;
                         break;
-                    case PlayController.STATE_SERVICE_PAUSE:
+                    case GlobalConst.STATE_SERVICE_PAUSE:
                         playOrPauseIV.setImageResource(R.drawable.play);
 //                        MusicApplication.isPlaying = false;
                         break;
-                    case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
-                        int currentPosition = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
+                    case GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
+                        int currentPosition = intent.getIntExtra(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
 //                        Log.i(TAG, "onReceive: " + currentPosition + " " + MusicApplication.musicLists.get(position).getDuration());
                         seekBar.setProgress(currentPosition);
                         break;

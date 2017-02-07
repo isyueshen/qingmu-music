@@ -7,7 +7,7 @@ import java.util.HashMap;
  *
  */
 
-public class DailyRecommendType {
+public class TopSongType {
 
     public static final HashMap<Integer, String> ALL_TYPE = new HashMap<>();
     public static final int TYPE_NEW_SONG = 1;

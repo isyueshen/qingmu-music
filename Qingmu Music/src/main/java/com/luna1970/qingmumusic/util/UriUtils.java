@@ -3,7 +3,7 @@ package com.luna1970.qingmumusic.util;
 import java.text.MessageFormat;
 
 /**
- * Created by Yue on 1/29/2017.
+ * 提供API
  *
  */
 

@@ -25,7 +25,7 @@ import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.UriUtils;
 
 import java.io.IOException;
@@ -222,13 +222,13 @@ public class BannerFocusFragment extends Fragment {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Intent intent = new Intent();
-                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+                intent.setAction(GlobalConst.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
                 playState.updatePlayList(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 int index = position - 1;
-                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, index);
                 localBroadcastManager.sendBroadcast(intent);
             }
         });

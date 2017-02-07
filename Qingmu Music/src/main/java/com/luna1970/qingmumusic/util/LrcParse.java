@@ -26,10 +26,11 @@ public class LrcParse {
             int prevTime = 0;
             boolean merge = false;
             while ((line = bufferedReader.readLine()) != null) {
+                // 如果是空行
                 if (TextUtils.isEmpty(line)) {
                     continue;
                 }
-
+                // 如果是非法数据
                 String check = line.substring(line.indexOf("[") + 1, line.indexOf(":"));
                 if (!check.matches("[0-9]+")) {
                     continue;

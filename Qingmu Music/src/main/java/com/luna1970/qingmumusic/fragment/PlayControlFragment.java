@@ -23,7 +23,6 @@ import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.util.GlobalConst;
-import com.luna1970.qingmumusic.util.PlayController;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -114,7 +113,7 @@ public class PlayControlFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_OR_PAUSE);
+                intent.setAction(GlobalConst.ACTION_PLAY_OR_PAUSE);
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
@@ -122,7 +121,7 @@ public class PlayControlFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_NEXT);
+                intent.setAction(GlobalConst.ACTION_PLAY_NEXT);
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
@@ -147,30 +146,30 @@ public class PlayControlFragment extends Fragment {
      */
     private void setBroadcastReceiver() {
         intentFilter = new IntentFilter();
-        intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
-        intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
-        intentFilter.addAction(PlayController.STATE_SERVICE_PLAY_CONTINUE);
-        intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
-        intentFilter.addAction(PlayController.ACTION_PLAY_LIST_CLEAR);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PLAYING);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PAUSE);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PLAY_CONTINUE);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_LIST_CLEAR);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
 //                Log.i(TAG, "onReceive: " + intent.getAction());
                 switch (intent.getAction()) {
-                    case PlayController.STATE_SERVICE_PLAYING:
+                    case GlobalConst.STATE_SERVICE_PLAYING:
                         setData();
                         break;
-                    case PlayController.STATE_SERVICE_PLAY_CONTINUE:
+                    case GlobalConst.STATE_SERVICE_PLAY_CONTINUE:
                         playOrPause.setImageResource(R.drawable.pause);
                         break;
-                    case PlayController.STATE_SERVICE_PAUSE:
+                    case GlobalConst.STATE_SERVICE_PAUSE:
                         playOrPause.setImageResource(R.drawable.play);
                         break;
-                    case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
-                        int currentPosition = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
+                    case GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
+                        int currentPosition = intent.getIntExtra(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
                         progressBar.setProgress(currentPosition/10/playState.getDuration());
                         break;
-                    case PlayController.ACTION_PLAY_LIST_CLEAR:
+                    case GlobalConst.ACTION_PLAY_LIST_CLEAR:
                         playListDialog.dismiss();
                         getActivity().getSupportFragmentManager().beginTransaction().remove(getActivity().getSupportFragmentManager().findFragmentByTag(GlobalConst.PLAY_CONTROL_BAR_FRAGMENT_TAG)).commit();
                         break;

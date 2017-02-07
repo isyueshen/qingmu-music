@@ -21,7 +21,7 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.PlayListAdapter;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
-import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.GlobalConst;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -69,10 +69,10 @@ public class PlayListDialog extends Dialog {
                             public void onClick(DialogInterface dialog, int which) {
                                 playState.clearSong();
                                 Intent intent = new Intent();
-                                intent.setAction(PlayController.ACTION_PLAY_LIST_CLEAR);
+                                intent.setAction(GlobalConst.ACTION_PLAY_LIST_CLEAR);
                                 localBroadcastManager.sendBroadcast(intent);
                                 intent = new Intent();
-                                intent.setAction(PlayController.ACTION_PLAY_STOP);
+                                intent.setAction(GlobalConst.ACTION_PLAY_STOP);
                                 localBroadcastManager.sendBroadcast(intent);
                             }
                         })
@@ -92,8 +92,8 @@ public class PlayListDialog extends Dialog {
             @Override
             public void onClick(int index) {
                 Intent intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
-                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
+                intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, index);
                 localBroadcastManager.sendBroadcast(intent);
 
             }
@@ -108,8 +108,8 @@ public class PlayListDialog extends Dialog {
                 playListTitleTv.setText("播放列表 (" + playState.getListSize() + ")");
                 if (playState.getCurrentPosition() == index) {
                     Intent intent = new Intent();
-                    intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
-                    intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                    intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
+                    intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, index);
                     localBroadcastManager.sendBroadcast(intent);
                 }
             }

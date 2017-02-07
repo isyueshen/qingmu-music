@@ -4,38 +4,26 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SnapHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.activity.TopBillboardActivity;
-import com.luna1970.qingmumusic.adapter.RecommendListAdapter;
+import com.luna1970.qingmumusic.adapter.TopSongListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.DataCentral;
-import com.luna1970.qingmumusic.util.GsonUtils;
-import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.PlayController;
-import com.luna1970.qingmumusic.util.UriUtils;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.Response;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -45,14 +33,12 @@ import static com.luna1970.qingmumusic.application.MusicApplication.playState;
  */
 
 public class MainTopSongListFragment extends Fragment {
-    private static final String TAG = "MainRecommendListFrag";
+//    private static final String TAG = "MainRecommendListFrag";
 
     private List<Song> songList;
-    private RecommendListAdapter recommendListAdapter;
+    private TopSongListAdapter topSongListAdapter;
     private Bundle bundle;
     private int type;
-    private LocalBroadcastManager localBroadcastManager;
-    private LinearLayout linearLayout;
 
     @Nullable
     @Override
@@ -62,23 +48,28 @@ public class MainTopSongListFragment extends Fragment {
         return view;
     }
 
+    /**
+     * 初始化View, 并设置数据
+     * @param view 父View
+     */
     public void setView(View view) {
         TextView titleTv= (TextView) view.findViewById(R.id.title_tv);
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
+        // 设置标题
         bundle = getArguments();
 //        Log.i(TAG, "setView: " + getArguments());
         if (bundle != null) {
             titleTv.setText(bundle.getString("title"));
         }
-
-        linearLayout = (LinearLayout) view.findViewById(R.id.start_top_billboard_detail_area);
+        // 设置数据
         songList = new ArrayList<>();
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
-        recommendListAdapter = new RecommendListAdapter(songList, new CustomRecyclerItemOnClickListener() {
+        topSongListAdapter = new TopSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
             public void onClick(int position) {
                 preparePlay(position);
+                // 若播放列表没有歌曲, 则启动播放页
                 if (playState.getListSize() == 0) {
                     Intent intent = new Intent(getContext(), MusicPlayActivity.class);
                     getActivity().startActivity(intent);
@@ -86,11 +77,15 @@ public class MainTopSongListFragment extends Fragment {
                 }
             }
         });
-        recyclerView.setAdapter(recommendListAdapter);
+        recyclerView.setAdapter(topSongListAdapter);
+        // 粘性滚动
         SnapHelper snapHelper = new LinearSnapHelper();
         snapHelper.attachToRecyclerView(recyclerView);
+        // 防止粘滞
         recyclerView.setNestedScrollingEnabled(false);
 
+        // 设置点击查看更多
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.start_top_billboard_detail_area);
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -110,9 +105,12 @@ public class MainTopSongListFragment extends Fragment {
             type = bundle.getInt("type");
         }
         requestSongInfoList(type);
-        localBroadcastManager = LocalBroadcastManager.getInstance(getActivity());
     }
 
+    /**
+     * 展示数据
+     * @param type 榜单类型
+     */
     private void requestSongInfoList(int type) {
         DataCentral.requestTopSongList(type, 20, new DataCentral.ResponseSongListListener() {
             @Override
@@ -120,12 +118,21 @@ public class MainTopSongListFragment extends Fragment {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        MainTopSongListFragment.this.songList.clear();
                         MainTopSongListFragment.this.songList.addAll(songList);
-                        recommendListAdapter.notifyDataSetChanged();
+                        topSongListAdapter.notifyDataSetChanged();
                     }
                 });
             }
         });
+    }
+
+    /**
+     * 用户点击播放
+     * @param position 索引
+     */
+    private void preparePlay(final int position) {
+        DataCentral.requestTopSongToPlay(type, position);
     }
 
     /**
@@ -141,9 +148,5 @@ public class MainTopSongListFragment extends Fragment {
         MainTopSongListFragment mainTopSongListFragment = new MainTopSongListFragment();
         mainTopSongListFragment.setArguments(bundle);
         return mainTopSongListFragment;
-    }
-
-    private void preparePlay(final int position) {
-        DataCentral.requestTopSongToPlay(type, position);
     }
 }

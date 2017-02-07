@@ -7,7 +7,6 @@ import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.luna1970.qingmumusic.Gson.Song;
-import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.List;
@@ -45,13 +44,13 @@ public class DataCentral {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 Intent intent = new Intent();
-                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+                intent.setAction(GlobalConst.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
                 playState.updatePlayList(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
+                intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 int index = position;
-                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, index);
+                intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, index);
                 localBroadcastManager.sendBroadcast(intent);
             }
         });

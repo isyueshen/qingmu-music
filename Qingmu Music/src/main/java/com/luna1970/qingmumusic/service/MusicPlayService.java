@@ -16,7 +16,7 @@ import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.application.PlayMode;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
 
@@ -49,14 +49,14 @@ public class MusicPlayService extends Service {
         controlProgressUpdateWorkThread = true;
         // 初始化intentFilter
         intentFilter = new IntentFilter();
-        intentFilter.addAction(PlayController.ACTION_PLAY_OR_PAUSE);
-        intentFilter.addAction(PlayController.ACTION_PLAY_NEXT);
-        intentFilter.addAction(PlayController.ACTION_PLAY_PREV);
-        intentFilter.addAction(PlayController.ACTION_PLAY_SPECIFIC);
-        intentFilter.addAction(PlayController.ACTION_PLAY_MODE_CHANGED);
-        intentFilter.addAction(PlayController.ACTION_REFRESH_PLAY_LIST);
-        intentFilter.addAction(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED);
-        intentFilter.addAction(PlayController.ACTION_PLAY_STOP);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_OR_PAUSE);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_NEXT);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_PREV);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_SPECIFIC);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_MODE_CHANGED);
+        intentFilter.addAction(GlobalConst.ACTION_REFRESH_PLAY_LIST);
+        intentFilter.addAction(GlobalConst.ACTION_SEEK_BAR_PROGRESS_CHANGED);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_STOP);
         mediaPlayer = new MediaPlayer();
         currentPlayMode = PlayMode.REPEAT_ALL;
         localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
@@ -68,8 +68,8 @@ public class MusicPlayService extends Service {
                     if (mediaPlayer.isPlaying()) {
                         int currentSeekPosition = mediaPlayer.getCurrentPosition();
                         Intent intent = new Intent();
-                        intent.putExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, currentSeekPosition);
-                        intent.setAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+                        intent.putExtra(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, currentSeekPosition);
+                        intent.setAction(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
                         localBroadcastManager.sendBroadcast(intent);
                     }
                     try {
@@ -91,7 +91,7 @@ public class MusicPlayService extends Service {
             public boolean onError(MediaPlayer mp, int what, int extra) {
                 mp.reset();
                 ToastUtils.makeText("播放错误, 请重试!").show();
-                sendBroadcastControlCenter(PlayController.STATE_SERVICE_STOP);
+                sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_STOP);
                 return false;
             }
         });
@@ -121,8 +121,8 @@ public class MusicPlayService extends Service {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
                 Intent intent = new Intent();
-                intent.putExtra(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, percent);
-                intent.setAction(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
+                intent.putExtra(GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, percent);
+                intent.setAction(GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
@@ -180,31 +180,31 @@ private PlayControlBinder playControlBinder;
                 String action = intent.getAction();
                 Log.i(TAG, "onReceive: " + action);
                 switch (action) {
-                    case PlayController.ACTION_PLAY_SPECIFIC:
-                        int position = intent.getIntExtra(PlayController.ACTION_PLAY_SPECIFIC, 0);
+                    case GlobalConst.ACTION_PLAY_SPECIFIC:
+                        int position = intent.getIntExtra(GlobalConst.ACTION_PLAY_SPECIFIC, 0);
                         playSpecific(position);
                         break;
-                    case PlayController.ACTION_PLAY_NEXT:
+                    case GlobalConst.ACTION_PLAY_NEXT:
                         playNext();
                         break;
-                    case PlayController.ACTION_PLAY_PREV:
+                    case GlobalConst.ACTION_PLAY_PREV:
                         playPrevious();
                         break;
-                    case PlayController.ACTION_REFRESH_PLAY_LIST:
+                    case GlobalConst.ACTION_REFRESH_PLAY_LIST:
                         prepareUpdatePlayList();
                         break;
-                    case PlayController.ACTION_PLAY_OR_PAUSE:
+                    case GlobalConst.ACTION_PLAY_OR_PAUSE:
                         playOrPause();
                         break;
-                    case PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED:
-                        int seekIndex = intent.getIntExtra(PlayController.ACTION_SEEK_BAR_PROGRESS_CHANGED, 0);
+                    case GlobalConst.ACTION_SEEK_BAR_PROGRESS_CHANGED:
+                        int seekIndex = intent.getIntExtra(GlobalConst.ACTION_SEEK_BAR_PROGRESS_CHANGED, 0);
                         if (mediaPlayer.isPlaying()) {
                             mediaPlayer.seekTo(seekIndex);
                         }
-                    case PlayController.ACTION_PLAY_MODE_CHANGED:
-                        currentPlayMode = intent.getIntExtra(PlayController.ACTION_PLAY_MODE_CHANGED, 0);
+                    case GlobalConst.ACTION_PLAY_MODE_CHANGED:
+                        currentPlayMode = intent.getIntExtra(GlobalConst.ACTION_PLAY_MODE_CHANGED, 0);
                         break;
-                    case PlayController.ACTION_PLAY_STOP:
+                    case GlobalConst.ACTION_PLAY_STOP:
                         if (mediaPlayer!=null) {
                             if (mediaPlayer.isPlaying()) {
                                 mediaPlayer.stop();
@@ -225,11 +225,11 @@ private PlayControlBinder playControlBinder;
         if (mediaPlayer != null && mediaPlayer.isPlaying()) {
             mediaPlayer.pause();
             playState.setPlaying(false);
-            sendBroadcastControlCenter(PlayController.STATE_SERVICE_PAUSE);
+            sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PAUSE);
         } else {
             mediaPlayer.start();
             playState.setPlaying(true);
-            sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
+            sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PLAYING);
         }
     }
 
@@ -257,7 +257,7 @@ private PlayControlBinder playControlBinder;
             return;
         }
         currentSongId = playState.getSongID();
-        sendBroadcastControlCenter(PlayController.STATE_SERVICE_PLAYING);
+        sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PLAYING);
         // 网络歌曲uri
         String songUri = UriUtils.getSongFile(currentSongId);
         preparePlay(songUri);
@@ -272,7 +272,7 @@ private PlayControlBinder playControlBinder;
             @Override
             public void onFailure(Call call, IOException e) {
                 playState.setPlaying(false);
-                sendBroadcastControlCenter(PlayController.STATE_SERVICE_STOP);
+                sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_STOP);
             }
 
             @Override
@@ -309,7 +309,7 @@ private PlayControlBinder playControlBinder;
             case PlayMode.ORDER:
                 index++;
                 if (index >= playState.getListSize()) {
-                    sendBroadcastControlCenter(PlayController.STATE_SERVICE_STOP);
+                    sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_STOP);
                     return;
                 }
                 break;

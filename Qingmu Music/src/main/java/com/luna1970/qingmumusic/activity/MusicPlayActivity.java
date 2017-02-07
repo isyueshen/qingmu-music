@@ -40,7 +40,7 @@ import com.luna1970.qingmumusic.listener.LrcViewSingleTapUpListener;
 import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.LrcParse;
-import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
 import com.luna1970.qingmumusic.widget.LrcView;
@@ -383,11 +383,11 @@ public class MusicPlayActivity extends BaseActivity {
 
     private void initBroadCastReceiver() {
         intentFilter = new IntentFilter();
-        intentFilter.addAction(PlayController.STATE_SERVICE_PLAYING);
-        intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
-        intentFilter.addAction(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
-        intentFilter.addAction(PlayController.STATE_SERVICE_PAUSE);
-        intentFilter.addAction(PlayController.ACTION_PLAY_LIST_CLEAR);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PLAYING);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
+        intentFilter.addAction(GlobalConst.STATE_SERVICE_PAUSE);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_LIST_CLEAR);
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -395,7 +395,7 @@ public class MusicPlayActivity extends BaseActivity {
                 String action = intent.getAction();
                 switch (action) {
                     // 即将播放
-                    case PlayController.STATE_SERVICE_PLAYING:
+                    case GlobalConst.STATE_SERVICE_PLAYING:
                         playOrPauseIv.setSelected(true);
                         setViewInfo();
                         // 设置歌词
@@ -420,9 +420,9 @@ public class MusicPlayActivity extends BaseActivity {
                         });
                         break;
                     // 更新进度
-                    case PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
+                    case GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
                         // 当前播放进度
-                        int progress = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
+                        int progress = intent.getIntExtra(GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS, 0);
                         seekBar.setProgress(progress);
                         String current = new SimpleDateFormat("mm:ss").format(new Date(progress));
                         currentTimeTv.setText(current);
@@ -431,16 +431,16 @@ public class MusicPlayActivity extends BaseActivity {
                             lrcView.refreshLrc(progress);
                         }
                         break;
-                    case PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS:
+                    case GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS:
                         // 歌曲文件缓冲状态
-                        int bufferProgress = intent.getIntExtra(PlayController.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, 0);
+                        int bufferProgress = intent.getIntExtra(GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, 0);
                         seekBar.setSecondaryProgress(bufferProgress * playState.getDuration() * 10);
                         break;
-                    case PlayController.STATE_SERVICE_PAUSE:
+                    case GlobalConst.STATE_SERVICE_PAUSE:
                         // 更新按钮样式
                         playOrPauseIv.setSelected(false);
                         break;
-                    case PlayController.ACTION_PLAY_LIST_CLEAR:
+                    case GlobalConst.ACTION_PLAY_LIST_CLEAR:
                         playListDialog.dismiss();
                         finish();
                         break;

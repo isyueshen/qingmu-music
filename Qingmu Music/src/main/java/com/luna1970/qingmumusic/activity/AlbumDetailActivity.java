@@ -25,7 +25,7 @@ import com.luna1970.qingmumusic.adapter.SongListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.PlayController;
+import com.luna1970.qingmumusic.util.GlobalConst;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -92,12 +92,12 @@ public class AlbumDetailActivity extends BaseActivity {
             @Override
             public void onClick(int position) {
                 Intent intent = new Intent();
-                intent.setAction(PlayController.ACTION_REFRESH_PLAY_LIST);
+                intent.setAction(GlobalConst.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
                 playState.updatePlayList(songList);
                 intent = new Intent();
-                intent.setAction(PlayController.ACTION_PLAY_SPECIFIC);
-                intent.putExtra(PlayController.ACTION_PLAY_SPECIFIC, position);
+                intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
+                intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, position);
                 localBroadcastManager.sendBroadcast(intent);
 
             }

@@ -6,7 +6,7 @@ import android.widget.Toast;
 import com.luna1970.qingmumusic.application.MusicApplication;
 
 /**
- * Created by Yue on 1/10/2017.
+ * Toast工具类
  *
  */
 
