@@ -1,5 +1,6 @@
 package com.luna1970.qingmumusic.widget;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.PlayListAdapter;
+import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 import com.luna1970.qingmumusic.util.GlobalConst;
@@ -83,7 +85,7 @@ public class PlayListDialog extends Dialog {
     }
 
     private void setRecyclerView() {
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.scrollToPosition(playState.getCurrentPosition());
@@ -91,6 +93,8 @@ public class PlayListDialog extends Dialog {
         playListAdapter.setPlayListDialogOnClickListener(new PlayListDialogOnClickListener() {
             @Override
             public void onClick(int index) {
+                playState.setCurrentPosition(index);
+                playListAdapter.notifyItemRangeChanged(linearLayoutManager.findFirstVisibleItemPosition(), linearLayoutManager.findLastVisibleItemPosition());
                 Intent intent = new Intent();
                 intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, index);

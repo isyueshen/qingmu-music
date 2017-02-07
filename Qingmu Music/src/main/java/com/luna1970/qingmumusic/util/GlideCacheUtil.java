@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 
 /**
  * Created by Yue on 2/7/2017.
- *
  */
 
 public class GlideCacheUtil {
@@ -55,17 +54,14 @@ public class GlideCacheUtil {
      * 清除图片内存缓存
      */
     public void clearImageMemoryCache() {
-        try {
-            //只能在主线程执行
-            Message.obtain(new Handler(Looper.getMainLooper()), new Runnable() {
-                @Override
-                public void run() {
-                    Glide.get(context).clearMemory();
-                }
-            }).sendToTarget();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        //只能在主线程执行
+        Message.obtain(new Handler(Looper.getMainLooper()), new Runnable() {
+            @Override
+            public void run() {
+                Glide.get(context).clearMemory();
+            }
+        }).sendToTarget();
+
     }
 
     /**
@@ -74,7 +70,7 @@ public class GlideCacheUtil {
     public void clearImageAllCache() {
         clearImageDiskCache();
         clearImageMemoryCache();
-        String ImageExternalCatchDir=context.getExternalCacheDir()+ ExternalCacheDiskCacheFactory.DEFAULT_DISK_CACHE_DIR;
+        String ImageExternalCatchDir = context.getExternalCacheDir() + ExternalCacheDiskCacheFactory.DEFAULT_DISK_CACHE_DIR;
         deleteFolderFile(ImageExternalCatchDir, true);
     }
 
@@ -133,7 +129,7 @@ public class GlideCacheUtil {
     /**
      * 删除指定目录下的文件，这里用于缓存的删除
      *
-     * @param filePath filePath
+     * @param filePath       filePath
      * @param deleteThisPath deleteThisPath
      */
     private void deleteFolderFile(String filePath, boolean deleteThisPath) {

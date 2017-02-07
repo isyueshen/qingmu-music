@@ -184,6 +184,11 @@ public class PlayControlFragment extends Fragment {
         super.onStart();
     }
 
+    @Override
+    public void onResume() {
+        setData();
+        super.onResume();
+    }
 
     @Override
     public void onStop() {

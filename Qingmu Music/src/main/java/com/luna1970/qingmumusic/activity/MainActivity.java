@@ -19,15 +19,19 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
 import com.lapism.searchview.SearchView;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
 import com.luna1970.qingmumusic.fragment.PlayControlFragment;
+import com.luna1970.qingmumusic.util.GlideCacheUtil;
 import com.luna1970.qingmumusic.util.GlobalConst;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
@@ -122,6 +126,19 @@ public class MainActivity extends BaseActivity {
             }
 
         });
+        GestureDetector gestureDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+                GlideCacheUtil.getInstance().clearImageMemoryCache();
+                return super.onScroll(e1, e2, distanceX, distanceY);
+            }
+        });
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        return super.onTouchEvent(event);
     }
 
     private void showAlertDialog() {

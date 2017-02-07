@@ -1,7 +1,6 @@
 package com.luna1970.qingmumusic.adapter;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -22,6 +21,7 @@ import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 
 import java.util.List;
+
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 /**
  * Created by Yue on 1/29/2017.
@@ -111,7 +111,6 @@ public class PlayListAdapter extends RecyclerView.Adapter<PlayListAdapter.MViewH
         }
         holder.songTitle.setText(spannableStringBuilder);
         holder.songAlbum.setText("专辑: " + song.albumTitle);
-
         holder.deleteIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

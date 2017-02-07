@@ -1,9 +1,14 @@
 package com.luna1970.qingmumusic.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.LinearSnapHelper;
 import android.support.v7.widget.RecyclerView;
@@ -19,12 +24,14 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.activity.TopBillboardActivity;
 import com.luna1970.qingmumusic.adapter.TopSongListAdapter;
+import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
 import com.luna1970.qingmumusic.util.DataCentral;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.luna1970.qingmumusic.application.MusicApplication.currentNetType;
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
@@ -39,6 +46,8 @@ public class MainTopSongListFragment extends Fragment {
     private TopSongListAdapter topSongListAdapter;
     private Bundle bundle;
     private int type;
+    private boolean prefNet_onlyWifi;
+    private boolean prefNet_playOnCellular;
 
     @Nullable
     @Override
@@ -67,14 +76,30 @@ public class MainTopSongListFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         topSongListAdapter = new TopSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
-            public void onClick(int position) {
-                preparePlay(position);
-                // 若播放列表没有歌曲, 则启动播放页
-                if (playState.getListSize() == 0) {
-                    Intent intent = new Intent(getContext(), MusicPlayActivity.class);
-                    getActivity().startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
+            public void onClick(final int position) {
+                checkUserPreferences();
+                if (currentNetType != ConnectivityManager.TYPE_WIFI && prefNet_onlyWifi) {
+                    return;
                 }
+                if (currentNetType == ConnectivityManager.TYPE_MOBILE && !prefNet_playOnCellular) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("确定打开2G/3G/4G网络播放开关吗?")
+                            .setMessage("2G/3G/4G网络下会消耗流量, 请参考你的话费套餐情况进行设置!")
+                            .setPositiveButton("打开播放开关", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences.Editor editor =  PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+                                    editor.putBoolean("prefNet_onlyWifi", false);
+                                    editor.putBoolean("prefNet_playOnCellular", true);
+                                    editor.apply();
+                                    preparePlay(position);
+                                }
+                            })
+                            .setNegativeButton(R.string.userAction_cancel, null)
+                            .show();
+                    return;
+                }
+                preparePlay(position);
             }
         });
         recyclerView.setAdapter(topSongListAdapter);
@@ -96,6 +121,11 @@ public class MainTopSongListFragment extends Fragment {
         });
     }
 
+    public void checkUserPreferences() {
+        prefNet_onlyWifi = PreferenceManager.getDefaultSharedPreferences(MusicApplication.getInstance().getApplicationContext()).getBoolean("prefNet_onlyWifi", false);
+        prefNet_playOnCellular = PreferenceManager.getDefaultSharedPreferences(MusicApplication.getInstance().getApplicationContext()).getBoolean("prefNet_playOnCellular", true);
+    }
+
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -112,7 +142,7 @@ public class MainTopSongListFragment extends Fragment {
      * @param type 榜单类型
      */
     private void requestSongInfoList(int type) {
-        DataCentral.requestTopSongList(type, 20, new DataCentral.ResponseSongListListener() {
+        DataCentral.getInstance().requestTopSongList(type, 20, new DataCentral.ResponseSongListListener() {
             @Override
             public void responseSongList(final List<Song> songList) {
                 getActivity().runOnUiThread(new Runnable() {
@@ -132,7 +162,13 @@ public class MainTopSongListFragment extends Fragment {
      * @param position 索引
      */
     private void preparePlay(final int position) {
-        DataCentral.requestTopSongToPlay(type, position);
+        DataCentral.getInstance().requestTopSongToPlay(type, position);
+        // 若播放列表没有歌曲, 则启动播放页
+        if (playState.getListSize() == 0) {
+            Intent intent = new Intent(getContext(), MusicPlayActivity.class);
+            getActivity().startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
+        }
     }
 
     /**

@@ -46,10 +46,10 @@
             android:layout_height="match_parent"
             android:scaleType="fitXY"/>
 
-        <com.luna1970.qingmumusic.widget.SnappyRecyclerView2
+        <android.support.v7.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-        </com.luna1970.qingmumusic.widget.SnappyRecyclerView2>
+        </android.support.v7.widget.RecyclerView>
     </FrameLayout>
 </LinearLayout>

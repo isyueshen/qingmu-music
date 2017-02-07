@@ -1,10 +1,15 @@
 package com.luna1970.qingmumusic.fragment;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
@@ -22,7 +27,9 @@ import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
+import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.DataCentral;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.GlobalConst;
@@ -36,6 +43,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
+import static com.luna1970.qingmumusic.application.MusicApplication.currentNetType;
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
@@ -49,6 +57,8 @@ public class BannerFocusFragment extends Fragment {
     private NewSongListAdapter newSongListAdapter;
     private ImageView backgroundIv;
     private LocalBroadcastManager localBroadcastManager;
+    private boolean prefNet_onlyWifi;
+    private boolean prefNet_playOnCellular;
 
     @Nullable
     @Override
@@ -66,13 +76,30 @@ public class BannerFocusFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
         newSongListAdapter = new NewSongListAdapter(songList, new CustomRecyclerItemOnClickListener() {
             @Override
-            public void onClick(int position) {
-                preparePlay(position);
-                if (playState.getListSize() == 0) {
-                    Intent intent = new Intent(getContext(), MusicPlayActivity.class);
-                    getActivity().startActivity(intent);
-                    getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
+            public void onClick(final int position) {
+                checkUserPreferences();
+                if (currentNetType != ConnectivityManager.TYPE_WIFI && prefNet_onlyWifi) {
+                    return;
                 }
+                if (currentNetType == ConnectivityManager.TYPE_MOBILE && !prefNet_playOnCellular) {
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("确定打开2G/3G/4G网络播放开关吗?")
+                            .setMessage("2G/3G/4G网络下会消耗流量, 请参考你的话费套餐情况进行设置!")
+                            .setPositiveButton("打开播放开关", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    SharedPreferences.Editor editor =  PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+                                    editor.putBoolean("prefNet_onlyWifi", false);
+                                    editor.putBoolean("prefNet_playOnCellular", true);
+                                    editor.apply();
+                                    preparePlay(position);
+                                }
+                            })
+                            .setNegativeButton(R.string.userAction_cancel, null)
+                            .show();
+                    return;
+                }
+                preparePlay(position);
             }
 
             @Override
@@ -119,7 +146,10 @@ public class BannerFocusFragment extends Fragment {
             }
         });
     }
-
+    public void checkUserPreferences() {
+        prefNet_onlyWifi = PreferenceManager.getDefaultSharedPreferences(MusicApplication.getInstance().getApplicationContext()).getBoolean("prefNet_onlyWifi", false);
+        prefNet_playOnCellular = PreferenceManager.getDefaultSharedPreferences(MusicApplication.getInstance().getApplicationContext()).getBoolean("prefNet_playOnCellular", true);
+    }
     @Override
     public void onResume() {
         Log.i(TAG, "onResume: ");
@@ -232,5 +262,10 @@ public class BannerFocusFragment extends Fragment {
                 localBroadcastManager.sendBroadcast(intent);
             }
         });
+        if (playState.getListSize() == 0) {
+            Intent intent = new Intent(getContext(), MusicPlayActivity.class);
+            getActivity().startActivity(intent);
+            getActivity().overridePendingTransition(R.anim.start_activity_translate_in_bottom2top, R.anim.none);
+        }
     }
 }
