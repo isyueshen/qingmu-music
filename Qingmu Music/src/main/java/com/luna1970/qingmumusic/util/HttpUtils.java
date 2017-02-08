@@ -10,6 +10,9 @@ import okhttp3.Request;
 
 public class HttpUtils {
     public static void sendHttpRequest(String url, okhttp3.Callback callback) {
+        if (!url.startsWith("http://")) {
+            return;
+        }
         OkHttpClient okHttpClient = new OkHttpClient();
         Request request = new Request.Builder()
                 .url(url)

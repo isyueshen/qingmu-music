@@ -24,6 +24,7 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
+import com.orhanobut.logger.Logger;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -80,6 +81,9 @@ public class PlayControlFragment extends Fragment {
     private void setData() {
         if (playState.getListSize() != 0) {
             Song song = playState.getSong();
+            if (song == null) {
+                return;
+            }
             Glide.with(getActivity()).load(song.songCoverPath).into(miniAlbumPic);
             musicTitleTV.setText(song.title);
             musicArtistTV.setText(song.author);

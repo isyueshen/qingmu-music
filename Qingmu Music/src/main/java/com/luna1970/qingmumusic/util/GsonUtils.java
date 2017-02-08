@@ -3,6 +3,7 @@ package com.luna1970.qingmumusic.util;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import com.luna1970.qingmumusic.Gson.Album;
 import com.luna1970.qingmumusic.Gson.AlbumInfo;
@@ -10,6 +11,7 @@ import com.luna1970.qingmumusic.Gson.Billboard;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.Gson.TopBillboard;
+import com.raizlabs.android.dbflow.structure.BaseModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,10 +45,9 @@ public class GsonUtils {
         AlbumInfo albumInfo = null;
         try {
             String albumInfoString = new JSONObject(json).getJSONObject("albumInfo").toString();
-            albumInfo = new Gson().fromJson(albumInfoString, AlbumInfo.class);
+            albumInfo = new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(albumInfoString, AlbumInfo.class);
             String songListString = new JSONObject(json).getJSONArray("songlist").toString();
-            List<Song> songList = new Gson().fromJson(songListString, new TypeToken<List<Song>>() {
-            }.getType());
+            List<Song> songList = new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(songListString, new TypeToken<List<Song>>() {}.getType());
             if (albumInfo != null) {
                 albumInfo.songList = songList;
                 Log.d(TAG, "handlerAlbumInfo: playList size " + albumInfo.songList.size());
@@ -78,8 +79,7 @@ public class GsonUtils {
         List<Song> songList = null;
         try {
             String songListString = new JSONObject(json).getJSONArray("song_list").toString();
-            songList = new Gson().fromJson(songListString, new TypeToken<List<Song>>() {
-            }.getType());
+            songList = new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(songListString, new TypeToken<List<Song>>() {}.getType());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -110,7 +110,7 @@ public class GsonUtils {
 
     public static TopBillboard handlerTopBillboard(String json) {
         TopBillboard topBillboard = null;
-        topBillboard = new Gson().fromJson(json, TopBillboard.class);
+        topBillboard = new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(json, TopBillboard.class);
         return topBillboard;
     }
 }

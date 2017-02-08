@@ -34,6 +34,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.animation.ViewPropertyAnimation;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.application.PlayMode;
 import com.luna1970.qingmumusic.entity.Lrc;
 import com.luna1970.qingmumusic.listener.LrcViewSingleTapUpListener;
@@ -90,6 +91,7 @@ public class MusicPlayActivity extends BaseActivity {
     private ImageView playList;
     private FrameLayout frameLayout;
     private PlayListDialog playListDialog;
+    private int currentSongId;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -102,6 +104,10 @@ public class MusicPlayActivity extends BaseActivity {
             Window window = getWindow();
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
+        setToolbar();
+        initView();
+        setViewInfo();
+        setListeners();
 
         // 绑定播放服务
         Intent intent = new Intent(this, MusicPlayService.class);
@@ -109,6 +115,22 @@ public class MusicPlayActivity extends BaseActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 playControlBinder = (MusicPlayService.PlayControlBinder) service;
+                int playMode = playControlBinder.getPlayMode();
+                switch (playMode) {
+                    case PlayMode.REPEAT_ALL:
+                        playModeIv.setImageLevel(PlayMode.REPEAT_ALL);
+                        break;
+                    case PlayMode.REPEAT_ONE:
+                        playModeIv.setImageLevel(PlayMode.REPEAT_ONE);
+                        break;
+                    case PlayMode.MODE_SHUFFLE:
+                        playModeIv.setImageLevel(PlayMode.MODE_SHUFFLE);
+                        break;
+                    case PlayMode.ORDER:
+                        playModeIv.setImageLevel(PlayMode.ORDER);
+                        break;
+                }
+                seekBar.setSecondaryProgress(playControlBinder.getBufferedState() * playState.getDuration() * 10);
             }
 
             @Override
@@ -118,11 +140,6 @@ public class MusicPlayActivity extends BaseActivity {
             }
         };
         bindService(intent, serviceConnection, BIND_AUTO_CREATE);
-
-        setToolbar();
-        initView();
-        setViewInfo();
-        setListeners();
     }
 
     /**
@@ -163,6 +180,10 @@ public class MusicPlayActivity extends BaseActivity {
         playList = (ImageView) findViewById(R.id.play_list);
         frameLayout = (FrameLayout) findViewById(R.id.content_fl);
 
+        if (playState.isPlaying()) {
+            playOrPauseIv.setSelected(true);
+        }
+        setLrcView();
         // 开始转动
         startSongCoverAnimation();
         // 根据屏幕动态设置ImageView的位置, Y -> status bar + 2 * action bar, X -> Screen width / 2 - image radius
@@ -312,6 +333,7 @@ public class MusicPlayActivity extends BaseActivity {
         gestureDetector = null;
         lrcView.clearAnimation();
         localBroadcastManager.unregisterReceiver(broadcastReceiver);
+        Glide.get(MusicPlayActivity.this).clearMemory();
         super.onStop();
     }
 
@@ -325,6 +347,10 @@ public class MusicPlayActivity extends BaseActivity {
         if (song == null) {
             return;
         }
+        if (currentSongId == playState.getSongID()) {
+            return;
+        }
+        currentSongId = playState.getSongID();
         // 设置标题栏信息
         songTitleTv.setText(song.title);
         songAuthorTv.setText(song.author);
@@ -362,6 +388,7 @@ public class MusicPlayActivity extends BaseActivity {
         String total = simpleDateFormat.format(date);
         totalTimeTv.setText(total);
         prevSongCover = song.songCoverPath;
+        setLrcView();
     }
 
     /**
@@ -391,33 +418,13 @@ public class MusicPlayActivity extends BaseActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                Log.d(TAG, "onReceive() called with: context = [" + context + "], intent = [" + intent + "]");
+//                Log.d(TAG, "onReceive() called with: context = [" + context + "], intent = [" + intent + "]");
                 String action = intent.getAction();
                 switch (action) {
                     // 即将播放
                     case GlobalConst.STATE_SERVICE_PLAYING:
                         playOrPauseIv.setSelected(true);
                         setViewInfo();
-                        // 设置歌词
-                        String uri = playState.getSong().lrcPath;
-                        lrcView.setLrc(null);
-                        if (TextUtils.isEmpty(uri)) {
-                            lrcView.drawTint("暂无歌词");
-                            break;
-                        }
-                        lrcView.drawTint("正在加载...");
-                        HttpUtils.sendHttpRequest(playState.getSong().lrcPath, new Callback() {
-                            @Override
-                            public void onFailure(Call call, IOException e) {
-                                lrcView.drawTint("加载歌词失败");
-                            }
-
-                            @Override
-                            public void onResponse(Call call, Response response) throws IOException {
-                                Lrc lrc = LrcParse.parseLrc(response.body().string());
-                                lrcView.setLrc(lrc);
-                            }
-                        });
                         break;
                     // 更新进度
                     case GlobalConst.STATE_SERVICE_UPDATE_SEEK_BAR_PROGRESS:
@@ -450,6 +457,29 @@ public class MusicPlayActivity extends BaseActivity {
         localBroadcastManager = LocalBroadcastManager.getInstance(this);
     }
 
+    public void setLrcView() {
+        // 设置歌词
+        Song song = playState.getSong();
+        String uri = song.lrcPath;
+        lrcView.setLrc(null);
+        if (TextUtils.isEmpty(uri)) {
+            lrcView.drawTint("暂无歌词");
+            return;
+        }
+        lrcView.drawTint("正在加载...");
+        HttpUtils.sendHttpRequest(playState.getSong().lrcPath, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                lrcView.drawTint("加载歌词失败");
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                Lrc lrc = LrcParse.parseLrc(response.body().string());
+                lrcView.setLrc(lrc);
+            }
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -464,7 +494,6 @@ public class MusicPlayActivity extends BaseActivity {
         super.onBackPressed();
         overridePendingTransition(0, R.anim.exit_activity_translate_out_top2bottom);
     }
-
     @Override
     protected void onDestroy() {
         unbindService(serviceConnection);

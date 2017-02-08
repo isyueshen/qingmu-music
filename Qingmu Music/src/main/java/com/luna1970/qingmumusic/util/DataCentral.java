@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.application.MusicApplication;
+import com.luna1970.qingmumusic.dao.SongDao;
 
 import java.io.IOException;
 import java.util.List;
@@ -59,7 +60,8 @@ public class DataCentral {
                 Intent intent = new Intent();
                 intent.setAction(GlobalConst.ACTION_REFRESH_PLAY_LIST);
                 localBroadcastManager.sendBroadcast(intent);
-                playState.updatePlayList(GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string()));
+                List<Song> songList = GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string());
+                playState.updatePlayList(songList);
                 intent = new Intent();
                 intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, position);

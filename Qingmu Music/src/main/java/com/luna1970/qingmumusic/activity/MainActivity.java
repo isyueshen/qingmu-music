@@ -27,12 +27,14 @@ import android.view.View;
 import com.bumptech.glide.Glide;
 import com.lapism.searchview.SearchView;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.dao.SongDao;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
 import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 import com.luna1970.qingmumusic.util.GlideCacheUtil;
 import com.luna1970.qingmumusic.util.GlobalConst;
+import com.orhanobut.logger.Logger;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -56,11 +58,13 @@ public class MainActivity extends BaseActivity {
         setNavigation();
         setFab();
         setSearchView();
+        playState.updatePlayList(SongDao.getSongList());
         setFragment();
     }
 
     private void setFragment() {
         if (playState.getListSize() > 0) {
+            Logger.d(playState.getListSize());
             fragment = new PlayControlFragment();
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
             fragmentTransaction.replace(R.id.play_control_container, fragment, GlobalConst.PLAY_CONTROL_BAR_FRAGMENT_TAG);
@@ -99,7 +103,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
-                floatingActionButton.show();
+//                floatingActionButton.show();
             }
         };
         actionBarDrawerToggle.syncState();
@@ -229,5 +233,11 @@ public class MainActivity extends BaseActivity {
             removeFragment();
         }
         super.onResume();
+    }
+
+    @Override
+    protected void onStop() {
+        Glide.get(MainActivity.this).clearMemory();
+        super.onStop();
     }
 }

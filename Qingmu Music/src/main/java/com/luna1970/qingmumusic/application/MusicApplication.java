@@ -13,6 +13,7 @@ import android.net.NetworkInfo;
 
 import com.bumptech.glide.Glide;
 import com.luna1970.qingmumusic.R;
+import com.luna1970.qingmumusic.dao.UserInfo;
 import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.GlideCacheUtil;
 import com.luna1970.qingmumusic.util.ToastUtils;
@@ -43,7 +44,12 @@ public class MusicApplication extends Application {
         intent.setClass(this, MusicPlayService.class);
         startService(intent);
         FlowManager.init(getApplicationContext());
+        initUserInfo();
         setBroadcastReceiver();
+    }
+
+    private void initUserInfo() {
+        playState.setCurrentPosition(UserInfo.getCurrentPosition());
     }
 
     private void setBroadcastReceiver() {

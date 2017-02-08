@@ -38,6 +38,7 @@ public class AlbumInfo implements Parcelable{
     @SerializedName("songlist")
     public List<Song> songList;
 
+
     protected AlbumInfo(Parcel in) {
         id = in.readInt();
         AlbumId = in.readInt();
@@ -53,7 +54,6 @@ public class AlbumInfo implements Parcelable{
         artistId = in.readInt();
         albumPicPath = in.readString();
         listenNum = in.readInt();
-        songList = in.createTypedArrayList(Song.CREATOR);
     }
 
     public static final Creator<AlbumInfo> CREATOR = new Creator<AlbumInfo>() {
@@ -67,6 +67,27 @@ public class AlbumInfo implements Parcelable{
             return new AlbumInfo[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "AlbumInfo{" +
+                "id=" + id +
+                ", AlbumId=" + AlbumId +
+                ", author='" + author + '\'' +
+                ", title='" + title + '\'' +
+                ", publishCompany='" + publishCompany + '\'' +
+                ", country='" + country + '\'' +
+                ", language='" + language + '\'' +
+                ", totalCount=" + totalCount +
+                ", info='" + info + '\'' +
+                ", style='" + style + '\'' +
+                ", publishTime='" + publishTime + '\'' +
+                ", artistId=" + artistId +
+                ", albumPicPath='" + albumPicPath + '\'' +
+                ", listenNum=" + listenNum +
+                ", playList=" + songList +
+                '}';
+    }
 
     @Override
     public int describeContents() {
@@ -89,27 +110,5 @@ public class AlbumInfo implements Parcelable{
         dest.writeInt(artistId);
         dest.writeString(albumPicPath);
         dest.writeInt(listenNum);
-        dest.writeTypedList(songList);
-    }
-
-    @Override
-    public String toString() {
-        return "AlbumInfo{" +
-                "id=" + id +
-                ", AlbumId=" + AlbumId +
-                ", author='" + author + '\'' +
-                ", title='" + title + '\'' +
-                ", publishCompany='" + publishCompany + '\'' +
-                ", country='" + country + '\'' +
-                ", language='" + language + '\'' +
-                ", totalCount=" + totalCount +
-                ", info='" + info + '\'' +
-                ", style='" + style + '\'' +
-                ", publishTime='" + publishTime + '\'' +
-                ", artistId=" + artistId +
-                ", albumPicPath='" + albumPicPath + '\'' +
-                ", listenNum=" + listenNum +
-                ", playList=" + songList +
-                '}';
     }
 }

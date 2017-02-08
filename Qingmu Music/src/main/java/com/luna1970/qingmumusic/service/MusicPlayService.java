@@ -19,6 +19,7 @@ import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
+import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.Random;
@@ -43,6 +44,8 @@ public class MusicPlayService extends Service {
     private LocalBroadcastManager localBroadcastManager;
     private MediaPlayer mediaPlayer;
     private int currentSongId;
+    private boolean hasLoaded;
+    private int percent;
 
     @Override
     public void onCreate() {
@@ -120,6 +123,7 @@ public class MusicPlayService extends Service {
         mediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
+                MusicPlayService.this.percent = percent;
                 Intent intent = new Intent();
                 intent.putExtra(GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS, percent);
                 intent.setAction(GlobalConst.STATE_SERVICE_UPDATE_BUFFER_PROGRESS);
@@ -159,8 +163,14 @@ public class MusicPlayService extends Service {
             }
         }
 
+        public int getBufferedState() {
+            return MusicPlayService.this.percent;
+        }
         public void changePlayMode(int mode) {
             currentPlayMode = mode;
+        }
+        public int getPlayMode() {
+            return currentPlayMode;
         }
     }
 private PlayControlBinder playControlBinder;
@@ -227,9 +237,14 @@ private PlayControlBinder playControlBinder;
             playState.setPlaying(false);
             sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PAUSE);
         } else {
-            mediaPlayer.start();
-            playState.setPlaying(true);
-            sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PLAYING);
+            if (!hasLoaded) {
+                playSpecific(playState.getCurrentPosition());
+                hasLoaded = true;
+            } else {
+                mediaPlayer.start();
+                playState.setPlaying(true);
+                sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PLAYING);
+            }
         }
     }
 
@@ -257,6 +272,7 @@ private PlayControlBinder playControlBinder;
             return;
         }
         currentSongId = playState.getSongID();
+        playState.setPlaying(true);
         sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PLAYING);
         // 网络歌曲uri
         String songUri = UriUtils.getSongFile(currentSongId);
@@ -286,7 +302,6 @@ private PlayControlBinder playControlBinder;
                 mediaPlayer.setDataSource(song.FileLink);
                 mediaPlayer.prepare();
                 mediaPlayer.start();
-                playState.setPlaying(true);
             }
         });
     }

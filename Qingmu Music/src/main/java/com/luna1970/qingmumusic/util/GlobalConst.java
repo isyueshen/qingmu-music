@@ -35,4 +35,7 @@ public final class GlobalConst {
 
     public static final String PLAY_CONTROL_BAR_FRAGMENT_TAG = "PLAY_CONTROL_BAR_FRAGMENT_TAG";
 
+    // user info
+    public static final String CURRENT_POSITION = "CURRENT_POSITION";
+
 }
