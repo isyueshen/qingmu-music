@@ -1,5 +1,7 @@
 package com.luna1970.qingmumusic.util;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.MessageFormat;
 
 /**
@@ -23,6 +25,7 @@ public class UriUtils {
 
     private static final String SONG_FILE = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&type=json&from=webapp_music&method=baidu.ting.song.play&songid=";
 
+    private static final String QUERY_RESULT_ONLYSONG = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.suggestion&query={0}&format=json&from=ios&version=2.1.1";
     public static String getRecommendUri(int type, int offset, int size) {
         MessageFormat messageFormat = new MessageFormat(TOP_HOT);
         return messageFormat.format(new String[]{type + "", offset + "", size + ""});
@@ -51,5 +54,15 @@ public class UriUtils {
 
     public static String getSongFile(int id) {
         return SONG_FILE + id;
+    }
+
+    /**
+     * 获得查询链接
+     * @param s 查询参数
+     * @return 查询结果(仅含歌曲名称)
+     * @throws UnsupportedEncodingException
+     */
+    public static String getQueryResultOnlySong(String s) throws UnsupportedEncodingException {
+        return new MessageFormat(QUERY_RESULT_ONLYSONG).format(new String[]{URLEncoder.encode(s, "UTF-8")});
     }
 }

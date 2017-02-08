@@ -144,7 +144,7 @@ public class MainTopSongListFragment extends Fragment {
     private void requestSongInfoList(int type) {
         DataCentral.getInstance().requestTopSongList(type, 20, new DataCentral.ResponseSongListListener() {
             @Override
-            public void responseSongList(final List<Song> songList) {
+            public void onResponse(final List<Song> songList) {
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

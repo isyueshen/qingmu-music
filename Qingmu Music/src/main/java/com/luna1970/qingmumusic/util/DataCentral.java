@@ -6,11 +6,13 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.luna1970.qingmumusic.Gson.QuerySuggestion;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.application.MusicApplication;
-import com.luna1970.qingmumusic.dao.SongDao;
+import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import okhttp3.Call;
@@ -86,13 +88,44 @@ public class DataCentral {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 List<Song> songList = GsonUtils.handlerSongListByRequestDailyRecommend(response.body().string());
-                responseSongListListener.responseSongList(songList);
+                responseSongListListener.onResponse(songList);
             }
         });
     }
 
-    public interface ResponseSongListListener {
-        void responseSongList(List<Song> songList);
+    public void querySuggestion(String query, final ResponseQuerySuggestionListener responseQuerySuggestionListener) {
+        try {
+            String apiUri = UriUtils.getQueryResultOnlySong(query);
+//            Logger.d(apiUri);
+            HttpUtils.sendHttpRequest(apiUri, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Message.obtain(new Handler(Looper.getMainLooper()), new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.makeText("failed").show();
+                        }
+                    }).sendToTarget();
+                    responseQuerySuggestionListener.onResponse(null);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    responseQuerySuggestionListener.onResponse(GsonUtils.getQuerySuggestion(response.body().string()));
+                }
+            });
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
     }
+
+    public interface ResponseSongListListener {
+        void onResponse(List<Song> songList);
+    }
+
+    public interface ResponseQuerySuggestionListener {
+        void onResponse(QuerySuggestion querySuggestion);
+    }
+
 
 }

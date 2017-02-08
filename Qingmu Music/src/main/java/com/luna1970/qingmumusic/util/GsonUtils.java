@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.luna1970.qingmumusic.Gson.Album;
 import com.luna1970.qingmumusic.Gson.AlbumInfo;
 import com.luna1970.qingmumusic.Gson.Billboard;
+import com.luna1970.qingmumusic.Gson.QuerySuggestion;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.Gson.TopBillboard;
@@ -112,5 +113,14 @@ public class GsonUtils {
         TopBillboard topBillboard = null;
         topBillboard = new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(json, TopBillboard.class);
         return topBillboard;
+    }
+
+    /**
+     * 获得搜索建议(仅歌名)
+     * @param json raw String
+     * @return QuerySuggestion Object
+     */
+    public static QuerySuggestion getQuerySuggestion(String json) {
+        return new Gson().fromJson(json, QuerySuggestion.class);
     }
 }

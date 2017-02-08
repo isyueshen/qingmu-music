@@ -29,6 +29,13 @@ public class ToastUtils {
         return makeText(content);
     }
 
+    public static void show(CharSequence charSequence) {
+        makeText(charSequence).show();
+    }
+
+    public static void show(int resId) {
+        makeText(resId).show();
+    }
     public static void cancel() {
         toast.cancel();
     }
