@@ -14,5 +14,5 @@
     <string name="userAction_cancel">取消</string>
     <string name="userAction_confirm">确定</string>
     <string name="appActivityPreferences">设置</string>
-    <string name="appWigetSeracheViewHint">点击搜索...</string>
+    <string name="appWidgetSearchViewHint">点击搜索...</string>
 </resources>

@@ -13,38 +13,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/mainBackground"
-            android:stateListAnimator="@null"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:stateListAnimator="@null">
 
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                app:layout_scrollFlags="scroll|enterAlways|snap"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
 
-                <android.support.v7.widget.Toolbar
-                    android:id="@+id/toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="?attr/actionBarSize"
-                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                    app:layout_scrollFlags="scroll|enterAlways|snap"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+            </android.support.v7.widget.Toolbar>
 
-                </android.support.v7.widget.Toolbar>
+            <android.support.design.widget.TabLayout
+                android:id="@+id/tab_layout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:elevation="5dp"
+                app:tabIndicatorColor="@android:color/white"
+                app:tabMode="fixed"
+                app:tabSelectedTextColor="@android:color/white"
+                app:tabTextColor="@android:color/white">
 
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tab_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:elevation="5dp"
-                    app:tabIndicatorColor="@android:color/white"
-                    app:tabMode="fixed"
-                    app:tabSelectedTextColor="@android:color/white"
-                    app:tabTextColor="@android:color/white">
-
-                </android.support.design.widget.TabLayout>
-
+            </android.support.design.widget.TabLayout>
         </android.support.design.widget.AppBarLayout>
 
         <com.luna1970.qingmumusic.widget.CustomScrollViewPager
@@ -54,43 +51,30 @@
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         </com.luna1970.qingmumusic.widget.CustomScrollViewPager>
-        <!--<include-->
-            <!--android:layout_gravity="bottom"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--layout="@layout/fragment_play_control"/>-->
+
         <FrameLayout
             android:id="@+id/play_control_container"
-            android:layout_gravity="bottom"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom">
         </FrameLayout>
+
         <ImageView
             android:id="@+id/loading"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-        <com.lapism.searchview.SearchView
-            android:id="@+id/search_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:search_clear_on_close="true"
-            android:visibility="gone"
-            app:layout_behavior="com.lapism.searchview.SearchBehavior"
-            app:search_hint="点击搜索...">
-        </com.lapism.searchview.SearchView>
+            android:layout_height="match_parent" />
+
         <com.arlib.floatingsearchview.FloatingSearchView
             android:id="@+id/floating_search_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:floatingSearch_searchBarMarginLeft="5dp"
-            app:floatingSearch_searchBarMarginTop="3dp"
-            app:floatingSearch_searchBarMarginRight="5dp"
-            app:floatingSearch_searchHint="Search..."
-            app:floatingSearch_suggestionsListAnimDuration="250"
-            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_close_search_on_keyboard_dismiss="true"
             app:floatingSearch_leftActionMode="showHamburger"
             app:floatingSearch_menu="@menu/pop_menu"
-            app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
+            app:floatingSearch_searchHint="@string/appWidgetSearchViewHint"
+            app:floatingSearch_showSearchKey="true"
+            app:floatingSearch_suggestionsListAnimDuration="250"/>
+
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"

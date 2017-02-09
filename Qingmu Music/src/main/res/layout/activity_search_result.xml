@@ -21,17 +21,24 @@
         android:layout_marginBottom="20dp">
 
     </android.support.v7.widget.Toolbar>
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#22999999"/>
+        android:background="@color/viewListDivider"/>
     <android.support.v7.widget.RecyclerView
         android:layout_marginTop="?attr/actionBarSize"
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@id/play_control_container">
     </android.support.v7.widget.RecyclerView>
+    <FrameLayout
+        android:layout_alignParentBottom="true"
+        android:id="@+id/play_control_container"
+        android:layout_gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </FrameLayout>
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/floating_search_view"
         android:layout_width="match_parent"
@@ -39,9 +46,7 @@
         app:floatingSearch_close_search_on_keyboard_dismiss="true"
         app:floatingSearch_leftActionMode="showHome"
         app:floatingSearch_menu="@menu/pop_menu"
-        app:floatingSearch_searchBarMarginLeft="2dp"
-        app:floatingSearch_searchBarMarginRight="2dp"
-        app:floatingSearch_searchHint="Search..."
-        app:floatingSearch_showSearchKey="false"
-        app:floatingSearch_suggestionsListAnimDuration="250" />
+        app:floatingSearch_searchHint="@string/appWidgetSearchViewHint"
+        app:floatingSearch_showSearchKey="true"
+        app:floatingSearch_suggestionsListAnimDuration="250"/>
 </RelativeLayout>

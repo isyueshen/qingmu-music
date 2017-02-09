@@ -7,6 +7,7 @@
     <color name="colorPrimaryDark">#0F9D58</color>
     <color name="colorAccent">#0F9D58</color>
     <color name="mainBackground">#0F9D58</color>
+    <color name="viewListDivider">#22999999</color>
     <color name="playControlBarBackgroundPressed">#eebbbbbb</color>
     <color name="playControlBarBackground">#ddffffff</color>
     <color name="playListDialogBackgroundPressed">#eebbbbbb</color>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle">
+    <item android:drawable="@drawable/view_pressed_selector"
+        android:top="3dp"/>
+</layer-list>

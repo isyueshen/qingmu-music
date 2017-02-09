@@ -12,8 +12,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -41,11 +39,8 @@ import com.luna1970.qingmumusic.dao.SongDao;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
-import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 import com.luna1970.qingmumusic.util.DataCentral;
-import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
-import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,11 +54,7 @@ public class MainActivity extends BaseActivity {
     private Toolbar toolbar;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
-    private boolean playBarState = false;
-    private Fragment fragment;
     private SearchView searchView;
-    private SearchAdapter adapter;
-    private List<SearchItem> searchItemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +66,6 @@ public class MainActivity extends BaseActivity {
         setDrawerLayout();
         setNavigation();
         setFab();
-//        setSearchView();
         floatingSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
         setFloatingSearchView();
         floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
@@ -93,24 +83,6 @@ public class MainActivity extends BaseActivity {
         setFragment();
     }
 
-    private void setFragment() {
-        if (playState.getListSize() > 0) {
-            Logger.d(playState.getListSize());
-            fragment = new PlayControlFragment();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.play_control_container, fragment, GlobalConst.PLAY_CONTROL_BAR_FRAGMENT_TAG);
-            fragmentTransaction.commit();
-            Log.i(TAG, "setFragment: " + playState.getListSize());
-            playBarState = true;
-        }
-    }
-
-    private void removeFragment() {
-        if (fragment != null) {
-            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
-            playBarState = false;
-        }
-    }
 
     private void setFab() {
         floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
@@ -196,7 +168,7 @@ public class MainActivity extends BaseActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setTitle("text");
+            actionBar.setTitle("");
         }
     }
 
@@ -229,113 +201,22 @@ public class MainActivity extends BaseActivity {
     }
 
     private void setSearchView() {
-        searchView = (SearchView) findViewById(R.id.search_view);
-        if (searchView != null) {
-            // hint
-            searchView.setHint(R.string.appWigetSeracheViewHint);
-            // drawer layout btn
-            searchView.setOnMenuClickListener(new SearchView.OnMenuClickListener() {
-                @Override
-                public void onMenuClick() {
-                    if (drawerLayout != null) {
-                        drawerLayout.openDrawer(GravityCompat.START);
+        searchView.setOnVoiceClickListener(new SearchView.OnVoiceClickListener() {
+            @Override
+            public void onVoiceClick() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
+                            != PackageManager.PERMISSION_GRANTED) {
+                        searchView.setVoiceText("请授权该应用使用语音权限");
+                        requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_VOICE);
                     }
                 }
-            });
-            searchView.setOnOpenCloseListener(new SearchView.OnOpenCloseListener() {
-                @Override
-                public boolean onClose() {
-//                    setFragment();
-                    return false;
-                }
-
-                @Override
-                public boolean onOpen() {
-//                    removeFragment();
-                    return false;
-                }
-            });
-            // search
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    searchView.showSuggestions();
-                    return false;
-                }
-
-                @Override
-                public boolean onQueryTextChange(final String newText) {
-                    searchItemList.clear();
-                    adapter.notifyDataSetChanged();
-//                    MainActivity.this.runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            searchItemList.add(new SearchItem(newText));
-//                            adapter.notifyItemInserted(0);
-//                        }
-//                    });
-                    if (TextUtils.isEmpty(newText)) {
-                        return false;
-                    }
-                    DataCentral.getInstance().querySuggestion(newText, new DataCentral.ResponseQuerySuggestionListener() {
-                        @Override
-                        public void onResponse(final QuerySuggestion querySuggestion) {
-
-//                            MainActivity.this.runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    if (querySuggestion != null && querySuggestion.suggestionList != null) {
-//                                        for (int i = 0; i < querySuggestion.suggestionList.size(); i++) {
-//                                            if (i > 5) {
-//                                                break;
-//                                            }
-//                                            searchItemList.add(new SearchItem(querySuggestion.suggestionList.get(i)));
-//                                            adapter.notifyItemInserted(i);
-//                                            Logger.d(querySuggestion.suggestionList.get(i));
-//                                        }
-//                                    } else {
-//                                        searchItemList.add(new SearchItem("没有结果"));
-//                                        adapter.notifyItemInserted(0);
-//                                    }
-//
-//                                }
-//                            });
-                        }
-                    });
-                    return false;
-                }
-            });
-            searchView.setVoiceText("语音识别: 点击按钮开始识别!");
-            searchView.setOnVoiceClickListener(new SearchView.OnVoiceClickListener() {
-                @Override
-                public void onVoiceClick() {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.RECORD_AUDIO)
-                                != PackageManager.PERMISSION_GRANTED) {
-                            searchView.setVoiceText("请授权该应用使用语音权限");
-                            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, REQUEST_PERMISSION_VOICE);
-                        }
-                    }
-                }
-            });
-            searchItemList = new ArrayList<>();
-            adapter = new SearchAdapter(MainActivity.this, searchItemList);
-            adapter.addOnItemClickListener(new SearchAdapter.OnItemClickListener() {
-                @Override
-                public void onItemClick(View view, int position) {
-                    ToastUtils.show(position + "");
-                }
-            });
-            searchView.setAdapter(adapter);
-            SearchHistoryTable searchHistoryTable = new SearchHistoryTable(this);
-            searchHistoryTable.setHistorySize(5);
-            searchHistoryTable.clearDatabase();
-        }
+            }
+        });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
     }
 

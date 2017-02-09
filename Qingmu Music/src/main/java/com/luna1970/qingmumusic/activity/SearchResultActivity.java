@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -28,6 +29,8 @@ import java.util.List;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 public class SearchResultActivity extends BaseActivity {
 
@@ -154,5 +157,16 @@ public class SearchResultActivity extends BaseActivity {
         Intent intent = new Intent(context, SearchResultActivity.class);
         intent.putExtra(QUERY_STRING_EXTRA, queryString);
         context.startActivity(intent);
+    }
+
+    @Override
+    protected void onResume() {
+        if (!playBarState) {
+            setFragment();
+        }
+        if (playBarState && playState.getListSize() == 0) {
+            removeFragment();
+        }
+        super.onResume();
     }
 }

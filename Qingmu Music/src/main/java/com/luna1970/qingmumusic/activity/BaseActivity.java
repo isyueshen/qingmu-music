@@ -4,6 +4,8 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -19,12 +21,17 @@ import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.luna1970.qingmumusic.Gson.QuerySuggestion;
+import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.entity.ViewQuerySuggestion;
+import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 import com.luna1970.qingmumusic.util.DataCentral;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 1/28/2017.
@@ -36,6 +43,8 @@ public class BaseActivity extends AppCompatActivity {
     protected FloatingSearchView floatingSearchView;
     protected DrawerLayout drawerLayout;
 
+    protected boolean playBarState;
+    protected Fragment fragment;
     private long lastTime;
 
     @Override
@@ -67,18 +76,6 @@ public class BaseActivity extends AppCompatActivity {
             if (drawerLayout != null) {
                 floatingSearchView.attachNavigationDrawerToMenuButton(drawerLayout);
             }
-
-//            floatingSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
-//                @Override
-//                public void onMenuOpened() {
-//                    drawerLayout.openDrawer(GravityCompat.START);
-//                }
-//
-//                @Override
-//                public void onMenuClosed() {
-//                    drawerLayout.closeDrawer(GravityCompat.START);
-//                }
-//            });
             floatingSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
                 @Override
                 public void onActionMenuItemSelected(MenuItem item) {
@@ -94,65 +91,88 @@ public class BaseActivity extends AppCompatActivity {
             floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
                 @Override
                 public void onSearchTextChanged(String oldQuery, String newQuery) {
-                    if (TextUtils.isEmpty(newQuery)) {
-                        floatingSearchView.clearSuggestions();
-                        return;
-                    }
-                    // 防止用户长按delete键时持续查询
-                    long time = System.currentTimeMillis();
-//                    Logger.d(time - lastTime);
-                    if (time - lastTime < 100) {
-                        lastTime = time;
-                        return;
-                    }
-                    lastTime = time;
-                    // 显示查询状态
-                    floatingSearchView.showProgress();
-                    DataCentral.getInstance().querySuggestion(newQuery, new DataCentral.ResponseQuerySuggestionListener() {
-                        @Override
-                        public void onResponse(final QuerySuggestion querySuggestion) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    List<ViewQuerySuggestion> suggestions = new ArrayList<>();
-                                    if (querySuggestion != null && querySuggestion.suggestionList != null) {
-                                        for (int i = 0; i < querySuggestion.suggestionList.size(); i++) {
-                                            if (i > 5) {
-                                                break;
-                                            }
-                                            String content = querySuggestion.suggestionList.get(i);
-                                            if (TextUtils.isEmpty(content)) {
-                                                suggestions.add(new ViewQuerySuggestion("没有查询结果..."));
-                                            } else {
-                                                suggestions.add(new ViewQuerySuggestion(content));
-                                            }
-//                                            Logger.d(querySuggestion.suggestionList.get(i));
-                                        }
-                                    } else {
-                                        suggestions.add(new ViewQuerySuggestion("查询失败..."));
-                                        Logger.d(suggestions);
-                                    }
-                                    // 显示结果
-                                    floatingSearchView.swapSuggestions(suggestions);
-                                    floatingSearchView.hideProgress();
-                                }
-                            });
-                        }
-                    });
+                    requestQuerySuggestion(newQuery);
                 }
+
             });
             floatingSearchView.setDismissOnOutsideClick(true);
             floatingSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
                 @Override
-                public void onFocus() {}
+                public void onFocus() {
+                    requestQuerySuggestion(floatingSearchView.getQuery());
+                }
 
                 @Override
                 public void onFocusCleared() {
                     floatingSearchView.hideProgress();
-                    floatingSearchView.clearQuery();
                     floatingSearchView.clearSuggestions();
                 }
             });
+        }
+    }
+    private void requestQuerySuggestion(String newQuery) {
+        if (TextUtils.isEmpty(newQuery)) {
+            floatingSearchView.clearSuggestions();
+            return;
+        }
+        // 防止用户长按delete键时持续查询
+        long time = System.currentTimeMillis();
+//                    Logger.d(time - lastTime);
+        if (time - lastTime < 100) {
+            lastTime = time;
+            return;
+        }
+        lastTime = time;
+        // 显示查询状态
+        floatingSearchView.showProgress();
+        DataCentral.getInstance().querySuggestion(newQuery, new DataCentral.ResponseQuerySuggestionListener() {
+            @Override
+            public void onResponse(final QuerySuggestion querySuggestion) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        List<ViewQuerySuggestion> suggestions = new ArrayList<>();
+                        if (querySuggestion != null && querySuggestion.suggestionList != null) {
+                            for (int i = 0; i < querySuggestion.suggestionList.size(); i++) {
+                                if (i > 5) {
+                                    break;
+                                }
+                                String content = querySuggestion.suggestionList.get(i);
+                                if (TextUtils.isEmpty(content)) {
+                                    suggestions.add(new ViewQuerySuggestion("没有查询结果..."));
+                                } else {
+                                    suggestions.add(new ViewQuerySuggestion(content));
+                                }
+//                                            Logger.d(querySuggestion.suggestionList.get(i));
+                            }
+                        } else {
+                            suggestions.add(new ViewQuerySuggestion("查询失败..."));
+                            Logger.d(suggestions);
+                        }
+                        // 显示结果
+                        floatingSearchView.swapSuggestions(suggestions);
+                        floatingSearchView.hideProgress();
+                    }
+                });
+            }
+        });
+    }
+
+    protected void setFragment() {
+        if (playState.getListSize() > 0) {
+            Logger.d(playState.getListSize());
+            fragment = new PlayControlFragment();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.play_control_container, fragment, GlobalConst.PLAY_CONTROL_BAR_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+            playBarState = true;
+        }
+    }
+
+    protected void removeFragment() {
+        if (fragment != null) {
+            getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            playBarState = false;
         }
     }
 }
