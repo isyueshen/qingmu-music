@@ -1,6 +1,5 @@
 package com.luna1970.qingmumusic.activity;
 
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,7 +19,6 @@ import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.luna1970.qingmumusic.Gson.QuerySuggestion;
-import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.entity.ViewQuerySuggestion;
 import com.luna1970.qingmumusic.util.DataCentral;
 import com.orhanobut.logger.Logger;
@@ -102,7 +100,7 @@ public class BaseActivity extends AppCompatActivity {
                     }
                     // 防止用户长按delete键时持续查询
                     long time = System.currentTimeMillis();
-                    Logger.d(time - lastTime);
+//                    Logger.d(time - lastTime);
                     if (time - lastTime < 100) {
                         lastTime = time;
                         return;

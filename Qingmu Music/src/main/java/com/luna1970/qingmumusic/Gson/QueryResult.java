@@ -12,11 +12,11 @@ import java.util.List;
 public class QueryResult {
     public String query;
 
-    @SerializedName("is_artist")
-    public int isArtist;
+//    @SerializedName("is_artist")
+//    public int isArtist;
 
-    @SerializedName("is_album")
-    public int isAlbum;
+//    @SerializedName("is_album")
+//    public int isAlbum;
 
     @SerializedName("song_list")
     public List<Song> songList;

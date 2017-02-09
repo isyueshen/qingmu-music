@@ -29,7 +29,8 @@ public class UriUtils {
      * search suggestion list (only song name)
      */
     private static final String SEARCH_SUGGESTION_ONLY_SONG = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.suggestion&query={0}&format=json&from=ios&version=2.1.1";
-    public static final String QUREY_RESULT = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.search.common&format=json&query={0}&page_no=0&page_size=30";
+    public static final String QUERY_RESULT = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.search.common&format=json&query={0}&page_no=1&page_size=30";
+//    public static final String QUERY_RESULT = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=android&version=5.6.5.0&method=baidu.ting.search.merge&format=json&query={0}&page_no=1&page_size=50&type=-1&data_source=0&use_cluster=1 ";
     public static String getRecommendUri(int type, int offset, int size) {
         MessageFormat messageFormat = new MessageFormat(TOP_HOT);
         return messageFormat.format(new String[]{type + "", offset + "", size + ""});
@@ -77,6 +78,6 @@ public class UriUtils {
      * @throws UnsupportedEncodingException 编码错误
      */
     public static String getQueryResult(String s) throws UnsupportedEncodingException {
-        return new MessageFormat(QUREY_RESULT).format(new String[]{URLEncoder.encode(s, "UTF-8")});
+        return new MessageFormat(QUERY_RESULT).format(new String[]{URLEncoder.encode(s, "UTF-8")});
     }
 }

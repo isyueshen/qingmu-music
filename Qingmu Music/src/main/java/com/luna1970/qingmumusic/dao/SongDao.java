@@ -2,10 +2,7 @@ package com.luna1970.qingmumusic.dao;
 
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.Gson.Song$Table;
-import com.raizlabs.android.dbflow.runtime.transaction.process.ProcessModelInfo;
-import com.raizlabs.android.dbflow.runtime.transaction.process.SaveModelTransaction;
 import com.raizlabs.android.dbflow.sql.builder.Condition;
-import com.raizlabs.android.dbflow.sql.language.Delete;
 import com.raizlabs.android.dbflow.sql.language.Select;
 
 import java.util.List;

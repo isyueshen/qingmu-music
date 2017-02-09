@@ -18,9 +18,9 @@ import com.luna1970.qingmumusic.Gson.TopBillboard;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.SongListAdapter;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.UriUtils;
 import com.orhanobut.logger.Logger;
 

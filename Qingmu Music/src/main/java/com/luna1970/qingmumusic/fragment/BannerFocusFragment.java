@@ -29,10 +29,9 @@ import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.adapter.NewSongListAdapter;
 import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.CustomRecyclerItemOnClickListener;
-import com.luna1970.qingmumusic.util.DataCentral;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.UriUtils;
 
 import java.io.IOException;

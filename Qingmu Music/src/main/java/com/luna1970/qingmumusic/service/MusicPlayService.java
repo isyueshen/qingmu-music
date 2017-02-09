@@ -14,12 +14,11 @@ import android.util.Log;
 
 import com.luna1970.qingmumusic.Gson.SongInfo;
 import com.luna1970.qingmumusic.application.PlayMode;
+import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.GsonUtils;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
-import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.Random;

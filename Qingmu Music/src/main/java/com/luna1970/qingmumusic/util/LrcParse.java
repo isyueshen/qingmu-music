@@ -10,7 +10,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 
 /**
- * Created by Yue on 2/5/2017.
  * lrc parse tool
  */
 
@@ -40,12 +39,19 @@ public class LrcParse {
                 // 分
                 String minute = line.substring(line.indexOf("[") + 1, line.indexOf(":"));
                 // 秒
-                String second = line.substring(line.indexOf(":") + 1, line.indexOf("."));
+                String second = line.substring(line.indexOf(":") + 1, 6);
                 // 毫秒
-                String milliSecond = line.substring(line.indexOf(".") + 1, line.lastIndexOf("]"));
+                String milliSecond = line.substring(7, line.lastIndexOf("]"));
                 // 时间(毫秒)
                 int time = Integer.parseInt(minute) * 60 * 1000 + Integer.parseInt(second) * 1000
                         + Integer.parseInt(milliSecond) * 10;
+                // 空行则直接添加
+                if (TextUtils.isEmpty(content)) {
+                    lrcRow = new LrcRow(content, time);
+                    lrc.getLrcRowList().add(lrcRow);
+                    continue;
+                }
+                // 内容过短需要合并
                 if (merge) {
                     content = prevLine + content;
                     time = prevTime;

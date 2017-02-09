@@ -2,17 +2,13 @@ package com.luna1970.qingmumusic.application;
 
 import android.app.Activity;
 import android.app.Application;
-import android.app.usage.NetworkStatsManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkInfo;
 
-import com.bumptech.glide.Glide;
-import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.dao.UserInfo;
 import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.GlideCacheUtil;

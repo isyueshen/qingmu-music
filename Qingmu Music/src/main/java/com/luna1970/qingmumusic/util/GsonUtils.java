@@ -131,7 +131,11 @@ public class GsonUtils {
      * @return QuerySuggestion Object
      */
     public static QueryResult getQueryResult(String json) {
-
+//        try {
+//            json = new JSONObject(json).getJSONObject("result").getJSONObject("song_info").toString();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
         return new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(json, QueryResult.class);
     }
 }

@@ -1,6 +1,5 @@
 package com.luna1970.qingmumusic.widget;
 
-import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +19,6 @@ import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.adapter.PlayListAdapter;
-import com.luna1970.qingmumusic.application.MusicApplication;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 import com.luna1970.qingmumusic.util.GlobalConst;

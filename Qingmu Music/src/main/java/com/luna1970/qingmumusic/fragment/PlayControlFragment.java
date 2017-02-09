@@ -24,7 +24,6 @@ import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.activity.MusicPlayActivity;
 import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
-import com.orhanobut.logger.Logger;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 

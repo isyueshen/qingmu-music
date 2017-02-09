@@ -8,7 +8,6 @@ import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.AbsoluteSizeSpan;
 import android.text.style.ForegroundColorSpan;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -91,62 +90,33 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
     public void onBindViewHolder(SearchResultListAdapter.ViewHolder holder, final int position) {
         // 获得当前视图对应的song object
         final Song song = songList.get(position);
-        // 设置标题
-        String startFlag = "<em>";
-        String endFlag = "</em>";
 
+        // 初始化歌曲名
         String title = song.title;
-        SpannableStringBuilder titleSSB = new SpannableStringBuilder(title);
-        Log.d(TAG, "onBindViewHolder: " + titleSSB + " --> " + position);
-        if (TextUtils.isEmpty(song.title)) {
-            titleSSB.clear();
-        } else {
-            titleSSB.setSpan(new ForegroundColorSpan(Color.BLACK), 0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if (title.contains(startFlag)) {
-                int start = title.indexOf(startFlag);
-                int end = title.indexOf(endFlag);
-                titleSSB.setSpan(new ForegroundColorSpan(0xFF0F9D58), start + 4, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                titleSSB.replace(start, start + 4, "");
-                titleSSB.replace(end-4, end+1, "");
-            }
-        }
-
+        SpannableStringBuilder temp = new SpannableStringBuilder(title);
+        temp.setSpan(new ForegroundColorSpan(Color.BLACK), 0, title.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder titleSSB = parseTitle(temp);
+        // 初始化艺术家
         String author = " - " + song.author;
-        SpannableStringBuilder authorSSB = new SpannableStringBuilder(author);
-        Log.d(TAG, "onBindViewHolder: " + authorSSB + " --> " + position);
-        if (TextUtils.isEmpty(song.author)) {
-            authorSSB.clear();
-        } else {
-            authorSSB.setSpan(new AbsoluteSizeSpan(12, true), 0, author.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            authorSSB.setSpan(new ForegroundColorSpan(0xFFAAAAAA), 0, author.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if (author.contains(startFlag)) {
-                int start = author.indexOf(startFlag);
-                int end = author.indexOf(endFlag);
-                authorSSB.setSpan(new ForegroundColorSpan(0xFF0F9D58), start + 4, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                authorSSB.replace(start, start + 4, "");
-                authorSSB.replace(end-4, end+1, "");
-            }
-        }
+        temp = new SpannableStringBuilder(author);
+        temp.setSpan(new AbsoluteSizeSpan(12, true), 0, author.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        temp.setSpan(new ForegroundColorSpan(0xFFAAAAAA), 0, author.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder authorSSB = parseAuthor(temp);
+
         holder.songTitle.setText(titleSSB.append(authorSSB));
 
-        String album = "专辑: " + song.albumTitle;
-        SpannableStringBuilder albumSSB = new SpannableStringBuilder(album);
-        Log.d(TAG, "onBindViewHolder: " + albumSSB + " --> " + position);
+        // 若为空, 则隐藏
         if (TextUtils.isEmpty(song.albumTitle)) {
             holder.songAlbum.setVisibility(View.GONE);
-            albumSSB.clear();
         } else {
+            // 初始化专辑名称
             holder.songAlbum.setVisibility(View.VISIBLE);
-            albumSSB.setSpan(new ForegroundColorSpan(0xFFAAAAAA), 0, album.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-            if (album.contains(startFlag)) {
-                int start = album.indexOf(startFlag);
-                int end = album.indexOf(endFlag);
-                albumSSB.setSpan(new ForegroundColorSpan(0xFF0F9D58), start + 4, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                albumSSB.replace(start, start + 4, "");
-                albumSSB.replace(end-4, end+1, "");
-            }
+            String album = "专辑: " + song.albumTitle;
+            temp = new SpannableStringBuilder(album);
+            temp.setSpan(new ForegroundColorSpan(0xFFAAAAAA), 0, album.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+            SpannableStringBuilder albumSSB = parseAuthor(temp);
+            holder.songAlbum.setText(albumSSB);
         }
-        holder.songAlbum.setText(albumSSB);
 
         holder.menuBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -167,6 +137,90 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
         });
     }
 
+    /**
+     * 递归解析歌曲名称
+     * @param raw 原始字符串
+     * @return 解析后的字符串
+     */
+    private SpannableStringBuilder parseTitle(CharSequence raw) {
+        // 标签
+        String startFlag = "<em>";
+        String endFlag = "</em>";
+        SpannableStringBuilder titleSSB = new SpannableStringBuilder(raw);
+        String title = raw.toString();
+        if (TextUtils.isEmpty(title)) {
+            titleSSB.clear();
+            return titleSSB;
+        } else {
+            if (title.contains(startFlag)) {
+                int start = title.indexOf(startFlag);
+                int end = title.indexOf(endFlag);
+                titleSSB.setSpan(new ForegroundColorSpan(0xFF0F9D58), start + startFlag.length(), end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                titleSSB.replace(start, start + startFlag.length(), "");
+                titleSSB.replace(end-startFlag.length(), end+endFlag.length()-startFlag.length(), "");
+            } else {
+                return titleSSB;
+            }
+            return parseTitle(titleSSB);
+        }
+    }
+
+    /**
+     * 递归解析艺术家名称
+     * @param raw 原始字符串
+     * @return 解析后的字符串
+     */
+    private SpannableStringBuilder parseAuthor(CharSequence raw) {
+        // 标签
+        String startFlag = "<em>";
+        String endFlag = "</em>";
+        String author = raw.toString();
+        SpannableStringBuilder authorSSB = new SpannableStringBuilder(raw);
+        if (TextUtils.isEmpty(author)) {
+            authorSSB.clear();
+            return authorSSB;
+        } else {
+            if (author.contains(startFlag)) {
+                int start = author.indexOf(startFlag);
+                int end = author.indexOf(endFlag);
+                authorSSB.setSpan(new ForegroundColorSpan(0xFF0F9D58), start + 4, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                authorSSB.replace(start, start + 4, "");
+                authorSSB.replace(end-4, end+1, "");
+            } else {
+                return authorSSB;
+            }
+            return parseAuthor(authorSSB);
+        }
+    }
+
+    /**
+     * 递归解析专辑名称
+     * @param raw 原始字符串
+     * @return 解析后的字符串
+     */
+    private SpannableStringBuilder parseAlbum(CharSequence raw) {
+        // 标签
+        String startFlag = "<em>";
+        String endFlag = "</em>";
+        String album = raw.toString();
+        SpannableStringBuilder albumSSB = new SpannableStringBuilder(raw);
+        if (TextUtils.isEmpty(album)) {
+            albumSSB.clear();
+            return albumSSB;
+        } else {
+            if (album.contains(startFlag)) {
+                int start = album.indexOf(startFlag);
+                int end = album.indexOf(endFlag);
+                albumSSB.setSpan(new ForegroundColorSpan(0xFF0F9D58), start + 4, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                albumSSB.replace(start, start + 4, "");
+                albumSSB.replace(end-4, end+1, "");
+            } else {
+                return albumSSB;
+            }
+            return parseAlbum(albumSSB);
+        }
+    }
+
     @Override
     public int getItemViewType(int position) {
         return super.getItemViewType(position);
@@ -177,10 +231,16 @@ public class SearchResultListAdapter extends RecyclerView.Adapter<SearchResultLi
         return songList.size();
     }
 
+    /**
+     * 菜单按钮监听
+     */
     public interface MenuOnClickListener {
         void onClick(int position);
     }
 
+    /**
+     * 单项单击监听
+     */
     public interface ItemOnClickListener {
         void onClick(int position);
     }

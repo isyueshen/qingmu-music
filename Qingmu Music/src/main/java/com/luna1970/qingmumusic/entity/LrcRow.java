@@ -11,10 +11,7 @@ public class LrcRow {
 
     @Override
     public String toString() {
-        return "LrcRow{" +
-                "content='" + content + '\'' +
-                ", time=" + time +
-                '}';
+        return content;
     }
 
     public String getContent() {
