@@ -25,7 +25,11 @@ public class UriUtils {
 
     private static final String SONG_FILE = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&type=json&from=webapp_music&method=baidu.ting.song.play&songid=";
 
-    private static final String QUERY_RESULT_ONLYSONG = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.suggestion&query={0}&format=json&from=ios&version=2.1.1";
+    /**
+     * search suggestion list (only song name)
+     */
+    private static final String SEARCH_SUGGESTION_ONLY_SONG = "http://tingapi.ting.baidu.com/v1/restserver/ting?method=baidu.ting.search.suggestion&query={0}&format=json&from=ios&version=2.1.1";
+    public static final String QUREY_RESULT = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.search.common&format=json&query={0}&page_no=0&page_size=30";
     public static String getRecommendUri(int type, int offset, int size) {
         MessageFormat messageFormat = new MessageFormat(TOP_HOT);
         return messageFormat.format(new String[]{type + "", offset + "", size + ""});
@@ -57,12 +61,22 @@ public class UriUtils {
     }
 
     /**
-     * 获得查询链接
+     * 获得搜索建议链接
      * @param s 查询参数
      * @return 查询结果(仅含歌曲名称)
-     * @throws UnsupportedEncodingException
+     * @throws UnsupportedEncodingException 编码错误
      */
-    public static String getQueryResultOnlySong(String s) throws UnsupportedEncodingException {
-        return new MessageFormat(QUERY_RESULT_ONLYSONG).format(new String[]{URLEncoder.encode(s, "UTF-8")});
+    public static String getSearchSuggestionOnlySong(String s) throws UnsupportedEncodingException {
+        return new MessageFormat(SEARCH_SUGGESTION_ONLY_SONG).format(new String[]{URLEncoder.encode(s, "UTF-8")});
+    }
+
+    /**
+     * 获得查询链接
+     * @param s 查询参数
+     * @return 查询结果
+     * @throws UnsupportedEncodingException 编码错误
+     */
+    public static String getQueryResult(String s) throws UnsupportedEncodingException {
+        return new MessageFormat(QUREY_RESULT).format(new String[]{URLEncoder.encode(s, "UTF-8")});
     }
 }

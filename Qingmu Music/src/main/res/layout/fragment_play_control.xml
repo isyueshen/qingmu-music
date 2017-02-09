@@ -3,7 +3,7 @@
     android:id="@+id/play_control_bar"
     android:layout_width="match_parent"
     android:layout_height="53dp"
-    android:background="@drawable/play_control_bar_selector"
+    android:background="@drawable/view_pressed_selector"
     android:clickable="true"
     android:orientation="vertical">
 

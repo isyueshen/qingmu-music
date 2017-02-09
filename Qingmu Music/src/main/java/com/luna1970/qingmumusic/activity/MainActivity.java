@@ -6,12 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.os.PersistableBundle;
 import android.os.Process;
-import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -28,15 +24,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
-import com.arlib.floatingsearchview.suggestions.SearchSuggestionsAdapter;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.bumptech.glide.Glide;
 import com.lapism.searchview.SearchAdapter;
@@ -46,13 +38,11 @@ import com.lapism.searchview.SearchView;
 import com.luna1970.qingmumusic.Gson.QuerySuggestion;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.dao.SongDao;
-import com.luna1970.qingmumusic.entity.ViewQuerySuggestion;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
 import com.luna1970.qingmumusic.fragment.PlayControlFragment;
 import com.luna1970.qingmumusic.util.DataCentral;
-import com.luna1970.qingmumusic.util.GlideCacheUtil;
 import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.ToastUtils;
 import com.orhanobut.logger.Logger;
@@ -65,7 +55,6 @@ import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 public class MainActivity extends BaseActivity {
     private static final String TAG = "MainActivity";
     public static final int REQUEST_PERMISSION_VOICE = 1;
-    private DrawerLayout drawerLayout;
     private FloatingActionButton floatingActionButton;
     private Toolbar toolbar;
     private ActionBarDrawerToggle actionBarDrawerToggle;
@@ -75,13 +64,11 @@ public class MainActivity extends BaseActivity {
     private SearchView searchView;
     private SearchAdapter adapter;
     private List<SearchItem> searchItemList;
-    private Handler handler;
-    private FloatingSearchView floatingSearchView;
-    private long lastTime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         setViews();
         setToolbar();
@@ -89,16 +76,21 @@ public class MainActivity extends BaseActivity {
         setNavigation();
         setFab();
 //        setSearchView();
+        floatingSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
         setFloatingSearchView();
+        floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+                SearchResultActivity.startAction(MainActivity.this, searchSuggestion.getBody());
+            }
+
+            @Override
+            public void onSearchAction(String currentQuery) {
+                SearchResultActivity.startAction(MainActivity.this, currentQuery);
+            }
+        });
         playState.updatePlayList(SongDao.getSongList());
         setFragment();
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                searchItemList.add(new SearchItem("dfdsaf"));
-                adapter.notifyItemInserted(0);
-            }
-        };
     }
 
     private void setFragment() {
@@ -275,7 +267,6 @@ public class MainActivity extends BaseActivity {
                 public boolean onQueryTextChange(final String newText) {
                     searchItemList.clear();
                     adapter.notifyDataSetChanged();
-                    handler.sendEmptyMessage(1);
 //                    MainActivity.this.runOnUiThread(new Runnable() {
 //                        @Override
 //                        public void run() {
@@ -339,112 +330,6 @@ public class MainActivity extends BaseActivity {
             SearchHistoryTable searchHistoryTable = new SearchHistoryTable(this);
             searchHistoryTable.setHistorySize(5);
             searchHistoryTable.clearDatabase();
-        }
-    }
-
-
-    private void setFloatingSearchView() {
-        floatingSearchView = (FloatingSearchView) findViewById(R.id.floating_search_view);
-        if (floatingSearchView != null) {
-            floatingSearchView.attachNavigationDrawerToMenuButton(drawerLayout);
-//            floatingSearchView.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
-//                @Override
-//                public void onMenuOpened() {
-//                    drawerLayout.openDrawer(GravityCompat.START);
-//                }
-//
-//                @Override
-//                public void onMenuClosed() {
-//                    drawerLayout.closeDrawer(GravityCompat.START);
-//                }
-//            });
-            floatingSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
-                @Override
-                public void onActionMenuItemSelected(MenuItem item) {
-                    Log.d(TAG, "onActionMenuItemSelected() called with: item = [" + item + "]");
-                }
-            });
-            floatingSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
-                @Override
-                public void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView, SearchSuggestion item, int itemPosition) {
-                    // 暂时不知有何用
-                }
-            });
-            floatingSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
-                @Override
-                public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
-                    Log.d(TAG, "onSuggestionClicked() called with: searchSuggestion = [" + searchSuggestion + "]");
-                }
-
-                @Override
-                public void onSearchAction(String currentQuery) {
-                    Log.d(TAG, "onSearchAction() called with: currentQuery = [" + currentQuery + "]");
-                }
-            });
-            floatingSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
-                @Override
-                public void onSearchTextChanged(String oldQuery, String newQuery) {
-                    if (TextUtils.isEmpty(newQuery)) {
-                        floatingSearchView.clearSuggestions();
-                        return;
-                    }
-                    // 防止用户长按delete键时持续查询
-                    long time = System.currentTimeMillis();
-                    Logger.d(time - lastTime);
-                    if (time - lastTime < 100) {
-                        lastTime = time;
-                        return;
-                    }
-                    lastTime = time;
-                    // 显示查询状态
-                    floatingSearchView.showProgress();
-                    DataCentral.getInstance().querySuggestion(newQuery, new DataCentral.ResponseQuerySuggestionListener() {
-                        @Override
-                        public void onResponse(final QuerySuggestion querySuggestion) {
-                            MainActivity.this.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    List<ViewQuerySuggestion> suggestions = new ArrayList<>();
-                                    if (querySuggestion != null && querySuggestion.suggestionList != null) {
-                                        for (int i = 0; i < querySuggestion.suggestionList.size(); i++) {
-                                            if (i > 5) {
-                                                break;
-                                            }
-                                            String content = querySuggestion.suggestionList.get(i);
-                                            if (TextUtils.isEmpty(content)) {
-                                                suggestions.add(new ViewQuerySuggestion("没有查询结果..."));
-                                            } else {
-                                                suggestions.add(new ViewQuerySuggestion(content));
-                                            }
-//                                            Logger.d(querySuggestion.suggestionList.get(i));
-                                        }
-                                    } else {
-                                        suggestions.add(new ViewQuerySuggestion("查询失败..."));
-                                        Logger.d(suggestions);
-                                    }
-                                    // 显示结果
-                                    floatingSearchView.swapSuggestions(suggestions);
-                                    floatingSearchView.hideProgress();
-                                }
-                            });
-                        }
-                    });
-                }
-            });
-            floatingSearchView.setDismissOnOutsideClick(true);
-            floatingSearchView.setOnFocusChangeListener(new FloatingSearchView.OnFocusChangeListener() {
-                @Override
-                public void onFocus() {
-                    floatingSearchView.showProgress();
-                }
-
-                @Override
-                public void onFocusCleared() {
-                    floatingSearchView.hideProgress();
-                    floatingSearchView.clearQuery();
-                    floatingSearchView.clearSuggestions();
-                }
-            });
         }
     }
 

@@ -59,6 +59,8 @@
         <meta-data
             android:name="com.luna1970.qingmumusic.application.CustomGlideModule"
             android:value="GlideModule" />
+
+        <activity android:name=".activity.SearchResultActivity"></activity>
     </application>
 
 </manifest>

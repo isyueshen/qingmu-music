@@ -8,6 +8,7 @@ import com.google.gson.reflect.TypeToken;
 import com.luna1970.qingmumusic.Gson.Album;
 import com.luna1970.qingmumusic.Gson.AlbumInfo;
 import com.luna1970.qingmumusic.Gson.Billboard;
+import com.luna1970.qingmumusic.Gson.QueryResult;
 import com.luna1970.qingmumusic.Gson.QuerySuggestion;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.Gson.SongInfo;
@@ -122,5 +123,15 @@ public class GsonUtils {
      */
     public static QuerySuggestion getQuerySuggestion(String json) {
         return new Gson().fromJson(json, QuerySuggestion.class);
+    }
+
+    /**
+     * 获得搜索结果
+     * @param json raw String
+     * @return QuerySuggestion Object
+     */
+    public static QueryResult getQueryResult(String json) {
+
+        return new GsonBuilder().setExclusionStrategies(new SpecificClassExclusionStrategy(null, BaseModel.class)).create().fromJson(json, QueryResult.class);
     }
 }

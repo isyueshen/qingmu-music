@@ -121,6 +121,7 @@ public class AlbumDetailActivity extends BaseActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        songList.clear();
                         songList.addAll(albumInfo.songList);
                         songListAdapter.notifyDataSetChanged();
                     }

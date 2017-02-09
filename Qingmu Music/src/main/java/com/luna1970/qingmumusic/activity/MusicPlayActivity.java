@@ -96,6 +96,7 @@ public class MusicPlayActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setMaterialDesign();
         setContentView(R.layout.activity_music_play);
         Glide.get(this).clearMemory();
 //
@@ -458,6 +459,9 @@ public class MusicPlayActivity extends BaseActivity {
     }
 
     public void setLrcView() {
+        if (playState.getListSize()<1) {
+            return;
+        }
         // 设置歌词
         Song song = playState.getSong();
         String uri = song.lrcPath;

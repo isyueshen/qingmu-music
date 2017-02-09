@@ -51,6 +51,7 @@ public class TopBillboardActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setMaterialDesign();
         setContentView(R.layout.activity_top_billboard);
         Logger.init(TAG);
         Glide.get(this).clearMemory();

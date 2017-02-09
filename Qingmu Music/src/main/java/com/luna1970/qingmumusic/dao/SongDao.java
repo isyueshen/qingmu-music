@@ -17,13 +17,13 @@ import java.util.List;
 
 public class SongDao {
     public static void saveAll(List<Song> songList) {
-        deleteAll();
-        new SaveModelTransaction<>(ProcessModelInfo.withModels(songList)).onExecute();
+//        deleteAll();
+//        new SaveModelTransaction<>(ProcessModelInfo.withModels(songList)).onExecute();
     }
     public static List<Song> getSongList() {
         return new Select().from(Song.class).where(Condition.column(Song$Table.PLAYLISTID).is(0)).queryList();
     }
     public static void deleteAll() {
-        Delete.table(Song.class, Condition.column(Song$Table.PLAYLISTID).is(0));
+//        Delete.table(Song.class, Condition.column(Song$Table.PLAYLISTID).is(0));
     }
 }

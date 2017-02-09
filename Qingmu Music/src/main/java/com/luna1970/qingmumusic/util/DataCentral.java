@@ -6,6 +6,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.v4.content.LocalBroadcastManager;
 
+import com.luna1970.qingmumusic.Gson.QueryResult;
 import com.luna1970.qingmumusic.Gson.QuerySuggestion;
 import com.luna1970.qingmumusic.Gson.Song;
 import com.luna1970.qingmumusic.application.MusicApplication;
@@ -40,9 +41,6 @@ public class DataCentral {
         }
         return dataCentral;
     }
-
-
-
 
     public void requestTopSongToPlay(final int type, final int position) {
         String apiUri = UriUtils.getRecommendUri(type, 0, 100);
@@ -95,7 +93,7 @@ public class DataCentral {
 
     public void querySuggestion(String query, final ResponseQuerySuggestionListener responseQuerySuggestionListener) {
         try {
-            String apiUri = UriUtils.getQueryResultOnlySong(query);
+            String apiUri = UriUtils.getSearchSuggestionOnlySong(query);
 //            Logger.d(apiUri);
             HttpUtils.sendHttpRequest(apiUri, new Callback() {
                 @Override
@@ -119,6 +117,33 @@ public class DataCentral {
         }
     }
 
+    public void queryResult(String query, final ResponseQueryResultListener responseQueryResultListener) {
+        try {
+            String apiUri = UriUtils.getQueryResult(query);
+            Logger.d(apiUri);
+            HttpUtils.sendHttpRequest(apiUri, new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    Message.obtain(new Handler(Looper.getMainLooper()), new Runnable() {
+                        @Override
+                        public void run() {
+                            ToastUtils.makeText("failed").show();
+                        }
+                    }).sendToTarget();
+                    responseQueryResultListener.onResponse(null);
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    String s = response.body().string();
+                    responseQueryResultListener.onResponse(GsonUtils.getQueryResult(s));
+                }
+            });
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
+
     public interface ResponseSongListListener {
         void onResponse(List<Song> songList);
     }
@@ -127,5 +152,8 @@ public class DataCentral {
         void onResponse(QuerySuggestion querySuggestion);
     }
 
+    public interface ResponseQueryResultListener {
+        void onResponse(QueryResult queryResult);
+    }
 
 }
