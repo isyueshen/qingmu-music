@@ -24,7 +24,6 @@ import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 /**
  * Created by Yue on 2/8/2017.
- *
  */
 
 public class DataCentral {
@@ -142,6 +141,14 @@ public class DataCentral {
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+
+    public void preparePlay(int songId) {
+        Intent intent = new Intent();
+        intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC_SONG_ID);
+        intent.putExtra("song_id", songId);
+        localBroadcastManager.sendBroadcast(intent);
     }
 
     public interface ResponseSongListListener {

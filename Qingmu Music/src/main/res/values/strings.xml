@@ -15,6 +15,7 @@
     <string name="userAction_confirm">OK</string>
     <string name="userAction_cancel">Cancel</string>
     <string name="appWidgetSearchViewHint">Click to Search...</string>
+    <string name="fragmentViewMore">More</string>
     <string-array name="pref_screenLanguage_entries">
         <item>自动</item>
         <item>English</item>

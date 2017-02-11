@@ -9,8 +9,8 @@ android {
         applicationId "com.luna1970.qingmumusic"
         minSdkVersion 17
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode 33
+        versionName "1.1.0.33"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 

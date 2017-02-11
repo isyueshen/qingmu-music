@@ -11,6 +11,7 @@ public final class GlobalConst {
     public static final String ACTION_PLAY_NEXT = "PLAY_NEXT";
     public static final String ACTION_PLAY_PREV = "PLAY_PREV";
     public static final String ACTION_PLAY_SPECIFIC = "PLAY_SPECIFIC";
+    public static final String ACTION_PLAY_SPECIFIC_SONG_ID = "ACTION_PLAY_SPECIFIC_SONG_ID";
     public static final String ACTION_PLAY_STOP = "ACTION_PLAY_STOP";
 
     // playing mode
@@ -38,4 +39,7 @@ public final class GlobalConst {
     // user info
     public static final String CURRENT_POSITION = "CURRENT_POSITION";
 
+    // update info
+    public static final String UPDATE_WEBSITE = "http://www.qingmu.tech";
+    public static final String UPDATE_WEBSITE_PACKAGE_INFO = "http://www.qingmu.tech/update.xml";
 }

@@ -60,7 +60,21 @@
             android:name="com.luna1970.qingmumusic.application.CustomGlideModule"
             android:value="GlideModule" />
 
-        <activity android:name=".activity.SearchResultActivity"></activity>
+        <activity android:name=".activity.SearchResultActivity" />
+
+        <service
+            android:name=".service.DownloadIntentService"
+            android:exported="false">
+        </service>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.luna1970.qingmumusic.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"/>
+        </provider>
     </application>
 
 </manifest>

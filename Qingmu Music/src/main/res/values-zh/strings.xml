@@ -15,4 +15,5 @@
     <string name="userAction_confirm">确定</string>
     <string name="appActivityPreferences">设置</string>
     <string name="appWidgetSearchViewHint">点击搜索...</string>
+    <string name="fragmentViewMore">查看更多</string>
 </resources>

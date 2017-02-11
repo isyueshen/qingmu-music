@@ -65,5 +65,13 @@
             android:key="prefEasy_lowBattery"
             android:summary="不开启"
             android:title="在低电量时停止播放" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="prefEasy_updatePackageOnWifi"
+            android:summary="仅Wi-Fi网络"
+            android:title="自动下载最新安装包" />
+        <Preference
+            android:key="prefEasy_checkForUpdate"
+            android:title="手动检查更新" />
     </PreferenceCategory>
 </PreferenceScreen>

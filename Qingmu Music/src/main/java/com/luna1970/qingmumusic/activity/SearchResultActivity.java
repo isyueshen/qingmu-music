@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -17,10 +16,9 @@ import com.luna1970.qingmumusic.adapter.SearchResultListAdapter;
 import com.luna1970.qingmumusic.entity.Lrc;
 import com.luna1970.qingmumusic.util.DataCentral;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.LrcParse;
+import com.luna1970.qingmumusic.util.ParseUtils;
 import com.luna1970.qingmumusic.util.ToastUtils;
 import com.orhanobut.dialogplus.DialogPlus;
-import com.orhanobut.logger.Logger;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -60,6 +58,7 @@ public class SearchResultActivity extends BaseActivity {
             @Override
             public void onClick(int position) {
                 ToastUtils.show(position + "");
+                DataCentral.getInstance().preparePlay(songList.get(position).songId);
             }
         });
         searchResultListAdapter.setMenuOnClickListener(new SearchResultListAdapter.MenuOnClickListener() {
@@ -73,7 +72,7 @@ public class SearchResultActivity extends BaseActivity {
 
                     @Override
                     public void onResponse(Call call, final Response response) throws IOException {
-                        final Lrc lrc = LrcParse.parseLrc(response.body().string());
+                        final Lrc lrc = ParseUtils.parseLrc(response.body().string());
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -133,7 +132,6 @@ public class SearchResultActivity extends BaseActivity {
                     public void run() {
                         if (queryResult != null) {
                             songList.clear();
-                            Logger.d(queryResult);
                             if (queryResult.songList != null && !queryResult.songList.isEmpty()) {
                                 songList.addAll(queryResult.songList);
                                 searchResultListAdapter.notifyDataSetChanged();

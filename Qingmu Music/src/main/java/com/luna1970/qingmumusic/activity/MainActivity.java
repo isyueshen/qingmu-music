@@ -20,7 +20,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -29,21 +28,13 @@ import android.view.View;
 import com.arlib.floatingsearchview.FloatingSearchView;
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.bumptech.glide.Glide;
-import com.lapism.searchview.SearchAdapter;
-import com.lapism.searchview.SearchHistoryTable;
-import com.lapism.searchview.SearchItem;
 import com.lapism.searchview.SearchView;
-import com.luna1970.qingmumusic.Gson.QuerySuggestion;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.dao.SongDao;
 import com.luna1970.qingmumusic.fragment.MainFragment;
 import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
 import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
-import com.luna1970.qingmumusic.util.DataCentral;
 import com.luna1970.qingmumusic.util.ToastUtils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -55,10 +46,13 @@ public class MainActivity extends BaseActivity {
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private NavigationView navigationView;
     private SearchView searchView;
+    private ViewPager viewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setMaterialDesign();
+
 
         setContentView(R.layout.activity_main);
         setViews();
@@ -169,11 +163,12 @@ public class MainActivity extends BaseActivity {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle("");
+            actionBar.setDisplayHomeAsUpEnabled(false);
         }
     }
 
     private void setViews() {
-        ViewPager viewPager = (ViewPager) findViewById(R.id.view_pager);
+        viewPager = (ViewPager) findViewById(R.id.view_pager);
         MainFragmentViewPagerFragment mainFragmentViewPagerFragment = new MainFragmentViewPagerFragment(getSupportFragmentManager());
         mainFragmentViewPagerFragment.addFragment(new MainFragment(), "榜单");
         mainFragmentViewPagerFragment.addFragment(new MainTopSongListFragment(), "电台");

@@ -30,7 +30,7 @@
             android:textSize="20sp"
             android:gravity="center"
             android:textColor="@color/mainBackground"
-            android:text="More"
+            android:text="@string/fragmentViewMore"
             android:layout_marginEnd="22sp"/>
 
     </LinearLayout>

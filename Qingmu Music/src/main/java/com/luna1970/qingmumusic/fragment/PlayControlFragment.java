@@ -8,12 +8,13 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -36,9 +37,9 @@ import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
 public class PlayControlFragment extends Fragment {
     private static final String TAG = "PlayControlFragment";
-    private ImageView playOrPause;
-    private ImageView playList;
-    private ImageView playNext;
+    private ImageButton playOrPause;
+    private ImageButton playList;
+    private ImageButton playNext;
     private TextView musicTitleTV;
     private TextView musicArtistTV;
     private CircleImageView miniAlbumPic;
@@ -65,9 +66,9 @@ public class PlayControlFragment extends Fragment {
      */
     private void initView(View view) {
         miniAlbumPic = (CircleImageView) view.findViewById(R.id.miniAlbumPic);
-        playOrPause = (ImageView) view.findViewById(R.id.playOrPause);
-        playList = (ImageView) view.findViewById(R.id.play_list);
-        playNext = (ImageView) view.findViewById(R.id.playNext);
+        playOrPause = (ImageButton) view.findViewById(R.id.playOrPause);
+        playList = (ImageButton) view.findViewById(R.id.play_list);
+        playNext = (ImageButton) view.findViewById(R.id.playNext);
         musicTitleTV = (TextView) view.findViewById(R.id.music_title_tv);
         musicArtistTV = (TextView) view.findViewById(R.id.musicArtistTV);
         progressBar = (ProgressBar) view.findViewById(R.id.progress_bar);
@@ -87,7 +88,7 @@ public class PlayControlFragment extends Fragment {
             musicTitleTV.setText(song.title);
             musicArtistTV.setText(song.author);
             if (playState.isPlaying()) {
-                playOrPause.setImageResource(R.drawable.pause);
+                playOrPause.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.pause));
             }
         }
     }

@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
 import com.luna1970.qingmumusic.dao.UserInfo;
+import com.luna1970.qingmumusic.service.DownloadIntentService;
 import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.GlideCacheUtil;
 import com.luna1970.qingmumusic.util.ToastUtils;
@@ -41,7 +42,12 @@ public class MusicApplication extends Application {
         startService(intent);
         FlowManager.init(getApplicationContext());
         initUserInfo();
+        readPreference();
         setBroadcastReceiver();
+    }
+
+    private void readPreference() {
+
     }
 
     private void initUserInfo() {
@@ -70,6 +76,7 @@ public class MusicApplication extends Application {
                                 // wifi
                                 case ConnectivityManager.TYPE_WIFI:
                                     currentNetType = ConnectivityManager.TYPE_WIFI;
+                                    DownloadIntentService.startActionCheckForUpdate(MusicApplication.this, true, true, null);
                                     break;
                             }
                         } else {

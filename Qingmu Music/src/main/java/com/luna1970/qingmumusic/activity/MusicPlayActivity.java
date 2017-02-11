@@ -40,7 +40,7 @@ import com.luna1970.qingmumusic.listener.LrcViewSingleTapUpListener;
 import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.HttpUtils;
-import com.luna1970.qingmumusic.util.LrcParse;
+import com.luna1970.qingmumusic.util.ParseUtils;
 import com.luna1970.qingmumusic.util.ScreenUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
 import com.luna1970.qingmumusic.widget.LrcView;
@@ -478,7 +478,7 @@ public class MusicPlayActivity extends BaseActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                Lrc lrc = LrcParse.parseLrc(response.body().string());
+                Lrc lrc = ParseUtils.parseLrc(response.body().string());
                 lrcView.setLrc(lrc);
             }
         });

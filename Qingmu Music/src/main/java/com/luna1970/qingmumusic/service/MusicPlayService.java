@@ -55,6 +55,7 @@ public class MusicPlayService extends Service {
         intentFilter.addAction(GlobalConst.ACTION_PLAY_NEXT);
         intentFilter.addAction(GlobalConst.ACTION_PLAY_PREV);
         intentFilter.addAction(GlobalConst.ACTION_PLAY_SPECIFIC);
+        intentFilter.addAction(GlobalConst.ACTION_PLAY_SPECIFIC_SONG_ID);
         intentFilter.addAction(GlobalConst.ACTION_PLAY_MODE_CHANGED);
         intentFilter.addAction(GlobalConst.ACTION_REFRESH_PLAY_LIST);
         intentFilter.addAction(GlobalConst.ACTION_SEEK_BAR_PROGRESS_CHANGED);
@@ -115,7 +116,7 @@ public class MusicPlayService extends Service {
                 } else if (playState.getCurrentPlayMode() == playState.getListSize()) {
                     return;
                 }
-                playNext();
+//                playNext();
                 Log.i(TAG, "onCompletion: ");
             }
         });
@@ -132,13 +133,13 @@ public class MusicPlayService extends Service {
         mediaPlayer.setOnSeekCompleteListener(new MediaPlayer.OnSeekCompleteListener() {
             @Override
             public void onSeekComplete(MediaPlayer mp) {
-                Log.d(TAG, "onSeekComplete() called with: mp = [" + mp + "]");
+//                Log.d(TAG, "onSeekComplete() called with: mp = [" + mp + "]");
             }
         });
         mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                Log.d(TAG, "onPrepared() called with: mp = [" + mp + "]");
+//                Log.d(TAG, "onPrepared() called with: mp = [" + mp + "]");
             }
         });
     }
@@ -189,8 +190,11 @@ private PlayControlBinder playControlBinder;
                 String action = intent.getAction();
                 Log.i(TAG, "onReceive: " + action);
                 switch (action) {
+                    case GlobalConst.ACTION_PLAY_SPECIFIC_SONG_ID:
+                        preparePlay(intent.getIntExtra("song_id", 0));
+                        break;
                     case GlobalConst.ACTION_PLAY_SPECIFIC:
-                        int position = intent.getIntExtra(GlobalConst.ACTION_PLAY_SPECIFIC, 0);
+                        int position = intent.getIntExtra(GlobalConst.ACTION_PLAY_SPECIFIC, -1);
                         playSpecific(position);
                         break;
                     case GlobalConst.ACTION_PLAY_NEXT:
@@ -273,15 +277,18 @@ private PlayControlBinder playControlBinder;
         currentSongId = playState.getSongID();
         playState.setPlaying(true);
         sendBroadcastControlCenter(GlobalConst.STATE_SERVICE_PLAYING);
-        // 网络歌曲uri
-        String songUri = UriUtils.getSongFile(currentSongId);
-        preparePlay(songUri);
+        preparePlay(currentSongId);
     }
 
     /**
      * 请求网络, 准备播放
      */
-    private void preparePlay(String songUri) {
+    private void preparePlay(int songId) {
+        if (songId == -1) {
+            return;
+        }
+        // 网络歌曲uri
+        String songUri = UriUtils.getSongFile(songId);
         Log.d(TAG, "preparePlay() called with: songUri = [" + songUri + "]");
         HttpUtils.sendHttpRequest(songUri, new Callback() {
             @Override
@@ -293,14 +300,21 @@ private PlayControlBinder playControlBinder;
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final SongInfo song = GsonUtils.handlerSongInfoByRequestPlay(response.body().string());
-                Log.i(TAG, "onResponse: " + song);
                 if (mediaPlayer.isPlaying()) {
                     mediaPlayer.stop();
                 }
                 mediaPlayer.reset();
-                mediaPlayer.setDataSource(song.FileLink);
-                mediaPlayer.prepare();
-                mediaPlayer.start();
+                try {
+                    mediaPlayer.setDataSource(song.FileLink);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    mediaPlayer.reset();
+                    mediaPlayer.setDataSource(song.FileLink);
+                    mediaPlayer.prepare();
+                    mediaPlayer.start();
+                }
             }
         });
     }
