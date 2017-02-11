@@ -41,13 +41,19 @@ public class PlayState {
         SongDao.saveAll(getPlayList());
     }
 
+    public void setPlayList(List<Song> data) {
+        if (data == null) {
+            return;
+        }
+        playList.clear();
+        playList.addAll(data);
+    }
     /**
      * 在列表指定位置插入歌曲
      * @param song Song Object
      */
     public void insertPlayNext(Song song) {
         playList.add(currentPosition + 1, song);
-        SongDao.saveAll(getPlayList());
     }
 
     /**

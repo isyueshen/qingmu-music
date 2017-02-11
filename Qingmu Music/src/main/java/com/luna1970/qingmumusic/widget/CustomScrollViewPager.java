@@ -29,19 +29,19 @@ public class CustomScrollViewPager extends ViewPager {
         this.canScroll = canScroll;
     }
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if (canScroll) {
-            return super.onTouchEvent(ev);
-        } else {
-            return true;
-        }
-    }
-
-    @Override
-    public void scrollTo(int x, int y) {
-        if (canScroll) {
-            super.scrollTo(x, y);
-        }
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent ev) {
+//        if (canScroll) {
+//            return super.onTouchEvent(ev);
+//        } else {
+//            return true;
+//        }
+//    }
+//
+//    @Override
+//    public void scrollTo(int x, int y) {
+//        if (canScroll) {
+//            super.scrollTo(x, y);
+//        }
+//    }
 }

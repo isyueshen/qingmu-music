@@ -30,6 +30,7 @@ public class ParseUtils {
             int prevTime = 0;
             boolean merge = false;
             while ((line = bufferedReader.readLine()) != null) {
+                line = line.trim();
                 // 如果是空行
                 if (TextUtils.isEmpty(line)) {
                     continue;
@@ -40,19 +41,19 @@ public class ParseUtils {
                     continue;
                 }
                 // 单行歌词内容
-                String content = line.substring(line.lastIndexOf("]") + 1).trim();
+                String content = line.substring(line.indexOf("]") + 1).trim();
                 // 分
                 String minute = line.substring(line.indexOf("[") + 1, line.indexOf(":"));
                 // 秒 (这里使用6, 是因为有的格式不符合规范, 如'[01:02:03]')
                 String second = line.substring(line.indexOf(":") + 1, 6);
                 // 毫秒
-                String milliSecond = line.substring(7, line.lastIndexOf("]"));
+                String milliSecond = line.substring(7, line.indexOf("]"));
                 // 总时间 (毫秒)
                 int time = Integer.parseInt(minute) * 60 * 1000 + Integer.parseInt(second) * 1000
                         + Integer.parseInt(milliSecond) * 10;
                 // 空行则直接添加
                 if (TextUtils.isEmpty(content)) {
-                    lrcRow = new LrcRow(content, time);
+                    lrcRow = new LrcRow("♪", time);
                     lrc.getLrcRowList().add(lrcRow);
                     continue;
                 }

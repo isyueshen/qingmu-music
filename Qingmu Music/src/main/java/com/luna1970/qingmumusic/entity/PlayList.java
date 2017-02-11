@@ -14,7 +14,7 @@ import com.raizlabs.android.dbflow.structure.BaseModel;
 
 @ModelContainer
 @Table(databaseName = DBFlowDatabase.NAME)
-public class PlayList extends BaseModel {
+public class Playlist extends BaseModel {
     @Column
     @PrimaryKey(autoincrement = true)
     public int id;

@@ -41,7 +41,7 @@ import com.luna1970.qingmumusic.service.MusicPlayService;
 import com.luna1970.qingmumusic.util.GlobalConst;
 import com.luna1970.qingmumusic.util.HttpUtils;
 import com.luna1970.qingmumusic.util.ParseUtils;
-import com.luna1970.qingmumusic.util.ScreenUtils;
+import com.luna1970.qingmumusic.util.DeviceUtils;
 import com.luna1970.qingmumusic.util.UriUtils;
 import com.luna1970.qingmumusic.widget.LrcView;
 import com.luna1970.qingmumusic.widget.PlayListDialog;
@@ -130,7 +130,9 @@ public class MusicPlayActivity extends BaseActivity {
                         playModeIv.setImageLevel(PlayMode.ORDER);
                         break;
                 }
-                seekBar.setSecondaryProgress(playControlBinder.getBufferedState() * playState.getDuration() * 10);
+                if (playState.isPlaying()) {
+                    seekBar.setSecondaryProgress(playControlBinder.getBufferedState() * playState.getDuration() * 10);
+                }
             }
 
             @Override
@@ -158,7 +160,7 @@ public class MusicPlayActivity extends BaseActivity {
         // 整体向下移动状态栏高度
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             LinearLayout linearLayout = (LinearLayout) findViewById(R.id.content_ll);
-            linearLayout.setPadding(0, ScreenUtils.getStatusBarSize(), 0, 0);
+            linearLayout.setPadding(0, DeviceUtils.getStatusBarSize(), 0, 0);
         }
     }
 
@@ -179,6 +181,15 @@ public class MusicPlayActivity extends BaseActivity {
         seekBar = (SeekBar) findViewById(R.id.seek_bar);
         playList = (ImageView) findViewById(R.id.play_list);
         frameLayout = (FrameLayout) findViewById(R.id.content_fl);
+
+        // 根据设备是否有Navigation Bar来设置边距
+        LinearLayout bottomContainer = (LinearLayout) findViewById(R.id.bottom_container);
+        if (!DeviceUtils.checkHasNavigationBar(MusicPlayActivity.this)) {
+            DeviceUtils.getNavigationBarSize(MusicPlayActivity.this);
+            LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) bottomContainer.getLayoutParams();
+            float navigationBarSize = DeviceUtils.getNavigationBarSize(MusicPlayActivity.this);
+            layoutParams.setMargins(0, 0, 0, (int) navigationBarSize);
+        }
 
         if (playState.isPlaying()) {
             playOrPauseIv.setSelected(true);

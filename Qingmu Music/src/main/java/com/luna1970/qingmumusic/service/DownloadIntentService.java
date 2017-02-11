@@ -147,7 +147,9 @@ public class DownloadIntentService extends IntentService {
                             startDownloadUpdatePackage(updateInfo.getUpdateUrl(), finalFile);
                         }
                     } else {
-                        checkForUpdateListener.onCheckResult(false);
+                        if (checkForUpdateListener != null) {
+                            checkForUpdateListener.onCheckResult(false);
+                        }
                     }
                 }
             });

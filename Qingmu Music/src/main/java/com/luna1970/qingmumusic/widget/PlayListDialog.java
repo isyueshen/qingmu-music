@@ -18,7 +18,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.luna1970.qingmumusic.R;
-import com.luna1970.qingmumusic.adapter.PlayListAdapter;
+import com.luna1970.qingmumusic.adapter.DialogPlayListAdapter;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnClickListener;
 import com.luna1970.qingmumusic.listener.PlayListDialogOnDeleteListener;
 import com.luna1970.qingmumusic.util.GlobalConst;
@@ -87,12 +87,12 @@ public class PlayListDialog extends Dialog {
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.scrollToPosition(playState.getCurrentPosition());
-        final PlayListAdapter playListAdapter = new PlayListAdapter(playState.getPlayList());
-        playListAdapter.setPlayListDialogOnClickListener(new PlayListDialogOnClickListener() {
+        final DialogPlayListAdapter dialogPlayListAdapter = new DialogPlayListAdapter(playState.getPlayList());
+        dialogPlayListAdapter.setPlayListDialogOnClickListener(new PlayListDialogOnClickListener() {
             @Override
             public void onClick(int index) {
                 playState.setCurrentPosition(index);
-                playListAdapter.notifyItemRangeChanged(linearLayoutManager.findFirstVisibleItemPosition(), linearLayoutManager.findLastVisibleItemPosition());
+                dialogPlayListAdapter.notifyItemRangeChanged(linearLayoutManager.findFirstVisibleItemPosition(), linearLayoutManager.findLastVisibleItemPosition());
                 Intent intent = new Intent();
                 intent.setAction(GlobalConst.ACTION_PLAY_SPECIFIC);
                 intent.putExtra(GlobalConst.ACTION_PLAY_SPECIFIC, index);
@@ -100,13 +100,13 @@ public class PlayListDialog extends Dialog {
 
             }
         });
-        playListAdapter.setPlayListDialogOnDeleteListener(new PlayListDialogOnDeleteListener() {
+        dialogPlayListAdapter.setPlayListDialogOnDeleteListener(new PlayListDialogOnDeleteListener() {
             @Override
             public void onDelete(int index) {
 //                Logger.d(index);
                 playState.removeSongAt(index);
-                playListAdapter.notifyItemRemoved(index);
-                playListAdapter.notifyItemRangeChanged(index, playState.getListSize()+1-index);
+                dialogPlayListAdapter.notifyItemRemoved(index);
+                dialogPlayListAdapter.notifyItemRangeChanged(index, playState.getListSize()+1-index);
                 playListTitleTv.setText("播放列表 (" + playState.getListSize() + ")");
                 if (playState.getCurrentPosition() == index) {
                     Intent intent = new Intent();
@@ -116,7 +116,7 @@ public class PlayListDialog extends Dialog {
                 }
             }
         });
-        recyclerView.setAdapter(playListAdapter);
+        recyclerView.setAdapter(dialogPlayListAdapter);
     }
 
     @Override

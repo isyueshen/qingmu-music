@@ -48,9 +48,24 @@ public class PreferencesFragment extends PreferenceFragment {
         };
     }
 
+
     private void initPreferenceData() {
+        // 图片缓存大小
         final Preference imageCacheSize = findPreference("prefCache_clearDiskCache");
-        imageCacheSize.setSummary(GlideCacheUtil.getInstance().getExternalCacheSize());
+        imageCacheSize.setSummary("正在统计...");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                final String size = GlideCacheUtil.getInstance().getExternalCacheSize();
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        imageCacheSize.setSummary(size);
+                    }
+                });
+            }
+        }).start();
+        // 清除图片缓存
         imageCacheSize.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
@@ -71,6 +86,7 @@ public class PreferencesFragment extends PreferenceFragment {
                 return false;
             }
         });
+        // 检查更新
         final Preference checkForUpdate = findPreference("prefEasy_checkForUpdate");
         checkForUpdate.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override

@@ -3,6 +3,10 @@ package com.luna1970.qingmumusic.fragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +16,20 @@ import java.util.List;
  *
  */
 
-public class MainFragmentViewPagerFragment extends FragmentPagerAdapter {
-    private final List<Fragment> fragments = new ArrayList<>();
-    private final List<String> titles = new ArrayList<>();
+public class ViewPagerFragmentAdapter extends FragmentPagerAdapter {
+    private List<Fragment> fragments;
+    private List<String> titles;
 
-    public MainFragmentViewPagerFragment(FragmentManager fm) {
+    public ViewPagerFragmentAdapter(FragmentManager fm, List<Fragment> fragmentList, List<String> titleList) {
         super(fm);
+        this.fragments = fragmentList;
+        this.titles = titleList;
     }
 
     public void addFragment(Fragment fragment, String title) {
         fragments.add(fragment);
         titles.add(title);
+        Logger.d(fragments.size());
     }
 
     @Override
@@ -39,4 +46,5 @@ public class MainFragmentViewPagerFragment extends FragmentPagerAdapter {
     public CharSequence getPageTitle(int position) {
         return titles.get(position);
     }
+
 }

@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
@@ -32,9 +33,12 @@ import com.lapism.searchview.SearchView;
 import com.luna1970.qingmumusic.R;
 import com.luna1970.qingmumusic.dao.SongDao;
 import com.luna1970.qingmumusic.fragment.MainFragment;
-import com.luna1970.qingmumusic.fragment.MainFragmentViewPagerFragment;
-import com.luna1970.qingmumusic.fragment.MainTopSongListFragment;
+import com.luna1970.qingmumusic.fragment.ViewPagerFragmentAdapter;
+import com.luna1970.qingmumusic.fragment.PlayListFragment;
 import com.luna1970.qingmumusic.util.ToastUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.luna1970.qingmumusic.application.MusicApplication.playState;
 
@@ -73,7 +77,7 @@ public class MainActivity extends BaseActivity {
                 SearchResultActivity.startAction(MainActivity.this, currentQuery);
             }
         });
-        playState.updatePlayList(SongDao.getSongList());
+        playState.setPlayList(SongDao.getSongList());
         setFragment();
     }
 
@@ -169,10 +173,14 @@ public class MainActivity extends BaseActivity {
 
     private void setViews() {
         viewPager = (ViewPager) findViewById(R.id.view_pager);
-        MainFragmentViewPagerFragment mainFragmentViewPagerFragment = new MainFragmentViewPagerFragment(getSupportFragmentManager());
-        mainFragmentViewPagerFragment.addFragment(new MainFragment(), "榜单");
-        mainFragmentViewPagerFragment.addFragment(new MainTopSongListFragment(), "电台");
-        viewPager.setAdapter(mainFragmentViewPagerFragment);
+        List<Fragment> fragmentList = new ArrayList<>();
+        fragmentList.add(new MainFragment());
+        fragmentList.add(new PlayListFragment());
+        List<String> titleList = new ArrayList<>();
+        titleList.add("榜单");
+        titleList.add("电台");
+        ViewPagerFragmentAdapter viewPagerFragmentAdapter = new ViewPagerFragmentAdapter(getSupportFragmentManager(), fragmentList, titleList);
+        viewPager.setAdapter(viewPagerFragmentAdapter);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
         tabLayout.setupWithViewPager(viewPager, true);
 //        final AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.app_bar_layout);
@@ -181,16 +189,18 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
 //                appBarLayout.setBackgroundColor(getResources().getColor(R.color.colorPrimary, null));
+                viewPager.setCurrentItem(tab.getPosition());
+                Log.i(TAG, "onTabSelected: " + viewPager.getChildCount() + viewPager.getCurrentItem());
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-
+                Log.i(TAG, "onTabUnselected: ");
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
-
+                Log.i(TAG, "onTabReselected: ");
             }
         });
     }

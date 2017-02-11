@@ -16,7 +16,7 @@ import android.widget.Scroller;
 import com.luna1970.qingmumusic.entity.Lrc;
 import com.luna1970.qingmumusic.entity.LrcRow;
 import com.luna1970.qingmumusic.listener.LrcViewSingleTapUpListener;
-import com.luna1970.qingmumusic.util.ScreenUtils;
+import com.luna1970.qingmumusic.util.DeviceUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -142,10 +142,10 @@ public class LrcView extends View implements View.OnTouchListener {
         // 设置文字内容居中绘制, 颜色, 大小
         paint.setTextAlign(Paint.Align.CENTER);
         normalTextColor = Color.argb(150, 210, 210, 210);
-        normalTextSize = (int) ScreenUtils.dp2px(14);
+        normalTextSize = (int) DeviceUtils.dp2px(14);
         currentTextColor = Color.WHITE;
-        currentTextSize = (int) ScreenUtils.dp2px(14);
-        dividerY = (int) ScreenUtils.dp2px(21);
+        currentTextSize = (int) DeviceUtils.dp2px(14);
+        dividerY = (int) DeviceUtils.dp2px(21);
         setOnTouchListener(this);
         gestureDetector = new GestureDetector(getContext(), new GestureDetector.OnGestureListener() {
             @Override
@@ -162,7 +162,7 @@ public class LrcView extends View implements View.OnTouchListener {
                 // 初始化专用画笔
                 timeLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
                 timeLinePaint.setTextAlign(Paint.Align.RIGHT);
-                timeLinePaint.setTextSize(ScreenUtils.dp2px(14));
+                timeLinePaint.setTextSize(DeviceUtils.dp2px(14));
                 timeLinePaint.setColor(Color.WHITE);
                 simpleDateFormat = new SimpleDateFormat("mm:ss.S");
                 return false;
@@ -258,7 +258,7 @@ public class LrcView extends View implements View.OnTouchListener {
             index = dragPosition;
             // 绘制当前时间
             String time = simpleDateFormat.format(new Date(lrcRow.getTime()));
-            float aline = ScreenUtils.dp2px(5);
+            float aline = DeviceUtils.dp2px(5);
             canvas.drawText(time, 0, time.length(), viewX - aline, centerY - aline, timeLinePaint);
             canvas.drawLine(0, centerY, viewX, centerY, paint);
         } else {
